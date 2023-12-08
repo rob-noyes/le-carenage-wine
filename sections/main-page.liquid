@@ -1,0 +1,57 @@
+<section
+  class="
+    page
+    section
+    {% if settings.enable_reveal_animations and section.settings.enable_animation %}
+      animation
+      animation--page
+    {% endif %}
+  "
+  data-section-id="{{ section.id }}"
+  data-section-type="page"
+>
+  <header class="page__header center animation--section-introduction">
+    <h1 class="type-heading-1 tc mt0 mb5">{{ page.title }}</h1>
+  </header>
+
+  <div class="page__content center" style="--content-max-width: {{ section.settings.content_max_width }}px;">
+    <div class="rte">
+      {{ page.content }}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.main_page.name",
+  "tag": "section",
+  "class": "spaced-section section-borderable",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:shared.settings.section_style.style_header.content"
+    },
+    {
+      "id": "enable_animation",
+      "type": "checkbox",
+      "label": "t:shared.settings.section_style.enable_animation.label",
+      "info": "t:shared.settings.section_style.enable_animation.info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:shared.settings.content_header.content"
+    },
+    {
+      "id": "content_max_width",
+      "type": "range",
+      "min": 400,
+      "max": 1300,
+      "step": 100,
+      "default": 500,
+      "label": "t:sections.main_page.settings.content_max_width.label",
+      "info": "t:sections.main_page.settings.content_max_width.info"
+    }
+  ]
+}
+{% endschema %}

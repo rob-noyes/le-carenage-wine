@@ -1,0 +1,111 @@
+{% comment %}
+This shop uses Bloom, a growth platform for modern wineries.
+You SHOULD NOT modify the contents of this file.
+It is automatically generated and your changes will be overwritten.
+These features and content can be managed within the Bloom app or the Shopify customizer.
+
+Bloom (www.bloom.wine)
+{% endcomment %}
+
+<script type="text/javascript">
+window.Bloom = window.Bloom || {};
+window.Bloom.storefront = window.Bloom.storefront || {};
+window.Bloom.storefront.utilities = window.Bloom.storefront.utilities || {};
+window.Bloom.storefront.utilities._ = window.Bloom.storefront.utilities._ || {};
+
+// Adapted from https://matthiashager.com/converting-snake-case-to-camel-case-object-keys-with-javascript
+Bloom.storefront.utilities._.isArray = function(a) {
+  return Array.isArray(a);
+};
+
+Bloom.storefront.utilities._.isObject = function(o) {
+  return o === Object(o) && !Bloom.storefront.utilities._.isArray(o) && typeof o !== 'function';
+};
+
+Bloom.storefront.utilities._.toCamel = function(s) {
+  return s.replace(/([-_][a-z])/ig, function($1) {
+    return $1.toUpperCase()
+      .replace('-', '')
+      .replace('_', '');
+  });
+};
+
+Bloom.storefront.utilities._.keysToCamel = function(o) {
+  if (Bloom.storefront.utilities._.isObject(o)) {
+    const n = {};
+
+    Object.keys(o)
+      .forEach(function(k) {
+        n[Bloom.storefront.utilities._.toCamel(k)] = Bloom.storefront.utilities._.keysToCamel(o[k]);
+      });
+
+    return n;
+  } else if (Bloom.storefront.utilities._.isArray(o)) {
+    return o.map(function(i) {
+      return Bloom.storefront.utilities._.keysToCamel(i);
+    });
+  }
+
+  return o;
+};
+
+window.Bloom.storefront.data = window.Bloom.storefront.data || {{ shop.metafields.bloom.bloomfields | json }};
+window.Bloom.storefront.data.clubs = window.Bloom.storefront.data.clubs || {{ shop.metafields.bloom.clubs | json }};
+window.Bloom.storefront.data.subscriptionVariants = window.Bloom.storefront.data.subscriptionVariants || {{ shop.metafields.bloom.subscription_variants | json }};
+
+(function() {
+  var subVariantIndex;
+
+  {%- for subscription_variant in shop.metafields.bloom.subscription_variants -%}
+    {%- for subscription_variant_field in subscription_variant -%}
+      {%- if subscription_variant_field[0] == "id" -%}
+        {%- assign subscription_variant_id = subscription_variant_field[1] -%}
+        {%- assign subscription_variant_key = "sub_variant_" | append: subscription_variant_id -%}
+        {%- break -%}
+      {%- endif -%}
+    {%- endfor -%}
+    subVariantIndex = Bloom.storefront.data.subscriptionVariants.findIndex(function(sv) { return sv.id == "{{ subscription_variant_id }}" });
+    if (subVariantIndex !== -1) {
+      Bloom.storefront.data.subscriptionVariants[subVariantIndex] = {{ shop.metafields.bloom[subscription_variant_key] | json }}
+    }
+  {%- endfor -%}
+})();
+
+(function() {
+
+    var clubIndex, levelIindex;
+
+    {%- for club in shop.metafields.bloom.clubs -%}
+      {%- for club_field in club -%}
+        {%- if club_field[0] == "id" -%}
+          {%- assign club_id = club_field[1] -%}
+        {%- endif -%}
+        {%- if club_field[0] == "levels" -%}
+          {%- assign levels = club_field[1] -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if levels -%}
+        {%- for level in levels -%}
+          {%- for level_field in level -%}
+            {%- if level_field[0] == "id" -%}
+              {%- assign level_id = level_field[1] -%}
+              {%- assign level_name = "membership_level_" | append: level_id -%}
+              {%- break -%}
+            {%- endif -%}
+          {%- endfor -%}
+          clubIndex = Bloom.storefront.data.clubs.findIndex(function(c) { return c.id === {{ club_id }} });
+          if (clubIndex !== -1) {
+            levelIindex = (Bloom.storefront.data.clubs[clubIndex]||{}).levels.findIndex(function(l) { return l.id === {{ level_id }} });
+            if (levelIindex !== -1) {
+              (Bloom.storefront.data.clubs[clubIndex]||{}).levels[levelIindex] = {{ shop.metafields.bloom[level_name] | json }}
+            }
+          }
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endfor -%}
+})();
+
+window.Bloom.storefront.data.clubs = Bloom.storefront.utilities._.keysToCamel(window.Bloom.storefront.data.clubs);
+window.Bloom.storefront.data.subscriptionVariants = Bloom.storefront.utilities._.keysToCamel(window.Bloom.storefront.data.subscriptionVariants);
+
+</script>

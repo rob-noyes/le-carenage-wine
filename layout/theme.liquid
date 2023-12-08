@@ -1,0 +1,129 @@
+<!doctype html>
+
+<!--
+  ___                       ___           ___           ___
+       /  /\                     /__/\         /  /\         /  /\
+      /  /:/_                    \  \:\       /  /:/        /  /::\
+     /  /:/ /\  ___     ___       \  \:\     /  /:/        /  /:/\:\
+    /  /:/ /:/ /__/\   /  /\  ___  \  \:\   /  /:/  ___   /  /:/  \:\
+   /__/:/ /:/  \  \:\ /  /:/ /__/\  \__\:\ /__/:/  /  /\ /__/:/ \__\:\
+   \  \:\/:/    \  \:\  /:/  \  \:\ /  /:/ \  \:\ /  /:/ \  \:\ /  /:/
+    \  \::/      \  \:\/:/    \  \:\  /:/   \  \:\  /:/   \  \:\  /:/
+     \  \:\       \  \::/      \  \:\/:/     \  \:\/:/     \  \:\/:/
+      \  \:\       \__\/        \  \::/       \  \::/       \  \::/
+       \__\/                     \__\/         \__\/         \__\/
+
+  --------------------------------------------------------------------
+  #  Lorenza v6.1.0
+  #  Documentation: https://fluorescent.co/help/lorenza/
+  #  Purchase: https://themes.shopify.com/themes/lorenza
+  #  A product by Fluorescent: https://fluorescent.co/
+  --------------------------------------------------------------------
+-->
+
+<html class="no-js" lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="canonical" href="{{ canonical_url }}">
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+
+ <!-- Redirect product detail pages to the wines page -->   
+    {% if template == 'product' %}
+      <script>
+        window.location.href = "/pages/wines";
+      </script>
+    {% endif %}
+
+    {%- unless settings.type_header_font.system? and settings.type_body_font.system? -%}
+      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+    {%- endunless -%}
+
+    {%- if settings.favicon != blank -%}
+      <link rel="shortcut icon" href="{{ settings.favicon | image_url: width: 32, height: 32 }}" type="image/png">
+    {%- endif -%}
+
+    {%- capture seo_title -%}
+      {%- if request.page_type == 'search' and search.performed == true -%}
+        {{ 'general.search.heading' | t: count: search.results_count }}:
+        {{ 'general.search.results_with_count' | t: terms: search.terms, count: search.results_count }}
+      {%- else -%}
+        {{ page_title }}
+      {%- endif -%}
+      {%- if current_tags -%}
+        {%- assign meta_tags = current_tags | join: ', ' -%}
+        &ndash; {{ 'general.meta.tags' | t: tags: meta_tags -}}
+      {%- endif -%}
+      {%- if current_page != 1 -%}
+        &ndash; {{ 'general.meta.page' | t: page: current_page }}
+      {%- endif -%}
+      {%- assign escaped_page_title = page_title | escape -%}
+      {%- unless escaped_page_title contains shop.name -%}
+        &ndash; {{ shop.name }}
+      {%- endunless -%}
+    {%- endcapture -%}
+    <title>{{ seo_title | strip }}</title>
+
+    {% if page_description %}
+      <meta name="description" content="{{ page_description | escape }}">
+    {% endif %}
+
+    {%- render 'social-meta-tags' -%}
+
+    {%- render 'theme-setup' -%}
+    {%- render 'theme-setting-vars' -%}
+    {%- render 'theme-liquid-css-assets' -%}
+    {%- render 'theme-globals' -%}
+
+    {{ content_for_header }}
+    {{ 'bloom_custom.css' | asset_url | stylesheet_tag }}
+    {% render 'bloom-header' %}
+  </head>
+
+  <body
+    class="
+      template-{{ request.page_type | handle }}
+      {% if settings.uppercase_headings %} g-uppercase{% endif %}
+      secondary_button-style-{{ settings.button_secondary_style }}
+    "
+    {% if settings.cart_type == 'flyout' %}
+      data-enable-quick-cart="true"
+    {% endif %}
+    {% if settings.cart_quick_shop_enabled %}
+      data-enable-quick-add-to-cart="true"
+    {% endif %}
+    data-enable-reveal-animations="{{ settings.enable_reveal_animations }}"
+  >
+    {% section 'bloom-age-gate-section' %}
+    <header class="header-container">
+      {% sections 'header-group' %}
+    </header>
+
+    {% sections 'overlay-group' %}
+
+    {% render 'quick-add' %}
+    {% render 'header-overlay' %}
+
+    <div class="theme-editor-scroll-offset"></div>
+    <main id="main-content">{{ content_for_layout }}</main>
+
+    {% sections 'footer-group' %}
+
+    {% render 'cart-drawer' %}
+    {% render 'modal' %}
+    {% render 'store-availability-drawer' %}
+    {% render 'drawer-overlay' %}
+
+    <script>
+      window.routes = {
+        cart_add_url: '{{ routes.cart_add_url }}',
+        cart_change_url: '{{ routes.cart_change_url }}',
+        cart_update_url: '{{ routes.cart_update_url }}',
+      };
+    </script>
+
+    {{ '//www.youtube.com/iframe_api' | script_tag }}
+    {{ '//cdn.shopify.com/shopifycloud/shopify-plyr/v1.0/shopify-plyr.css' | stylesheet_tag }}
+  </body>
+</html>

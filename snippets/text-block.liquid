@@ -1,0 +1,51 @@
+{% if overline != blank or heading != blank or subheading != blank or link_text != blank %}
+
+  {% assign alignment = ' text-block--' | append: heading_alignment %}
+
+  <div class="text-block {{ modifiers }}{{ alignment }}">
+    {% unless overline == blank  %}
+      <div
+        class="text-block__item text-block__overline overline ma0"
+        data-theme-editor-setting="section.{{ id }}.overline"
+      >
+        {{ overline }}
+      </div>
+    {% endunless %}
+
+    {%- unless heading == blank -%}
+      <h2
+        class="text-block__item text-block__heading type-heading-1 ma0{% if overline != blank %} mt3{% endif %}"
+        data-theme-editor-setting="section.{{ id }}.title"
+        {%- if text_max_width != blank -%} style="max-width: {{ text_max_width }}rem;"{%- endif -%}
+      >
+        {{ heading }}
+      </h2>
+    {%- endunless -%}
+
+    {%- unless subheading == blank -%}
+      <div
+        class="text-block__subheading type-body-regular ma0{% if overline != blank or heading != blank %} mt3{% endif %}"
+        data-theme-editor-setting="section.{{ id }}.subheading"
+        {%- if text_max_width != blank -%} style="max-width: {{ text_max_width }}rem;"{%- endif -%}
+      >
+        {{ subheading }}
+      </div>
+    {%- endunless -%}
+
+    {% if link != blank and link_text != blank %}
+      <a
+        href="{{ link }}"
+        class="text-block__item text-block__button bttn bttn--secondary bttn--inline mt4"
+        data-theme-editor-setting="section.{{ id }}.link_text"
+      >
+        {{ link_text }}
+      </a>
+
+    {% elsif show_placeholder_link %}
+      <a class="text-block__item text-block__button bttn bttn--secondary bttn--inline mt4">
+        {{ link_text }}
+      </a>
+    {% endif %}
+  </div>
+
+{% endif %}

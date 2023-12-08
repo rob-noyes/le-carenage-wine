@@ -1,0 +1,44 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "enable_animation": true,
+        "content_max_width": 500
+      }
+    },
+    "f0494451-0bfa-42ed-b364-f57b7867cffd": {
+      "type": "rich-text",
+      "blocks": {
+        "template--19543881449781__f0494451-0bfa-42ed-b364-f57b7867cffd-title-1": {
+          "type": "title",
+          "settings": {
+            "title": "Accessibility Statement",
+            "text_max_width": 100
+          }
+        },
+        "76f6e98c-d24e-4f89-9ba4-3b8b11285d20": {
+          "type": "text",
+          "settings": {
+            "text": "<p><\/p><p>Le Carénage is committed to ensuring all visitors 21+ have equal access to our products and services on our website. Le Carénage will work to maintain its website with the goal of being fully accessible to all visitors.<\/p><p><\/p><p>As the law and accessibility standards continue to change, our efforts are ongoing to deliver up-to-date content online and to implement relevant improvements. If you need assistance in using the processes found within this site, or have specific questions or concerns about the accessibility of this site, please contact us at;<\/p><p>Email: info@lecarenage.com<\/p><p>Telephone: (650) 308-4030<\/p><p>If you do encounter an accessibility issue on our site, please be sure to specify the specific page or process and we will make all reasonable efforts to make your experience more accessible.<\/p><p><\/p><p>THIRD PARTY APPLICATIONS<\/p><p>Information about Le Carénage products and events may also appear on third-party platforms such as Facebook, Twitter, Instagram, YouTube and LinkedIn. Le Carénage has no control or ability to remedy any challenges that might occur for individuals with disabilities on these third- party platforms. We encourage you to contact their customer service if you need any assistance accessing our content on those platforms.<\/p>",
+            "text_max_width": 100
+          }
+        }
+      },
+      "block_order": [
+        "template--19543881449781__f0494451-0bfa-42ed-b364-f57b7867cffd-title-1",
+        "76f6e98c-d24e-4f89-9ba4-3b8b11285d20"
+      ],
+      "settings": {
+        "section_style": "default",
+        "enable_animation": true,
+        "alignment": "left"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "f0494451-0bfa-42ed-b364-f57b7867cffd"
+  ]
+}

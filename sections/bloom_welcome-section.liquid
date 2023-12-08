@@ -1,0 +1,123 @@
+<style>
+  .Bloom__Welcome__Page .button {
+    max-width:280px;
+    margin: auto;
+  }
+  @media only screen and (min-width: 640px) {
+    .Bloom__Welcome__Page .button {
+      margin: unset;
+    }
+  }
+</style>
+<div class="Bloom__Welcome__Page uk-container uk-container-large uk-margin-medium uk-margin-medium-top">
+  <div class="uk-flex" uk-grid>
+    {% for block in section.blocks %}
+      {%- if block.settings.image != blank -%}
+        <div class="uk-width-1-2@m welcome-image-wrapper uk">
+          <img
+            src="{{ block.settings.image | img_url: '1000x' }}"
+            alt="{{ block.settings.title }}"
+            class="uk-width-1-1"
+          >
+        </div>
+      {%- endif -%}
+
+      <div class="uk-width-1-2@m welcome-text-wrapper uk-flex-first@m uk-flex uk-flex-middle">
+        {%- if block.settings.subheading != blank or block.settings.title != blank -%}
+          <div class="welcome-text-content">
+            {%- if block.settings.subheading != blank -%}
+              <h3 class="welcome-subheading h6 uk-margin-remove-bottom uk-text-center uk-text-left@s">
+                {{ block.settings.subheading | escape }}
+              </h3>
+            {%- endif -%}
+
+            {%- if block.settings.title != blank -%}
+              <h1 class="welcome-title h1 type-heading-1 uk-text-center uk-text-left@s uk-margin-medium-bottom uk-margin-large-bottom@s">
+                {{ block.settings.title | escape }}
+              </h1>
+            {%- endif -%}
+
+            {%- if block.settings.content != blank -%}
+              <div class="welcome-description uk-margin-bottom uk-text-center uk-text-left@s">
+                {{ block.settings.content }}
+              </div>
+            {%- endif -%}
+
+            {%- if block.settings.link_text != '' -%}
+              <div class="uk-text-center uk-text-left@s">
+                <a
+                  href="{% if block.settings.link_URL %}{{block.settings.link_URL}}{% else %}{{ block.settings.link_text_URL }}{% endif %}"
+                  class="Button button btn bttn bttn--secondary"
+                >
+                  {{ block.settings.link_text }}
+                </a>
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Welcome page content",
+  "blocks": [
+    {
+      "type": "rich-text-image",
+      "name": "Rich text with image",
+      "settings": [
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Sub-heading",
+          "default": "Thanks for signing up!"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Welcome to the club"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "1200 x 1200px .png recommended"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Text",
+          "default": "<p>Being a member opens up access to you for special events, opportunities and wines that are only available to our club members.</p>"
+        },
+        {
+          "type": "text",
+          "id": "link_text_URL",
+          "label": "Text URL path",
+          "default": "/account"
+        },
+        {
+          "type": "url",
+          "id": "link_URL",
+          "label": "Link URL path",
+          "info": "This field will override the text URL path."
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Text for membership button",
+          "default": "Review my membership"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Club Welcome",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

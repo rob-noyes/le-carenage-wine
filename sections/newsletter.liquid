@@ -1,0 +1,209 @@
+{% liquid
+  assign id = section.id
+  assign section_style = section.settings.section_style
+%}
+
+{% assign modifiers = '' %}
+
+{% assign modifiers = modifiers | append: ' section--' | append: section_style %}
+{% assign modifiers = modifiers | append: ' section--spacing-tall' %}
+
+{% unless section_style == 'contrast' %}
+  {% assign modifiers = modifiers | append: ' section--bordered' %}
+{% endunless %}
+
+{% if settings.enable_reveal_animations and section.settings.enable_animation %}
+  {% assign modifiers = modifiers | append: ' animation animation--newsletter' %}
+{% endif %}
+
+<section
+  data-section-id="{{ id }}"
+  data-section-type="newsletter"
+  class="section newsletter{{ modifiers }}"
+>
+  <div class="newsletter__inner animation--section-introduction">
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+        {%- when 'small_heading' -%}
+          <div
+            class="newsletter__overline overline mb3"
+            data-theme-editor-setting="section.{{ id }}.title"
+          >
+            {{ block.settings.small_heading }}
+          </div>
+        {%- when 'heading' -%}
+          <h2
+            for="Email"
+            class="newsletter__heading type-heading-1"
+            data-theme-editor-setting="section.{{ id }}.heading/escape"
+            style="max-width: {{ block.settings.text_max_width }}rem;"
+          >
+            {{ block.settings.heading | escape }}
+          </h2>
+        {%- when 'subheading' -%}
+          <div
+            class="newsletter__subheading type-body-regular rte"
+            data-theme-editor-setting="section.{{ id }}.subheading"
+            style="max-width: {{ block.settings.text_max_width }}rem;"
+          >
+            {{ block.settings.subheading }}
+          </div>
+      {%- endcase -%}
+    {%- endfor -%}
+
+    <div class="newsletter__form{% if subheading == blank %} pt0point5{% endif %}">
+      {% assign form_id = 'NewsletterForm' %}
+      {% assign success_msg = 'general.newsletter_form.confirmation' | t %}
+
+      {% form 'customer' %}
+        {% render 'form-status', form: form, form_id: form_id, success_message: success_msg %}
+
+        {% unless form.posted_successfully? %}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <div class="newsletter__input-container">
+            <input
+              type="email"
+              class="input newsletter__input input-reset"
+              name="contact[email]"
+              id="{{ form_id }}-email"
+              value="{% if customer.email != blank %}{{ customer.email }}{% endif %}"
+              placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}"
+              autocorrect="off"
+              autocapitalize="off"
+              type="email"
+              required
+            >
+            <label class="label--above" for="Email">{{ 'general.newsletter_form.email_placeholder' | t }}</label>
+            <button
+              type="submit"
+              name="commit"
+              id="Subscribe"
+              class="newsletter__submit-button"
+              aria-label="{{ 'general.accessibility.submit' | t }}"
+            >
+              {% render 'icon-arrow-forward', non_focusable: true %}
+            </button>
+          </div>
+        {% endunless %}
+      {% endform %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.newsletter.name",
+  "class": "section-dynamic section-borderable",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.newsletter.settings.style_header.content"
+    },
+    {
+      "type": "select",
+      "id": "section_style",
+      "label": "t:sections.newsletter.settings.style.label",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.newsletter.settings.style.option_1"
+        },
+        {
+          "value": "contrast",
+          "label": "t:sections.newsletter.settings.style.option_2"
+        }
+      ]
+    },
+    {
+      "id": "enable_animation",
+      "type": "checkbox",
+      "label": "t:shared.settings.section_style.enable_animation.label",
+      "info": "t:shared.settings.section_style.enable_animation.info",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.newsletter.settings.customer_list_paragraph.content"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "small_heading",
+      "name": "t:sections.newsletter.blocks.small_heading.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "small_heading",
+          "label": "t:sections.newsletter.blocks.small_heading.settings.small_heading.label",
+          "default": "Newsletter"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "name": "t:sections.newsletter.blocks.heading.name",
+      "limit": 1,
+      "settings": [
+        {
+          "id": "heading",
+          "type": "text",
+          "label": "t:sections.newsletter.blocks.heading.settings.heading.label",
+          "default": "Newsletters can reinforce your brand"
+        },
+        {
+          "type": "range",
+          "id": "text_max_width",
+          "label": "t:shared.settings.text_max_width.label",
+          "min": 16,
+          "max": 50,
+          "step": 1,
+          "default": 46
+        }
+      ]
+    },
+    {
+      "type": "subheading",
+      "name": "t:sections.newsletter.blocks.subheading.name",
+      "limit": 1,
+      "settings": [
+        {
+          "id": "subheading",
+          "type": "richtext",
+          "label": "t:sections.newsletter.blocks.subheading.settings.subheading.label",
+          "default": "<p>Include a short sentence describing what someone can expect from your newsletter.</p>"
+        },
+        {
+          "type": "range",
+          "id": "text_max_width",
+          "label": "t:shared.settings.text_max_width.label",
+          "min": 16,
+          "max": 50,
+          "step": 1,
+          "default": 36
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.newsletter.presets.name",
+      "blocks": [
+        {
+          "type": "small_heading"
+        },
+        {
+          "type": "heading"
+        },
+        {
+          "type": "subheading"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

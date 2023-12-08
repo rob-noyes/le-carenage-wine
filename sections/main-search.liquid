@@ -1,0 +1,239 @@
+{% paginate search.results by 10 %}
+
+{% liquid
+  assign show_filters = section.settings.show_filters
+  assign show_sort = section.settings.show_sort
+%}
+
+<div
+  class="
+    search-template
+    {% if settings.enable_reveal_animations and section.settings.enable_animation %}
+      animation
+      animation--search
+    {% endif %}
+  "
+  data-section-id="{{ section.id }}"
+  data-section-type="search"
+  data-search-item-count="{{ search.results_count }}"
+>
+
+  <div class="search-template__heading">
+    <h1 class="type-heading-1 mt0 mb5">
+      {% if search.performed %}
+        <span class="visually-hidden">{{ 'search.heading' | t: count: search.results_count }}:</span>
+          {{ 'search.results_with_count' | t: terms: search.terms, count: search.results_count }}
+      {% else %}
+        {{ 'search.title' | t }}
+      {% endif %}
+    </h1>
+
+    <form action="{{ routes.search_url }}" method="get" role="search">
+      <label for="Search" class="visually-hidden">
+        {{ 'search.placeholder' | t }}
+      </label>
+      <input type="search"
+            name="q"
+            id="Search"
+            value="{{ search.terms | escape }}"
+            placeholder="{{ 'search.placeholder' | t }}"
+      >
+      <input type="hidden" name="options[prefix]" value="last">
+      <button
+        type="submit"
+        class="search-template__submit-button bttn"
+      >
+        {{ 'search.submit' | t }}
+      </button>
+    </form>
+  </div>
+
+
+  <div class="search-template__loading" data-loading>
+    {% render 'loader' %}
+  </div>
+
+  {% if search.performed %}
+    {% if search.results_count == 0 %}
+      <div class="search-template__partial" data-partial>
+        {% if show_filters or show_sort %}
+          <div class="search-template__top-row">
+            {% render 'active-filters' with resource: search %}
+          </div>
+        {% endif %}
+        <p class="search-template__no-results">{{ 'search.no_results_html' | t: terms: search.terms }}</p>
+      </div>
+    {% else %}
+
+      {% if show_filters or show_sort %}
+        <div class="search-template__filter-buttons">
+          {% render 'filter-buttons' with
+            resource: search,
+            show_sort: show_sort,
+            show_filters: show_filters
+          %}
+        </div>
+      {% endif %}
+
+      <div class="search-template__partial" data-partial>
+        {% if show_filters or show_sort %}
+          <div class="search-template__top-row">
+            {% render 'active-filters' with resource: search %}
+          </div>
+        {% endif %}
+
+
+        <h2 class="visually-hidden">{{ 'search.heading' | t: count: search.results_count }}</h2>
+        <ul class="search-template__results">
+          {% for item in search.results %}
+            <li class="search-template__item">
+              <a href="{{ item.url | within: collection }}" class="search-template__item-link" title="{{ item.title }}" aria-label="{{ item.title }}">
+                <div class="search-template__image">
+                  {% assign featured_media = item.featured_media.preview_image | default: item.featured_image %}
+                  {% if item.object_type == 'product' %}
+                    {% if featured_media != blank %}
+                      {%- assign media_alt = featured_media.alt -%}
+                      {%- if media_alt == blank or media_alt == '' -%}
+                        {%- assign media_alt = item.title -%}
+                      {%- endif -%}
+                      {% comment %}
+                        TODO: Make the below image handling into a snippet for other images to use.
+                      {% endcomment %}
+                      <img srcset="
+                        {%- if featured_media.width >= 165 -%}{{ featured_media | img_url: '165x' }} 165w,{%- endif -%}
+                        {%- if featured_media.width >= 360 -%}{{ featured_media | img_url: '360x' }} 360w,{%- endif -%}
+                        {%- if featured_media.width >= 533 -%}{{ featured_media | img_url: '533x' }} 533w,{%- endif -%}
+                        {%- if featured_media.width >= 720 -%}{{ featured_media | img_url: '720x' }} 720w,{%- endif -%}"
+                        src="{{ featured_media | img_url: '533x' }}"
+                        sizes="(min-width: 1200px) calc((1200px - 10rem) / 2), (min-width: 750px) calc((100vw - 11.5rem) / 2), calc(100vw - 4rem)"
+                        alt="{{ media_alt }}"
+                        loading="lazy"
+                      >
+                    {% else %}
+                      {{ 'product-1' | placeholder_svg_tag }}
+                    {% endif %}
+                  {% else %}
+                    {% assign featured_media = item.image %}
+                    {% if featured_media %}
+                      {%- assign media_alt = featured_media.alt -%}
+                      {%- if media_alt == blank or media_alt == '' -%}
+                        {%- assign media_alt = item.title -%}
+                      {%- endif -%}
+                      <img srcset="
+                        {%- if featured_media.width >= 165 -%}{{ featured_media | img_url: '165x' }} 165w,{%- endif -%}
+                        {%- if featured_media.width >= 360 -%}{{ featured_media | img_url: '360x' }} 360w,{%- endif -%}
+                        {%- if featured_media.width >= 533 -%}{{ featured_media | img_url: '533x' }} 533w,{%- endif -%}
+                        {%- if featured_media.width >= 720 -%}{{ featured_media | img_url: '720x' }} 720w,{%- endif -%}"
+                        src="{{ featured_media | img_url: '533x' }}"
+                        sizes="(min-width: 1200px) calc((1200px - 10rem) / 2), (min-width: 750px) calc((100vw - 11.5rem) / 2), calc(100vw - 4rem)"
+                        alt="{{ media_alt }}"
+                        loading="lazy"
+                      >
+                    {% else %}
+                      {% render 'icon-article-placeholder' %}
+                    {% endif %}
+                  {% endif %}
+                </div>
+                {% if item.object_type == 'product' %}
+                  <div class="search-template__content">
+                    <h3 class="type-heading-2 mb2">
+                      {{ item.title }}
+                    </h3>
+                    {% if item.compare_at_price > item.price %}
+                      {% if item.price_varies %}
+                        {% assign sale_price = item.price | money %}
+                        {{ 'products.product.on_sale_from_html' | t: price: sale_price }}{% if settings.currency_code_enabled %} {{ cart.currency.iso_code }}{% endif %}
+                      {% else %}
+                        {{ 'products.product.on_sale' | t }}
+                        <span>{{ item.price | money }}{% if settings.currency_code_enabled %} {{ cart.currency.iso_code }}{% endif %}</span>
+                      {% endif %}
+                      <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+                      <s>{{ item.compare_at_price | money }}{% if settings.currency_code_enabled %} {{ cart.currency.iso_code }}{% endif %}</s>
+                    {% else %}
+                      {% if item.price_varies %}
+                        {% assign price = item.price | money %}
+                        <span>{{ 'products.product.from_lowest_price_html' | t: lowest_price: price }}{% if settings.currency_code_enabled %} {{ cart.currency.iso_code }}{% endif %}</span>
+                      {% else %}
+                        <span>{{ item.price | money }}{% if settings.currency_code_enabled %} {{ cart.currency.iso_code }}{% endif %}</span>
+                      {% endif %}
+                    {% endif %}
+                    {% unless item.available %}
+                    <span class="fw5 ma1-l">{{ 'products.product.sold_out' | t }}</span>
+                    {% endunless %}
+                  </div>
+                {% else %}
+                  <div class="search-template__content">
+                    <h3 class="type-heading-2 mb2">
+                      {{ item.title }}
+                    </h3>
+                    {%- if item.excerpt != blank -%}
+                      <p class="type-body-regular">{{ item.excerpt | strip_html }}</p>
+                    {%- else -%}
+                      <p class="type-body-regular">{{ item.content | strip_html | truncatewords: 50 }}</p>
+                    {%- endif -%}
+                  </div>
+                {% endif %}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+
+        {% if paginate.pages > 1 %}
+          <div class="search-template__pagination">
+            <hr class="mt0 mb3 b--solid b--default bb" style="border-top: none;" />
+            {% render 'pagination' with
+              type: 'general.search.results',
+              paginate: paginate
+            %}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% endif %}
+
+{% endpaginate %}
+
+{% render 'filter-flyout',
+  resource: search,
+  show_sort: show_sort,
+  show_filters: show_filters
+%}
+
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main_search.name",
+  "tag": "section",
+  "class": "spaced-section section-borderable",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:shared.settings.section_style.style_header.content"
+    },
+    {
+      "id": "enable_animation",
+      "type": "checkbox",
+      "label": "t:shared.settings.section_style.enable_animation.label",
+      "info": "t:shared.settings.section_style.enable_animation.info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main_search.settings.filtering_header.content"
+    },
+    {
+      "id": "show_sort",
+      "type": "checkbox",
+      "label": "t:sections.main_search.settings.show_sort.label",
+      "default": true
+    },
+    {
+      "id": "show_filters",
+      "type": "checkbox",
+      "label": "t:sections.main_search.settings.show_filters.label",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

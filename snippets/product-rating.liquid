@@ -1,0 +1,31 @@
+{%- liquid
+  assign star_transparent = star_color | color_to_rgb | replace: 'rgb', 'rgba' | replace: ')', ', 0.35)'
+  assign rating_decimal = 0
+  assign decimal = product.metafields.reviews.rating.value.rating | modulo: 1
+  if decimal >= 0.3 and decimal <= 0.7
+    assign rating_decimal = 0.5
+  elsif decimal > 0.7
+    assign rating_decimal = 1
+  endif
+-%}
+
+<div
+  class="rating"
+  role="img"
+  aria-label="{{ 'general.accessibility.star_reviews_info' | t: rating_value: product.metafields.reviews.rating.value, rating_max: product.metafields.reviews.rating.value.scale_max }}"
+  style="
+    --star-color: {{ star_color }};
+    --star-color-transparent: {{ star_transparent }};
+  "
+>
+  <span aria-hidden="true" class="rating-star" style="--rating: {{ product.metafields.reviews.rating.value.rating | floor }}; --rating-max: {{ product.metafields.reviews.rating.value.scale_max }}; --rating-decimal: {{ rating_decimal }};"></span>
+</div>
+
+<p class="rating-count caption">
+{% comment %} 
+  <span aria-hidden="true" data-review-caption>{{ "products.product.reviews" | t: count: product.metafields.reviews.rating_count }}</span> {% endcomment %}
+{% comment %}   
+  <span class="visually-hidden">{{ product.metafields.reviews.rating_count }} {{ "general.accessibility.total_reviews" | t }}</span> {% endcomment %}
+
+  <a href="#shopify-product-reviews" class="product__reviews-trigger accent" >{{ "products.product.reviews" | t: count: product.metafields.reviews.rating_count }}</a>
+</p>

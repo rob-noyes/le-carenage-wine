@@ -1,0 +1,354 @@
+{%- if section.blocks.size > 0 -%}
+  <div
+    data-section-id="{{ section.id }}"
+    data-section-type="popup"
+    class="popups"
+  >
+    {%- for block in section.blocks -%}
+      {% liquid
+        assign id = block.id
+        assign mobile_timeout_in_ms = 10000
+        assign popup_position = block.settings.popup_position
+        assign popup_image = block.settings.popup_image
+        assign text_color = block.settings.text_color
+        assign bg_color = block.settings.bg_color
+        assign bg_gradient = block.settings.color_background_gradient
+        assign border_color = block.settings.border_color
+        assign input_text_color = block.settings.text_color
+        assign input_text_lightened = input_text_color | color_modify: 'alpha', 0.7
+
+        if block.type == 'age_popup'
+          assign mobile_timeout_in_ms = 0
+          assign popup_position = 'center-center'
+        endif
+      %}
+
+      <section
+        class="
+          popup
+          popup--{{ popup_position }}
+          popup--{{ block.type }}
+          {% if settings.enable_reveal_animations %}
+            animation
+            animation--popup
+          {% endif %}
+        "
+        id="popup--{{ id }}"
+        data-popup
+        data-id="{{ id }}"
+        data-popup-type="{{ block.type }}"
+        data-timeout="{{ mobile_timeout_in_ms }}"
+        role="dialog"
+        style="
+          --color-text: {{ text_color }};
+          --color-bg: {{ bg_color }};
+          {% if bg_gradient != blank %}
+            --gradient-bg: {{ bg_gradient }};
+          {% endif %}
+          --color-border: {{ border_color }};
+          --color-input-text: {{ input_text_color }};
+          --color-input-text-lightened: {{ input_text_lightened }};
+        "
+        {{ block.shopify_attributes }}
+      >
+        {%- if block.type == 'age_popup' -%}
+          <div
+            class="popup__overlay"
+            style="
+              --color-overlay: {{ block.settings.overlay_color }};
+              --overlay-opacity: {{ block.settings.overlay_opacity | divided_by: 100.00 }};
+            "
+          ></div>
+        {%- endif -%}
+
+        <div class="popup__content">
+          {% if popup_image != blank %}
+            <div
+              class="popup__image responsive__img lazyload"
+              data-bgset="{% render 'responsive-bg-image', image: popup_image %}"
+              style="
+                background-image: url({{ popup_image | img_url }});
+                background-position: {{ popup_image.presentation.focal_point }};
+              "
+              role="img"
+              aria-label="{{ popup_image.alt }}"
+              u
+            ></div>
+          {% endif %}
+          <div class="popup__inner">
+            {% unless block.settings.popup_heading == blank %}
+              <div class="popup__heading">
+                {{ block.settings.popup_heading }}
+              </div>
+            {% endunless %}
+
+            {% unless block.settings.popup_subheading == blank %}
+              <div class="popup__message">
+                {{ block.settings.popup_subheading }}
+              </div>
+            {% endunless %}
+
+            {%- if block.settings.enable_newsletter_signup -%}
+              <div class="popup__form">
+                {% form 'customer' %}
+                  {% assign form_id = 'PopupForm' %}
+                  {% render 'form-status', form: form, form_id: form_id %}
+
+                  {% if form.posted_successfully? %}
+                    <p>{{ 'general.newsletter_form.confirmation' | t }}</p>
+                  {% else %}
+                    <div class="popup__form">
+                      <input type="hidden" name="contact[tags]" value="newsletter">
+                      <input
+                        type="email"
+                        class="popup__input input-reset input w-100"
+                        name="contact[email]"
+                        id="{{ form_id }}-email"
+                        value="{% if customer.email != blank %}{{ customer.email }}{% endif %}"
+                        placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}"
+                        autocorrect="off"
+                        autocomplete="email"
+                        autocapitalize="off"
+                        {% if form.errors contains 'email' %}
+                          aria-describedby="{{ form_id }}-email-error"
+                        {% endif %}
+                        required
+                      >
+                      <label class="label--above" for="{{ form_id }}-email">
+                        {{- 'general.newsletter_form.email_placeholder' | t -}}
+                      </label>
+                      <button
+                        type="submit"
+                        name="commit"
+                        id="Subscribe"
+                        class="popup__button"
+                        aria-label="{{ 'general.newsletter_form.submit' | t }}"
+                      >
+                        <span class="visually-hidden">{{ 'general.newsletter_form.submit' | t }}</span>
+                        {% render 'icon-arrow-forward' %}
+                      </button>
+                    </div>
+                  {% endif %}
+                {% endform %}
+              </div>
+            {% endif %}
+
+            {%- if block.type == 'age_popup' -%}
+              {%- liquid
+                assign brightness_button = block.settings.color_background_button | color_brightness
+                if brightness_button > 60
+                  assign color_background_button_hover = block.settings.color_background_button | color_darken: 20
+                else
+                  assign color_background_button_hover = block.settings.color_background_button | color_lighten: 20
+                endif
+              -%}
+              <div
+                class="popup__verify-age-buttons"
+                style="
+                  --color-text-button: {{ block.settings.color_text_button }};
+                  --color-background-button: {{ block.settings.color_background_button }};
+                  --color-background-button-hover : {{ color_background_button_hover }};
+                "
+              >
+                <button class="bttn bttn--secondary bttn--full popup__verify-age" data-verify-age>
+                  {{ block.settings.verify_button_text }}
+                </button>
+                <a
+                  href="{{ block.settings.decline_age_link | default: "/password" }}"
+                  class="popup__decline-age underline"
+                >
+                  {{ block.settings.decline_age_text }}
+                </a>
+              </div>
+            {%- endif -%}
+
+            {%- unless block.settings.footer_text == blank -%}
+              <div class="popup__footer-text type-body-small">
+                {{ block.settings.footer_text }}
+              </div>
+            {%- endunless -%}
+
+            {%- unless block.type == 'age_popup' -%}
+              <button
+                type="button"
+                class="popup__close"
+                data-close
+                aria-label="{{ 'general.accessibility.close_modal' | t }}"
+                aria-controls="popup--{{ id }}"
+              >
+                {% render 'icon-close' %}
+              </button>
+            {%- endunless -%}
+          </div>
+        </div>
+      </section>
+    {%- endfor -%}
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "t:sections.popup.name",
+  "blocks": [
+    {
+      "type": "age_popup",
+      "name": "t:sections.popup.blocks.age_popup.name",
+      "limit": 1,
+      "settings": [
+        {
+          "id": "popup_heading",
+          "type": "text",
+          "label": "t:sections.popup.blocks.shared.settings.title.label",
+          "default": "Please verify your age"
+        },
+        {
+          "id": "popup_subheading",
+          "type": "richtext",
+          "label": "t:sections.popup.blocks.shared.settings.subheading.label",
+          "default": "<p>You must be 19 years of age or older to enter.</p>"
+        },
+        {
+          "id": "verify_button_text",
+          "type": "text",
+          "label": "t:sections.popup.blocks.age_popup.settings.verify_button_text.label",
+          "default": "Enter"
+        },
+        {
+          "id": "decline_age_link",
+          "type": "url",
+          "label": "t:sections.popup.blocks.age_popup.settings.decline_age_link.label",
+          "info": "t:sections.popup.blocks.age_popup.settings.decline_age_link.info"
+        },
+        {
+          "type": "text",
+          "id": "decline_age_text",
+          "label": "t:sections.popup.blocks.age_popup.settings.decline_age_text.label",
+          "default": "Exit"
+        },
+        {
+          "type": "richtext",
+          "id": "footer_text",
+          "label": "t:sections.popup.blocks.age_popup.settings.footer_text.label",
+          "default": "<p>By entering you are agreeing that you are at least 19 years of age or older.</p>"
+        },
+        {
+          "type": "image_picker",
+          "id": "popup_image",
+          "label": "t:sections.popup.blocks.shared.settings.image.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.popup.blocks.shared.settings.color__header.content"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "t:sections.popup.blocks.shared.settings.color_text.label",
+          "default": "#1b1b1b"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "t:sections.popup.blocks.shared.settings.color_background.label",
+          "default": "#ffffff"
+        },
+        {
+          "id": "color_background_gradient",
+          "type": "color_background",
+          "label": "t:shared.settings.color.color_background_gradient.label"
+        },
+        {
+          "type": "color",
+          "id": "border_color",
+          "label": "t:sections.popup.blocks.shared.settings.color_border.label",
+          "default": "#dedede"
+        },
+        {
+          "type": "color",
+          "id": "overlay_color",
+          "label": "t:sections.popup.blocks.shared.settings.overlay_color.label",
+          "default": "#000000"
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "label": "t:sections.popup.blocks.shared.settings.overlay_opacity.label",
+          "min": 0,
+          "max": 100,
+          "step": 10,
+          "default": 90
+        }
+      ]
+    },
+    {
+      "type": "popup",
+      "name": "t:sections.popup.blocks.popup.name",
+      "limit": 1,
+      "settings": [
+        {
+          "id": "popup_heading",
+          "type": "text",
+          "label": "t:sections.popup.blocks.shared.settings.title.label",
+          "default": "Subscribe"
+        },
+        {
+          "id": "popup_subheading",
+          "type": "richtext",
+          "label": "t:sections.popup.blocks.shared.settings.subheading.label",
+          "default": "<p>We only send emails once or twice a month and only about good things.</p>"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_newsletter_signup",
+          "label": "t:sections.popup.blocks.popup.settings.enable_newsletter_signup.label",
+          "default": true
+        },
+        {
+          "type": "select",
+          "id": "popup_position",
+          "options": [
+            { "value": "top-left", "label": "t:sections.popup.blocks.shared.settings.popup_position.options__1" },
+            { "value": "top-right", "label": "t:sections.popup.blocks.shared.settings.popup_position.options__2" },
+            { "value": "bottom-left", "label": "t:sections.popup.blocks.shared.settings.popup_position.options__3" },
+            { "value": "bottom-right", "label": "t:sections.popup.blocks.shared.settings.popup_position.options__4" }
+          ],
+          "default": "bottom-right",
+          "label": "t:sections.popup.blocks.shared.settings.popup_position.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "popup_image",
+          "label": "t:sections.popup.blocks.shared.settings.image.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.popup.blocks.shared.settings.color__header.content"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "t:sections.popup.blocks.shared.settings.color_text.label",
+          "default": "#1b1b1b"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "t:sections.popup.blocks.shared.settings.color_background.label",
+          "default": "#ffffff"
+        },
+        {
+          "id": "color_background_gradient",
+          "type": "color_background",
+          "label": "t:shared.settings.color.color_background_gradient.label"
+        },
+        {
+          "type": "color",
+          "id": "border_color",
+          "label": "t:sections.popup.blocks.shared.settings.color_border.label",
+          "default": "#dedede"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,96 @@
+{% liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign form_id = 'quick_add_form_' | append: product.id
+
+  assign show_price_comparison = false
+
+  if current_variant.compare_at_price > current_variant.price
+    assign show_price_comparison = true
+  endif
+-%}
+
+<div class="quick-add__product-wrapper">
+  <div class="quick-add__product">
+    <div class="quick-add__image">
+      <a href="{{ product.url }}">
+        {%- if product.featured_media -%}
+          {%
+            render 'image' with
+            image: product.featured_media,
+            id: 'quick-add'
+          %}
+        {%- else -%}
+          <div class="quick-add__placeholder">
+            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+        {%- endif -%}
+      </a>
+    </div>
+    <div class="quick-add__details">
+      <h4 class="quick-add__product-title type-heading-2">
+        <a href="{{ product.url }}">{{ product.title }}</a>
+      </h4>
+      <div class="quick-add__price">
+        <s data-compare-price class="mr1 meta{% if show_price_comparison == false %} hide{% endif %}">
+          {% if show_price_comparison %}
+            {{ current_variant.compare_at_price | money -}}
+            {%- if settings.currency_code_enabled %} {{ cart.currency.iso_code }}{% endif %}
+          {% endif %}
+          <span class="visually-hidden" data-compare-text>{{ 'products.product.regular_price' | t }}</span>
+        </s>
+        <span data-product-price>
+          {{- current_variant.price | money -}}
+          {%- if settings.currency_code_enabled %} {{ cart.currency.iso_code }}{% endif -%}
+        </span>
+        {% render 'unit-price', item: current_variant %}
+      </div>
+    </div>
+  </div>
+
+  <div class="quick-add__form-wrapper">
+    {% form 'product',
+      product,
+      id: form_id,
+      class: 'quick-add__form',
+      novalidate: 'novalidate',
+      data-product-form: '',
+      data-product-handle: product.handle,
+      data-ajax-enabled: true
+    %}
+      {% unless product.has_only_default_variant %}
+        <div
+          class="product-form__controls-group product-form__controls-group--options"
+          data-product-variants
+          data-enable-dynamic-product-options="{{ settings.enable_dynamic_product_options }}"
+          data-current-variant-id="{{ current_variant.id }}"
+        >
+          {%
+            render 'product-form-options' with
+            product: product,
+          %}
+        </div>
+      {% endunless %}
+
+      {%- if settings.cart_quick_shop_show_quantity_input -%}
+        {%
+          render 'product-quantity' with
+          product: product,
+          form_id: form_id,
+          show_quantity_input: true
+        %}
+      {%- endif -%}
+
+      <div class="product__quantity-error hidden" data-quantity-error>
+        {{ 'products.product.quantity_error' | t }}
+      </div>
+
+      {%
+        render 'product-buy-buttons' with
+        product: product,
+        current_variant: current_variant,
+        show_dynamic_checkout: false,
+        form: form
+      %}
+    {% endform %}
+  </div>
+</div>

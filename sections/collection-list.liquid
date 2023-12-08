@@ -1,0 +1,286 @@
+{% liquid
+  assign id = section.id
+
+  assign section_style = section.settings.section_style
+  assign text_position = section.settings.text_position
+
+  assign columns_mobile = section.settings.columns_mobile
+  assign columns = section.settings.columns
+  assign aspect_ratio = section.settings.aspect_ratio
+  assign overline = section.settings.overline
+  assign heading = section.settings.title
+  assign subheading = section.settings.subheading
+  assign text_max_width = section.settings.text_max_width
+  assign blocks = section.blocks
+%}
+
+{% assign modifiers = '' %}
+
+{% assign modifiers = modifiers | append: ' section--' | append: section_style %}
+
+{% unless section_style == 'contrast' %}
+  {% assign modifiers = modifiers | append: ' section--bordered' %}
+{% endunless %}
+
+{% assign modifiers = modifiers
+  | append: ' carousel--columns-'
+  | append: columns
+  | append: ' carousel--columns-mobile-'
+  | append: columns_mobile
+%}
+
+{% assign carousel_text_position = text_position | split: '_' | first %}
+{% assign carousel_text_alignment = text_position | split: '_' | last %}
+
+{% assign modifiers = modifiers | append: ' carousel--text-position-' | append: carousel_text_position %}
+{% assign modifiers = modifiers | append: ' carousel--text-alignment-' | append: carousel_text_alignment %}
+{% assign modifiers = modifiers | append: ' carousel--items-' | append: blocks.size %}
+{% assign modifiers = modifiers | append: ' carousel--aspect-ratio-' | append: aspect_ratio %}
+
+{% if settings.enable_reveal_animations and section.settings.enable_animation %}
+  {% assign modifiers = modifiers | append: ' animation animation--collection-list' %}
+{% endif %}
+
+{% assign minimum_items_for_wrap_around = columns | plus: 2 %}
+{% assign items_needed = minimum_items_for_wrap_around | minus: blocks.size %}
+
+{% if carousel_text_position == 'top' and items_needed <= 0 or blocks.size == 0 %}
+  {% assign modifiers = modifiers | append: ' carousel--columns-wrap-around' %}
+{% endif %}
+
+{% assign image_is_constrained = true %}
+
+{% if aspect_ratio == 'natural' %}
+  {% assign image_is_constrained = false %}
+{% endif %}
+
+<section
+  data-section-id="{{ id }}"
+  data-section-type="collection-list"
+  class="section collection-list carousel{{ modifiers }}"
+  data-text-position="{{ carousel_text_position }}"
+  data-text-alignment="{{ carousel_text_alignment }}"
+  data-columns="{{ columns }}"
+>
+  {%
+    render 'text-block' with
+    id: id,
+    modifiers: 'mb5 animation--section-introduction',
+    heading_alignment: carousel_text_alignment,
+    overline: overline,
+    heading: heading,
+    subheading: subheading,
+    text_max_width: text_max_width,
+  %}
+
+  {% render 'carousel-navigation' %}
+
+  <div class="collection-list__slides carousel__slides" data-carousel>
+    {% if blocks.size > 0 %}
+      {% for block in blocks %}
+        {% assign featured_collection = collections[block.settings.collection] %}
+        {% if featured_collection != empty %}
+          <a
+            href="{{ featured_collection.url }}"
+            class="collection-list__slide carousel__slide"
+            {{ block.shopify_attributes }}
+            data-index="{{ forloop.index0 }}"
+          >
+            {%- assign image_object = featured_collection.image
+              | default: featured_collection.products.first.featured_media.preview_image
+            -%}
+
+            {% unless image_object == blank %}
+              <div class="collection-list__image carousel__slide-image">
+                {%
+                  render 'image' with
+                  image: image_object,
+                  disable_style: image_is_constrained,
+                  animate: true
+                %}
+              </div>
+            {% endunless %}
+
+            <h2 class="collection-list__title type-body-regular mt3 mb0">{{ featured_collection.title }}</h2>
+            <div class="collection-list__product-count meta">
+              {{ featured_collection.products_count }}
+              {{
+                featured_collection.products_count
+                | pluralize: 'sections.featured_collections.count_text_singular',
+                  'sections.featured_collections.count_text'
+                | t
+              }}
+            </div>
+          </a>
+        {% else %}
+          {% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}
+          {% capture product_count %}{% cycle 9, 18, 6, 21 %}{% endcapture %}
+
+          <div class="collection-list__slide carousel__slide">
+            <div class="collection-list__collection-placeholder carousel__slide-image">
+              {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+            <h2 class="collection-list__title type-body-regular mt3 mb0">
+              {{ 'homepage.onboarding.collection_title' | t }}
+            </h2>
+            <div class="collection-list__product-count meta">
+              {{ product_count }}
+              {{ 'sections.featured_collections.count_text' | t }}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      {% for i in (1..minimum_items_for_wrap_around) %}
+        {% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}
+        {% capture product_count %}{% cycle 9, 18, 6, 21 %}{% endcapture %}
+
+        <div class="collection-list__slide carousel__slide">
+          <div class="collection-list__collection-placeholder carousel__slide-image">
+            {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+          <h2 class="collection-list__title type-body-regular mt3 mb0">
+            {{ 'homepage.onboarding.collection_title' | t }}
+          </h2>
+          <div class="collection-list__product-count meta">
+            {{ product_count }}
+            {{ 'sections.featured_collections.count_text' | t }}
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.collection_list.name",
+  "class": "section-dynamic section-borderable",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"],
+    "templates": ["password"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.collection_list.settings.style_header.content"
+    },
+    {
+      "type": "select",
+      "id": "section_style",
+      "label": "t:sections.collection_list.settings.section_style.label",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.collection_list.settings.section_style.option_1"
+        },
+        {
+          "value": "contrast",
+          "label": "t:sections.collection_list.settings.section_style.option_2"
+        }
+      ]
+    },
+    {
+      "id": "enable_animation",
+      "type": "checkbox",
+      "label": "t:shared.settings.section_style.enable_animation.label",
+      "info": "t:shared.settings.section_style.enable_animation.info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.collection_list.settings.content_header.content"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "t:sections.collection_list.settings.columns.label",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "id": "columns_mobile",
+      "type": "select",
+      "label": "t:shared.settings.columns_mobile.label",
+      "options": [
+        { "label": "t:shared.settings.columns_mobile.option_1", "value": "1" },
+        { "label": "t:shared.settings.columns_mobile.option_2", "value": "2" }
+      ],
+      "default": "1"
+    },
+    {
+      "id": "aspect_ratio",
+      "type": "select",
+      "label": "t:sections.collection_list.settings.aspect_ratio.label",
+      "options": [
+        { "label": "t:sections.collection_list.settings.aspect_ratio.option_1", "value": "natural" },
+        { "label": "t:sections.collection_list.settings.aspect_ratio.option_2", "value": "square" },
+        { "label": "t:sections.collection_list.settings.aspect_ratio.option_3", "value": "landscape" },
+        { "label": "t:sections.collection_list.settings.aspect_ratio.option_4", "value": "portrait" }
+      ],
+      "default": "natural"
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "t:sections.collection_list.settings.text_position.label",
+      "options": [
+        { "value": "top_left", "label": "t:sections.collection_list.settings.text_position.option_1" },
+        { "value": "top_center", "label": "t:sections.collection_list.settings.text_position.option_2" },
+        { "value": "top_right", "label": "t:sections.collection_list.settings.text_position.option_3" },
+        { "value": "middle_left", "label": "t:sections.collection_list.settings.text_position.option_4" },
+        { "value": "middle_right", "label": "t:sections.collection_list.settings.text_position.option_5" }
+      ],
+      "default": "top_center"
+    },
+    {
+      "type": "text",
+      "id": "overline",
+      "label": "t:sections.collection_list.settings.overline.label",
+      "default": "Collections"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:sections.collection_list.settings.title.label",
+      "default": "Collection list"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "t:sections.collection_list.settings.subheading.label",
+      "default": "<p>Use this section to showcase your many collections.</p>"
+    },
+    {
+      "type": "range",
+      "id": "text_max_width",
+      "label": "t:sections.collection_list.settings.text_max_width.label",
+      "min": 16,
+      "max": 50,
+      "step": 1,
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "t:sections.collection_list.blocks.collection.name",
+      "settings": [
+        {
+          "id": "collection",
+          "type": "collection",
+          "label": "t:sections.collection_list.blocks.collection.settings.collection.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.collection_list.presets.collection_list.name"
+    }
+  ]
+}
+{% endschema %}

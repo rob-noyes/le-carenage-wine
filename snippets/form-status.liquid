@@ -1,0 +1,56 @@
+{% comment %}
+  Renders a form status message
+  Accepts:
+  - form: {Object} Form Liquid object (required)
+  - form_id: {String} Form's id attribute for accessibility purpose (required)
+  - success_message: {String} Success message locale key. Default to 'contact.form.post_success' (optional)
+
+  Usage:
+  {% render 'form-status', form: form, form_id: formId, success_message: post_message %}
+{% endcomment %}
+{% if form.posted_successfully? and success_message != blank %}
+  <div class="form-status">
+    {%- if form.posted_successfully? -%}
+      <span class="form-status__message form-status__message--success" tabindex="0" data-form-status>
+        {{ success_message }}
+      </span>
+    {%- endif -%}
+  </div>
+{%- elsif form.errors -%}
+  <div class="form-status">
+    {% comment %} We need to add this so the errors are output in the right order {% endcomment %}
+    {% assign error_order = "author, email, body, password, form" | split: ", " %}
+
+    <div class="form-status__message form-status__message--error">
+      <span class="form-status__message__title " tabindex="0" data-form-status>{{ 'general.accessibility.error' | t }}</span>
+      <ul role="list">
+        {% for error in error_order %}
+          {% for field in form.errors %}
+            {% if error == field %}
+
+              {% capture field_label %}
+                {% case field %}
+                  {% when 'author' %}
+                    {{ 'contact.form.name' | t }}
+                  {% when 'body' %}
+                    {{ 'contact.form.message' | t }}
+                  {% else %}
+                    {{ form.errors.translated_fields[field] }}
+                {% endcase %}
+              {% endcapture %}
+
+              <li>
+                {%- if field == 'form' -%}
+                  {{ form.errors.messages[field] }}
+                {%- else -%}
+                  {% comment %} the href should match the input's id {% endcomment %}
+                  <a href="#{{ form_id }}-{{ field }}" id="{{ form_id }}-{{ field }}-error" class="form-status__link">{{ field_label | strip | capitalize }} {{ form.errors.messages[field] }}</a>
+                {%- endif -%}
+              </li>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endif %}

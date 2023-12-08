@@ -1,0 +1,300 @@
+{% liquid
+  assign id = section.id
+
+  assign feature_background_color = section.settings.background_color
+  assign feature_background_gradient = section.settings.color_background_gradient
+  assign feature_image = section.settings.feature_image
+  assign feature_link = section.settings.feature_link
+  assign feature_description = section.settings.feature_description
+  assign feature_text_color = section.settings.feature_text_color
+  assign feature_alignment = section.settings.feature_alignment
+
+  assign overlay_image = section.settings.overlay_image
+  assign image_text = section.settings.image_text
+  assign link = section.settings.link
+  assign detail_alignment = section.settings.detail_alignment
+  assign text_color = section.settings.text_color
+  assign text_max_width = section.settings.text_max_width
+  assign gradient_color = section.settings.gradient_color
+  assign gradient_length = section.settings.gradient_length
+%}
+
+{% assign gradient_direction = detail_alignment | split: '_' | last %}
+{% assign gradient_starting_position = 100 | minus: gradient_length %}
+
+{% assign feature_text_alignment = feature_alignment | split: '_' | first %}
+{% assign feature_text_position = feature_alignment | split: '_' | last %}
+
+{% assign modifiers = '' %}
+
+{% if feature_text_position == 'top' %}
+  {% assign modifiers = modifiers | append: ' image-with-text-split--feature-text-above' %}
+{% endif %}
+
+{% assign modifiers = modifiers | append: ' image-with-text-split--feature-text-' | append: feature_text_alignment %}
+
+{% if settings.enable_reveal_animations and section.settings.enable_animation %}
+  {% assign modifiers = modifiers | append: ' animation animation--image-with-text-split' %}
+{% endif %}
+
+<section
+  data-section-id="{{ id }}"
+  data-section-type="image-with-text-split"
+  class="section section--full-width image-with-text-split{{ modifiers }}"
+  style="
+  {% unless feature_background_color == blank %}
+    --background-color: {{ feature_background_color }};
+  {% endunless %}
+  {% unless feature_background_gradient == blank %}
+    --background-gradient: {{ feature_background_gradient }};
+  {% endunless %}
+  "
+>
+  <div class="image-with-text-split__featured">
+    <div class="image-with-text-split__featured-image">
+      {% if feature_link != blank %}
+        <a href="{{ feature_link }}" aria-labelledby="feature-description">
+      {% endif %}
+
+      {% if feature_image != blank %}
+        {% render 'image',
+          image: feature_image,
+          animate: true
+        %}
+      {% else %}
+        {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      {% endif %}
+
+      {% if feature_link != blank %}
+        </a>
+      {% endif %}
+    </div>
+
+    {% unless feature_description == blank %}
+      <div
+        class="image-with-text-split__featured-content rte"
+        data-theme-editor-setting="section.{{ id }}.feature_description"
+        id="feature-description"
+        {% unless feature_text_color == blank %}
+          style="color: {{ feature_text_color }};"
+        {% endunless %}
+      >
+        {{ feature_description }}
+      </div>
+    {% endunless %}
+  </div>
+
+  <div class="image-with-text-split__image-wrapper">
+    {% if link != blank %}
+      <a href="{{ link }}">
+    {% endif %}
+
+    {% if overlay_image != blank %}
+      {% render 'image',
+        image: overlay_image,
+        wrapper_class: "image-with-text-split__image",
+        focal_point: 'image_presentation',
+        animate: true
+      %}
+    {% else %}
+      <div class="image-with-text-split__placeholder">{{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}</div>
+    {% endif %}
+
+    {% render 'overlay',
+      alignment: detail_alignment,
+      richtext: image_text,
+      text_color: text_color,
+      text_max_width: text_max_width,
+    %}
+
+    {% if gradient_color != blank %}
+      <div
+        class="image-with-text-split__gradient-overlay"
+        style="background: linear-gradient(to {{ gradient_direction }}, rgba(0, 0, 0, 0) {{ gradient_starting_position }}%, {{ gradient_color }} 100%);"
+      ></div>
+    {% endif %}
+
+    {% if link != blank %}
+      </a>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "t:sections.image_with_text_split.name",
+    "class": "section-dynamic",
+    "disabled_on": {
+      "groups": ["header", "custom.overlay"]
+    },
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:shared.settings.section_style.style_header.content"
+      },
+      {
+        "id": "enable_animation",
+        "type": "checkbox",
+        "label": "t:shared.settings.section_style.enable_animation.label",
+        "info": "t:shared.settings.section_style.enable_animation.info",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "t:sections.image_with_text_split.settings.feature_header.content"
+      },
+      {
+        "id": "feature_image",
+        "type": "image_picker",
+        "label": "t:sections.image_with_text_split.settings.feature_image.label"
+      },
+      {
+        "id": "feature_link",
+        "type": "url",
+        "label": "t:sections.image_with_text_split.settings.feature_link.label"
+      },
+      {
+        "id": "feature_description",
+        "type": "richtext",
+        "label": "t:sections.image_with_text_split.settings.feature_description.label",
+        "default":"<p>Use this half of the section to give an overall impression of your product</p>"
+      },
+      {
+        "id": "feature_text_color",
+        "type": "color",
+        "label": "t:sections.image_with_text_split.settings.feature_text_color.label",
+        "default": "#000"
+      },
+      {
+        "id": "background_color",
+        "type": "color",
+        "label": "t:sections.image_with_text_split.settings.background_color.label",
+        "default": "#F3F3F3"
+      },
+      {
+        "id": "color_background_gradient",
+        "type": "color_background",
+        "label": "t:shared.settings.color.color_background_gradient.label"
+      },
+      {
+        "id": "feature_alignment",
+        "type": "select",
+        "label": "t:sections.image_with_text_split.settings.feature_detail_alignment.label",
+        "options": [
+          { 
+            "value": "left_top", 
+            "label": "t:sections.image_with_text_split.settings.feature_detail_alignment.option_1" 
+          },
+          { 
+            "value": "center_top", 
+            "label": "t:sections.image_with_text_split.settings.feature_detail_alignment.option_2" 
+          },
+          { 
+            "value": "right_top", 
+            "label": "t:sections.image_with_text_split.settings.feature_detail_alignment.option_3" 
+          },
+          { 
+            "value": "left_bottom", 
+            "label": "t:sections.image_with_text_split.settings.feature_detail_alignment.option_4" 
+          },
+          { 
+            "value": "center_bottom", 
+            "label": "t:sections.image_with_text_split.settings.feature_detail_alignment.option_5" 
+          },
+          { 
+            "value": "right_bottom", 
+            "label": "t:sections.image_with_text_split.settings.feature_detail_alignment.option_6" 
+          }
+        ],
+        "default": "left_bottom"
+      },
+      {
+        "type": "header",
+        "content": "t:sections.image_with_text_split.settings.detail_header.content"
+      },
+      {
+        "id": "overlay_image",
+        "type": "image_picker",
+        "label": "t:sections.image_with_text_split.settings.overlay_image.label"
+      },
+      {
+        "id": "link",
+        "type": "url",
+        "label": "t:sections.image_with_text_split.settings.link.label"
+      },
+      {
+        "type": "richtext",
+        "id": "image_text",
+        "label": "t:sections.image_with_text_split.settings.image_text.label",
+        "default":"<p>This half is great for a large image of your product's details.</p>"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "label": "t:sections.image_with_text_split.settings.text_color.label",
+        "default": "#ffffff"
+      },
+      {
+        "id": "detail_alignment",
+        "type": "select",
+        "label": "t:sections.image_with_text_split.settings.feature_detail_alignment.label",
+        "options": [
+          { 
+            "value": "left_top", 
+            "label": "t:sections.image_with_text_split.settings.feature_detail_alignment.option_1" 
+          },
+          { 
+            "value": "center_top", 
+            "label": "t:sections.image_with_text_split.settings.feature_detail_alignment.option_2" 
+          },
+          { 
+            "value": "right_top", 
+            "label": "t:sections.image_with_text_split.settings.feature_detail_alignment.option_3" 
+          },
+          { 
+            "value": "left_bottom", 
+            "label": "t:sections.image_with_text_split.settings.feature_detail_alignment.option_4" 
+          },
+          { 
+            "value": "center_bottom", 
+            "label": "t:sections.image_with_text_split.settings.feature_detail_alignment.option_5" 
+          },
+          { 
+            "value": "right_bottom", 
+            "label": "t:sections.image_with_text_split.settings.feature_detail_alignment.option_6" 
+          }
+        ],
+        "default": "center_bottom"
+      },
+      {
+        "type": "range",
+        "id": "text_max_width",
+        "label": "t:sections.image_with_text_split.settings.text_max_width.label",
+        "min": 16,
+        "max": 50,
+        "step": 1,
+        "default": 50
+      },
+      {
+        "id": "gradient_color",
+        "type": "color",
+        "label": "t:sections.image_with_text_split.settings.gradient_color.label",
+        "default": "#030303"
+      },
+      {
+        "type": "range",
+        "id": "gradient_length",
+        "min": 0,
+        "max": 100,
+        "step": 10,
+        "label": "t:sections.image_with_text_split.settings.gradient_length.label",
+        "default": 30
+      }
+    ],
+    "presets": [
+      {
+        "name": "t:sections.image_with_text_split.presets.image.name"
+      }
+    ]
+  }
+{% endschema %}

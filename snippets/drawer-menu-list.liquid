@@ -1,0 +1,44 @@
+{%- assign depth = 1 -%}
+
+{%- for link in links -%}
+  {%- assign has_children = false -%}
+  {%- if link.levels > 0 -%}
+    {%- assign has_children = true -%}
+  {%- endif -%}
+
+  {%- capture sub_nav_id -%}drawer-sub-menu--{{ link.title | handle }}{%- endcapture -%}
+  {%- if parent -%}
+    {%- capture sub_nav_id -%}drawer-sub-menu--{{ parent.title | handle }}-{{ link.title | handle }}{%- endcapture -%}
+  {%- endif -%}
+
+  <li class="drawer-menu__item" data-list-item>
+    <a
+      data-item="{% if has_children %}parent{% else %}link{% endif %}"
+      class="drawer-menu__link {% if has_children %}no-transition{% endif %}"
+      href="{{ link.url }}"
+      {% if has_children %}
+        data-link="primary"
+        aria-expanded="false"
+        aria-controls="{{ sub_nav_id }}"
+      {% endif %}
+    >
+      <span>{{ link.title }}</span>
+      {%- if has_children -%}
+        {% render 'icon-chevron-right' %}
+      {%- endif -%}
+    </a>
+
+    {% comment %} Render sub navigation {% endcomment %}
+    {%- if link.links.size > 0 -%}
+      <ul class="drawer-menu__list drawer-menu__list--sub" data-height-reference id="{{ sub_nav_id }}">
+        <li class="drawer-menu__item drawer-menu__item--heading">
+          <a href="{{ link.url }}" class="drawer-menu__link" aria-label="{{ 'layout.navigation.back' | t }}" aria-controls="{{ sub_nav_id }}" data-heading="true" data-item="back">
+            <span>{{ link.title }}</span>
+            {% render 'icon-chevron-left' %}
+          </a>
+        </li>
+        {% render 'drawer-menu-list', links: link.links, parent: link %}
+      </ul>
+    {%- endif -%}
+  </li>
+{%- endfor -%}

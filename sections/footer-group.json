@@ -1,0 +1,69 @@
+{
+  "type": "footer",
+  "name": "t:groups.footer_group.name",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "text": {
+          "type": "text",
+          "settings": {
+            "desktop_width": 10,
+            "desktop_padding": 0,
+            "collapse_on_mobile": false,
+            "title": "",
+            "show_title_on_desktop": false,
+            "text": "",
+            "image": "shopify:\/\/shop_images\/LeCarenage_Boat_Wht.png",
+            "image_max_width": 180,
+            "image_placement": "above_text"
+          }
+        },
+        "spacer": {
+          "type": "spacer",
+          "settings": {
+            "desktop_width": 10
+          }
+        },
+        "links-1": {
+          "type": "links",
+          "settings": {
+            "desktop_width": 15,
+            "desktop_padding": 4,
+            "collapse_on_mobile": false,
+            "title": "",
+            "show_title_on_desktop": true,
+            "link_list": "footer"
+          }
+        },
+        "newsletter": {
+          "type": "newsletter",
+          "settings": {
+            "desktop_width": 30,
+            "desktop_padding": 0,
+            "collapse_on_mobile": false,
+            "title": "Newsletter",
+            "show_title_on_desktop": true,
+            "text": ""
+          }
+        }
+      },
+      "block_order": [
+        "text",
+        "spacer",
+        "links-1",
+        "newsletter"
+      ],
+      "settings": {
+        "powered_by_bloom": true,
+        "bloom_logo": "shopify:\/\/shop_images\/bloom-white_2x40_x40_edbeceaf-5a15-4f11-912c-34818b7d2e4f.png",
+        "show_locale_selector": true,
+        "show_currency_selector": true,
+        "show_payment_icons": true
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

@@ -1,0 +1,24 @@
+{%- form 'localization', class: 'selectors-form' -%}
+  <h2 class="visually-hidden" id="currency-heading">
+    {{ 'general.currency.dropdown_label' | t }}
+  </h2>
+
+  <div class="disclosure" data-disclosure="currency" data-disclosure-currency>
+    <button type="button" class="disclosure__toggle type-body-regular input-reset input" aria-expanded="false" aria-controls="currency-list" aria-describedby="currency-heading" data-disclosure-toggle data-navigation-dropdown-trigger>
+      {{ form.current_currency.iso_code }} {%- if form.current_currency.symbol -%}{{ form.current_currency.symbol }}{%- endif -%}
+      <span class="arrow">
+        {% render 'icon-inline-chevron-down' %}
+      </span>
+    </button>
+    <ul id="currency-list" class="disclosure-list" data-disclosure-list data-navigation-dropdown>
+      {% for currency in form.available_currencies %}
+        <li class="disclosure-list__item {% if currency.iso_code == form.current_currency.iso_code %}disclosure-list__item--current{% endif %}">
+          <a class="disclosure-list__option" href="#" {% if currency.iso_code == form.current_currency.iso_code %}aria-current="true"{% endif %} data-value="{{ currency.iso_code }}" data-disclosure-option>
+            {{ currency.iso_code }} {%- if currency.symbol -%}{{ currency.symbol }}{%- endif -%}
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+    <input type="hidden" name="currency_code" id="CurrencySelector" value="{{ form.current_currency.iso_code }}" data-disclosure-input/>
+  </div>
+{%- endform -%}

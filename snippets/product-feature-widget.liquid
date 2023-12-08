@@ -1,0 +1,162 @@
+{%- liquid
+  assign settings = block.settings
+  assign has_text_content = false
+  assign focal_alignment = settings.focal_point | replace: '_', ' '
+  assign text_position = settings.text_position | split: '_'
+  assign disable_style = true
+
+  if settings.text_alignment != blank
+    assign text_position = settings.text_alignment | split: '_'
+  endif
+
+  if settings.feature_height == 'media' and settings.aspect_ratio == 'natural'
+    assign disable_style = false
+  endif
+
+  if settings.title != blank or settings.text != blank
+    assign has_text_content = true
+  endif
+
+  assign opacity = settings.overlay_opacity | divided_by: 100.0
+
+  assign brightness_button = settings.color_background_button | color_brightness
+  if brightness_button > 127
+    assign color_background_button_hover = settings.color_background_button | color_darken: 20
+  else
+    assign color_background_button_hover = settings.color_background_button | color_lighten: 20
+  endif
+-%}
+
+{%- capture wrapping_tag -%}{%- if settings.link != blank and settings.link_text == blank -%}a{%- else -%}div{%- endif -%}{%- endcapture -%}
+{%- capture wrapping_tag_attributes -%}{%- if settings.link != blank and settings.link_text == blank -%}href="{{ settings.link }}"{%- endif -%}{%- endcapture -%}
+<{{ wrapping_tag }}
+  {{ wrapping_tag_attributes }}
+  class="
+    product-feature-widget
+    product-feature-widget--{{ settings.column }}
+    product-feature-widget--text-hortizontal-{{ text_position.first }}
+    {% if has_text_content %}
+      product-feature-widget--has-text-content
+    {% endif %}
+    {% if settings.image != blank or settings.video_url != blank %}
+      product-feature-widget--has-image
+    {% endif %}
+    product-feature-widget--height-{{ settings.feature_height }}
+    {% if settings.feature_height == 'media' %}
+      product-feature-widget--{{ settings.aspect_ratio }}
+      product-feature-widget--text-vertical-{{ text_position.last }}
+    {% endif %}
+  "
+  style="
+    --media-focal-alignment: {{ focal_alignment }};
+    --media-fit: {{ settings.media_fit }};
+    --s-color-text: {{ settings.color_text }};
+    --s-color-background: {{ settings.background_color }};
+    --s-color-background-button: {{ settings.color_background_button }};
+    --s-color-background-button-hover: {{ color_background_button_hover }};
+    --s-color-text-button: {{ settings.color_text_button }};
+    --s-heading-max-width: {{ settings.heading_max_width }}rem;
+    --s-text-max-width: {{ settings.text_max_width }}rem;
+    --color-overlay-color: {{ settings.overlay_color }};
+    --overlay-opacity: {{ opacity }};
+    {% if settings.color_overlay_gradient != blank %}
+      --overlay-gradient: {{ settings.color_overlay_gradient }};
+    {% endif %}
+    {% if settings.color_background_gradient != blank %}
+      --s-gradient-background: {{ settings.color_background_gradient }};
+    {% endif %}
+  "
+  {{ block.shopify_attributes }}
+>
+  {%- if settings.image != blank -%}
+    <div class="product-feature-widget__media">
+      {% render 'image',
+        image: settings.image,
+        wrapper_class: 'product-feature-widget__image',
+        focal_point: settings.focal_point,
+        object_fit: settings.media_fit,
+        disable_style: disable_style
+      %}
+    </div>
+  {%- endif -%}
+
+  {%- if settings.video_url != blank -%}
+    <div class="product-feature-widget__media product-feature-widget--video">
+      <video
+        class="product-feature-widget__video image"
+        autoplay
+        playsinline
+        loop
+        muted
+        src="{{ settings.video_url }}"
+      ></video>
+      {%- render 'video-pause' -%}
+    </div>
+  {% endif %}
+
+  <div
+    class="product-feature-widget__fill"
+    style="--color-overlay-color: {{ settings.overlay_color | color_modify: 'alpha', opacity }};"
+  ></div>
+
+  <div class="product-feature-widget__text-container">
+    {%- if settings.title != blank -%}
+      <div class="product-feature-widget__heading-wrapper">
+        {%- if settings.title != blank -%}
+          <h4 class="product-feature-widget__heading ma0{% if left_column %} type-heading-1-small{% else %} type-heading-3{% endif %}">
+            {{ settings.title }}
+          </h4>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if settings.text != blank -%}
+      <div class="product-feature-widget__text ma0 rte">
+        {{ settings.text }}
+      </div>
+    {%- endif -%}
+
+    {%- if settings.show_payment_icons -%}
+      <div class="product-feature-widget__button-wrapper">
+        <ul class="product-feature-widget__payment-icon-list list flex flex-wrap ma0 pa0">
+          {% for type in shop.enabled_payment_types %}
+            <li class="product-feature-widget__payment-icon">
+              {{ type | payment_type_svg_tag: class: 'icon' }}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {%- endif -%}
+
+    {%- if settings.link != blank and settings.link_text != blank -%}
+      <div class="product-feature-widget__button-wrapper">
+        <a
+          href="{{ settings.link }}"
+          class="product-feature-widget__button bttn bttn--secondary"
+        >
+          {{ settings.link_text }}
+        </a>
+      </div>
+    {%- endif -%}
+
+    {%- if block.settings.show_estimator and country_option_tags != blank -%}
+      <div class="product-feature-widget__button-wrapper">
+        <button
+          type="button"
+          class="
+            product-feature-widget__button
+            bttn
+            bttn--secondary
+            widget__estimator-trigger
+            {% unless current_variant.available %}hidden{% endunless %}
+          "
+          data-estimator-trigger
+        >
+          {{ 'products.product.estimate_shipping' | t }}
+        </button>
+
+        {% render 'shipping-estimator-modal' %}
+      </div>
+    {%- endif -%}
+  </div>
+</{{ wrapping_tag }}>

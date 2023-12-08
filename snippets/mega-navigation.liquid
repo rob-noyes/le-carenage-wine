@@ -1,0 +1,71 @@
+{% assign meganav_has_feature = false %}
+
+{%- capture mega_nav_features -%}
+  {% for block in blocks %}
+    {% assign b = block.settings %}
+
+    {% assign meganav_trigger = b.dropdown_parent_link | handle | strip %}
+
+    {% if link.handle == meganav_trigger %}
+      {% if b.mega_nav_featured_image != blank or b.featured_image_heading != blank %}
+        <div class="mega-navigation__featured">
+          <div class="mega-navigation__featured-wrapper">
+            {% if b.mega_nav_featured_image != blank %}
+              {% render 'image',
+                image: b.mega_nav_featured_image
+              %}
+            {% endif %}
+            {% if b.featured_image_link_text != blank or b.featured_image_heading != nil %}
+
+              {% assign meganav_has_feature = true %}
+
+              <div class="mega-navigation__featured-content{% if b.mega_nav_featured_image != blank %} mt3{% endif %}">
+                {% if b.featured_image_heading != blank %}
+                  <h6 class="mega-navigation__featured-heading type-body-regular">{{ b.featured_image_heading }}</h6>
+                {% endif %}
+                {% if b.featured_image_link_text != blank %}
+                  <a class="mega-navigation__featured-link type-body-regular" href="{{ b.featured_image_link }}">{{ b.featured_image_link_text }}</a>
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        {% break %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+{%- endcapture -%}
+
+<div class="mega-navigation">
+  <div class="mega-navigation__list-container{% if meganav_has_feature == false %} full-width{% endif %}">
+    <ul class="mega-navigation__list-parent">
+      {% for link in link.links %}
+        <li class="mega-navigation__list">
+          <h4 class="mega-navigation__list-heading mt0 overline">
+            <a href="{{ link.url }}">{{ link.title }}</a>
+          </h4>
+          {%
+            render 'navmenu' with
+            menu: link.handle
+          %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  {{ mega_nav_features }}
+</div>
+
+{% for block in blocks %}
+  {% assign b = block.settings %}
+  {% assign meganav_trigger = b.dropdown_parent_link | handle | strip %}
+
+  {% if link.handle == meganav_trigger and b.feature_text != blank %}
+    <div class="mega-navigation__feature-text rte">
+      {{ b.feature_text }}
+    </div>
+
+    {% break %}
+  {% endif %}
+{% endfor %}

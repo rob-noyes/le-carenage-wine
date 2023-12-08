@@ -1,0 +1,297 @@
+{% liquid
+  assign id = section.id
+  assign section_style = section.settings.section_style
+  assign columns = section.settings.columns
+  assign text_alignment = section.settings.text_alignment
+  assign text_max_width = section.settings.text_max_width
+  assign overline = section.settings.overline
+  assign heading = section.settings.title
+  assign subheading = section.settings.subheading
+  assign link = section.settings.link
+  assign link_text = section.settings.link_text
+  assign blocks = section.blocks
+%}
+
+{% assign modifiers = '' %}
+
+{% assign modifiers = modifiers | append: ' section--' | append: section_style %}
+
+{% unless section_style == 'contrast' %}
+  {% assign modifiers = modifiers | append: ' section--bordered' %}
+{% endunless %}
+
+{% assign modifiers = modifiers | append: ' text-columns--alignment-' | append: text_alignment %}
+
+{% assign modifiers = modifiers | append: ' collection-list-grid--columns-' | append: columns %}
+
+{% if settings.enable_reveal_animations and section.settings.enable_animation %}
+  {% assign modifiers = modifiers | append: ' animation animation--text-columns-with-images' %}
+{% endif %}
+
+{% assign item_width = '' %}
+
+{%- case columns -%}
+  {%- when 1 -%}
+    {%- assign item_width = 'full' -%}
+  {%- when 2 -%}
+    {%- assign item_width = 'one-half' -%}
+  {%- when 3 -%}
+    {%- assign item_width = 'one-third' -%}
+  {%- when 4 -%}
+    {%- assign item_width = 'one-quarter' -%}
+{%- endcase -%}
+
+<section
+  data-section-id="{{ id }}"
+  data-section-type="text-columns-with-images"
+  class="section text-columns{{ modifiers }}"
+>
+  {% render 'text-block' with
+    id: id,
+    modifiers: 'text-columns__intro animation--section-introduction',
+    heading_alignment: text_alignment,
+    text_max_width: text_max_width,
+    overline: overline,
+    heading: heading,
+    text_max_width: text_max_width,
+    subheading: subheading,
+    link: link,
+    link_text: link_text
+  %}
+
+  <div class="text-columns__content grid-display grid-display--{{ item_width }}">
+    {% for block in blocks %}
+      <div class="text-block text-columns__feature">
+        {%- if block.settings.image != blank -%}
+          {% if block.settings.link != blank %}
+            <a href="{{ block.settings.link }}" class="mb3 w-100 text-columns__image db" style="max-width: {{ block.settings.image_max_width }}%;">
+          {% else %}
+            <div class="mb3 w-100 text-columns__image db" style="max-width: {{ block.settings.image_max_width }}%;">
+          {% endif %}
+
+          {% render 'image' with image: block.settings.image %}
+
+          {% if block.settings.link != blank %}
+            </a>
+          {% else %}
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+        {%- if block.settings.title != blank -%}
+          <h3
+            class="text-block__item text-block__heading type-heading-1-small"
+            data-theme-editor-setting="section.{{ id }}.block.{{ block.id }}.title"
+            style="max-width: {{ block.settings.text_max_width }}em;"
+          >
+            {{ block.settings.title }}</h3>
+        {%- endif -%}
+        {%- if block.settings.subheading != blank -%}
+          <div
+            class="text-block__subheading type-body-regular rte"
+            data-theme-editor-setting="section.{{ id }}.block.{{ block.id }}.subheading"
+            style="max-width: {{ block.settings.text_max_width }}em;"
+          >
+            {{ block.settings.subheading }}
+          </div>
+        {%- endif -%}
+        {%- if block.settings.link != blank and block.settings.link_text != blank -%}
+          <a
+            href="{{ block.settings.link }}"
+            class="text-block__item text-block__button bttn bttn--secondary bttn--inline"
+            data-theme-editor-setting="section.{{ id }}.block.{{ block.id }}.link_text"
+          >
+            {{ block.settings.link_text }}
+          </a>
+        {%- endif -%}
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "t:sections.text_columns_with_images.name",
+    "class": "section-dynamic section-borderable",
+    "disabled_on": {
+      "groups": ["header", "custom.overlay"]
+    },
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:sections.text_columns_with_images.settings.style_header.content"
+      },
+      {
+        "type": "select",
+        "id": "section_style",
+        "label": "t:sections.text_columns_with_images.settings.section_style.label",
+        "default": "default",
+        "options": [
+          {
+            "value": "default",
+            "label": "t:sections.text_columns_with_images.settings.section_style.option_1"
+          },
+          {
+            "value": "contrast",
+            "label": "t:sections.text_columns_with_images.settings.section_style.option_2"
+          }
+        ]
+      },
+      {
+        "id": "enable_animation",
+        "type": "checkbox",
+        "label": "t:shared.settings.section_style.enable_animation.label",
+        "info": "t:shared.settings.section_style.enable_animation.info",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "t:sections.text_columns_with_images.settings.content_header.content"
+      },
+      {
+        "type": "range",
+        "id": "columns",
+        "label": "t:sections.text_columns_with_images.settings.columns.label",
+        "min": 1,
+        "max": 4,
+        "step": 1,
+        "default": 3
+      },
+      {
+        "type": "text",
+        "id": "overline",
+        "label": "t:sections.text_columns_with_images.settings.overline.label"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "t:sections.text_columns_with_images.settings.title.label"
+      },
+      {
+        "type": "richtext",
+        "id": "subheading",
+        "label": "t:sections.text_columns_with_images.settings.subheading.label"
+      },
+      {
+        "type": "url",
+        "id": "link",
+        "label": "t:sections.text_columns_with_images.settings.link.label"
+      },
+      {
+        "type": "text",
+        "id": "link_text",
+        "label": "t:sections.text_columns_with_images.settings.link_text.label"
+      },
+      {
+        "type": "select",
+        "id": "text_alignment",
+        "label": "t:sections.text_columns_with_images.settings.text_alignment.label",
+        "default": "center",
+        "options": [
+          {
+            "value": "left",
+            "label": "t:sections.text_columns_with_images.settings.text_alignment.option_1"
+          },
+          {
+            "value": "center",
+            "label": "t:sections.text_columns_with_images.settings.text_alignment.option_2"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "text_max_width",
+        "label": "t:sections.text_columns_with_images.settings.text_max_width.label",
+        "min": 16,
+        "max": 50,
+        "step": 1,
+        "default": 36
+      }
+    ],
+    "max_blocks": 8,
+    "blocks": [
+      {
+        "type": "column",
+        "name": "t:sections.text_columns_with_images.blocks.column.name",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "t:sections.text_columns_with_images.blocks.column.settings.image.label"
+          },
+          {
+            "type": "range",
+            "id": "image_max_width",
+            "label": "t:sections.text_columns_with_images.blocks.column.settings.image_max_width.label",
+            "min": 10,
+            "max": 100,
+            "step": 10,
+            "default": 50
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "t:sections.text_columns_with_images.blocks.column.settings.title.label",
+            "default": "Column heading"
+          },
+          {
+            "type": "richtext",
+            "id": "subheading",
+            "label": "t:sections.text_columns_with_images.blocks.column.settings.subheading.label",
+            "default": "<p>Column text</p>"
+          },
+          {
+            "type": "range",
+            "id": "text_max_width",
+            "label": "t:sections.text_columns_with_images.blocks.column.settings.text_max_width.label",
+            "min": 16,
+            "max": 50,
+            "step": 1,
+            "default": 36
+          },
+          {
+            "type": "url",
+            "id": "link",
+            "label": "t:sections.text_columns_with_images.blocks.column.settings.link.label"
+          },
+          {
+            "type": "text",
+            "id": "link_text",
+            "label": "t:sections.text_columns_with_images.blocks.column.settings.link_text.label",
+            "default": "Read more"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "t:sections.text_columns_with_images.presets.text_columns_with_images.name",
+        "blocks": [
+          {
+            "type": "column",
+            "settings": {
+              "title": "Column one",
+              "subheading": "<p>Start here. Introduce your vision, or explain why what you do or sell is superior to your competitors.</p>",
+              "link_text": "Read more"
+            }
+          },
+          {
+            "type": "column",
+            "settings": {
+              "title": "Column two",
+              "subheading": "<p>Get into your process a bit. The quality of handiwork, proprietary knowledge, or materials that you use that make your products better.</p>",
+              "link_text": "Read more"
+            }
+          },
+          {
+            "type": "column",
+            "settings": {
+              "title": "Column three",
+              "subheading": "<p>End it with an action item that the user can take advantage of. Link to a more in-depth page, or go straight to a collection. Your call.</p>",
+              "link_text": "Read more"
+            }
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

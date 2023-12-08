@@ -1,0 +1,229 @@
+{%- liquid
+  assign id = section.id
+
+  assign section_style = section.settings.section_style
+  assign text_position = section.settings.text_position
+
+  assign featured_collection = collections[section.settings.collection]
+  assign columns_mobile = section.settings.columns_mobile
+  assign columns = section.settings.columns
+  assign aspect_ratio = section.settings.aspect_ratio
+  assign overline = section.settings.overline
+  assign heading = section.settings.title
+  assign subheading = section.settings.subheading
+  assign text_max_width = section.settings.text_max_width
+  assign link_text = section.settings.link_text
+
+  assign max_product_limit = 8
+  assign modifiers = ''
+  assign modifiers = modifiers | append: ' section--' | append: section_style
+
+  unless section_style == 'contrast'
+    assign modifiers = modifiers | append: ' section--bordered'
+  endunless
+
+  assign modifiers = modifiers | append: ' carousel--columns-' | append: columns | append: ' carousel--columns-mobile-' | append: columns_mobile
+  assign carousel_text_position = 'top'
+  assign carousel_text_alignment = text_position
+
+  assign modifiers = modifiers | append: ' carousel--text-position-' | append: carousel_text_position
+  assign modifiers = modifiers | append: ' carousel--text-alignment-' | append: carousel_text_alignment
+  assign modifiers = modifiers | append: ' carousel--items-' | append: featured_collection.all_products_count
+  assign modifiers = modifiers | append: ' featured-collection--' | append: aspect_ratio
+
+  if settings.enable_reveal_animations and section.settings.enable_animation
+    assign modifiers = modifiers | append: ' animation animation--featured-collection'
+  endif
+
+  assign minimum_items_for_wrap_around = columns | plus: 2
+  assign items_needed = minimum_items_for_wrap_around | minus: featured_collection.all_products_count
+
+  if carousel_text_position == 'top' and items_needed <= 0 or featured_collection == blank
+    assign modifiers = modifiers | append: ' carousel--columns-wrap-around'
+  endif
+
+  assign collection_link = '#'
+
+  if featured_collection != blank
+    assign collection_link = featured_collection.url
+  endif
+-%}
+
+<section
+  data-section-id="{{ id }}"
+  data-section-type="featured-collection"
+  class="section featured-collection carousel{{ modifiers }}"
+  data-text-position="{{ carousel_text_position }}"
+  data-text-alignment="{{ carousel_text_alignment }}"
+  data-columns="{{ columns }}"
+>
+  {% render 'text-block',
+    id: id,
+    modifiers: 'mb5 animation--section-introduction',
+    heading_alignment: carousel_text_alignment,
+    overline: overline,
+    heading: heading,
+    subheading: subheading,
+    text_max_width: text_max_width,
+    link: collection_link,
+    link_text: link_text
+  %}
+
+  {% render 'carousel-navigation' %}
+
+  <div class="featured-collection__slides carousel__slides" data-carousel>
+    {% if featured_collection != blank %}
+      {%- for product in featured_collection.products limit: max_product_limit -%}
+        <div class="featured-collection__slide carousel__slide">
+          {% render 'product-item', product: product, collection: featured_collection, aspect_ratio: aspect_ratio %}
+        </div>
+      {%- endfor -%}
+    {% else %}
+      {% for i in (1..minimum_items_for_wrap_around) %}
+        <div class="featured-collection__slide product-item carousel__slide">
+          {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+          <div class="product-item__placeholder">
+            {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+
+          <h2 class="type-body-regular mt3 mb0">
+            {{ 'homepage.onboarding.product_title' | t }}
+          </h2>
+          <p class="price-item price-item--regular ma0 meta">
+            {{ 2000 | money -}}
+            {%- if settings.currency_code_enabled %} {{ cart.currency.iso_code }}{% endif %}
+          </p>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured collection",
+  "class": "section-dynamic section-borderable",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"],
+    "templates": ["password"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.featured_collection.settings.style_header.content"
+    },
+    {
+      "type": "select",
+      "id": "section_style",
+      "label": "t:sections.featured_collection.settings.section_style.label",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.featured_collection.settings.section_style.option_1"
+        },
+        {
+          "value": "contrast",
+          "label": "t:sections.featured_collection.settings.section_style.option_2"
+        }
+      ]
+    },
+    {
+      "id": "enable_animation",
+      "type": "checkbox",
+      "label": "t:shared.settings.section_style.enable_animation.label",
+      "info": "t:shared.settings.section_style.enable_animation.info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.featured_collection.settings.content_header.content"
+    },
+    {
+      "id": "collection",
+      "type": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "t:sections.featured_collection.settings.columns.label",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "id": "columns_mobile",
+      "type": "select",
+      "label": "t:shared.settings.columns_mobile.label",
+      "options": [
+        { "label": "t:shared.settings.columns_mobile.option_1", "value": "1" },
+        { "label": "t:shared.settings.columns_mobile.option_2", "value": "2" }
+      ],
+      "default": "1"
+    },
+    {
+      "id": "aspect_ratio",
+      "type": "select",
+      "label": "t:sections.featured_collection.settings.aspect_ratio.label",
+      "options": [
+        { "label": "t:sections.featured_collection.settings.aspect_ratio.option_1", "value": "natural" },
+        { "label": "t:sections.featured_collection.settings.aspect_ratio.option_2", "value": "square" },
+        { "label": "t:sections.featured_collection.settings.aspect_ratio.option_3", "value": "landscape" },
+        { "label": "t:sections.featured_collection.settings.aspect_ratio.option_4", "value": "portrait" }
+      ],
+      "default": "natural"
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "t:sections.featured_collection.settings.text_position.label",
+      "options": [
+        { "value": "left", "label": "t:sections.featured_collection.settings.text_position.option_1" },
+        { "value": "center", "label": "t:sections.featured_collection.settings.text_position.option_2" },
+        { "value": "right", "label": "t:sections.featured_collection.settings.text_position.option_3" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "text",
+      "id": "overline",
+      "label": "t:sections.featured_collection.settings.overline.label",
+      "default": "Collection"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:sections.featured_collection.settings.title.label",
+      "default": "Featured collection"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "t:sections.featured_collection.settings.subheading.label",
+      "default": "<p>Add a subheading to provide more details about this collection.</p>"
+    },
+    {
+      "type": "text",
+      "id": "link_text",
+      "label": "t:sections.featured_collection.settings.link_text.label",
+      "default": "Shop now"
+    },
+    {
+      "type": "range",
+      "id": "text_max_width",
+      "label": "t:sections.featured_collection.settings.text_max_width.label",
+      "min": 16,
+      "max": 50,
+      "step": 1,
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.featured_collection.presets.featured_collection.name"
+    }
+  ]
+}
+{% endschema %}

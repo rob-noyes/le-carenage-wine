@@ -1,0 +1,51 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "enable_animation": true,
+        "content_max_width": 500
+      }
+    },
+    "f0494451-0bfa-42ed-b364-f57b7867cffd": {
+      "type": "rich-text",
+      "blocks": {
+        "template--19543881449781__f0494451-0bfa-42ed-b364-f57b7867cffd-overline-1": {
+          "type": "overline",
+          "settings": {
+            "overline": ""
+          }
+        },
+        "template--19543881449781__f0494451-0bfa-42ed-b364-f57b7867cffd-title-1": {
+          "type": "title",
+          "settings": {
+            "title": "Privacy Policy",
+            "text_max_width": 36
+          }
+        },
+        "template--19543881449781__f0494451-0bfa-42ed-b364-f57b7867cffd-text-1": {
+          "type": "text",
+          "settings": {
+            "text": "<p><strong>PRIVACY POLICY<\/strong><\/p><p><strong> <\/strong><a>Protecting your<br\/>privacy is important to us at Le Carénage. We have developed this Privacy<br\/>Policy to help you understand what personal information we collect, how we<br\/>collect it and how it is used.<\/a><\/p><p><\/p><p><strong>PERSONS UNDER THE AGE OF 21<\/strong><\/p><p>Our online services<br\/>are not intended for persons under 21 years of age. No one under age 21 may<br\/>provide any information to, or on the online services and are not allowed to become<br\/>a member or request allocation of our wines. We do not knowingly collect<br\/>personal information from persons under 21. If you are under 21, do not use or<br\/>provide any information on the online services or on or through any of its<br\/>features\/register on the online services, make any purchases through the online<br\/>services, use any of the interactive or public comment features of the online services<br\/>or provide any information about yourself to us, including your name, address,<br\/>telephone number, email address, or any screen name or user name you may use.<br\/>If we learn we have collected or received personal information from a person<br\/>under 21, we will delete that information. If you believe we might have any<br\/>information from or about a person under 21, please contact us either (i) by<br\/>email at info@lecarenage.com or (ii) by telephone at (650) 308-4030.<\/p><p> <\/p><p><a><strong>WHY, WHAT, AND HOW WE<br\/>COLLECT INFORMATION  <\/strong><\/a><\/p><p><strong>Why we collect the information: <br\/><\/strong>We collect information about you including any personal<br\/>information that you provide to us:<\/p><p> <\/p><p><strong>What type of general and personal information we collect: <\/strong><\/p><p><strong> <\/strong><\/p><p> <\/p><p> <\/p><p><strong>How we collect the information:<\/strong><\/p><p><strong> <\/strong><\/p><p> <\/p><p> <\/p><p> <\/p><p> <\/p><p><a><strong>DISCLOSURE OF YOUR<br\/>INFORMATION<\/strong><\/a><\/p><p>We may disclose <span style=\"text-decoration:underline\">aggregated anonymous<br\/>information<\/span> about our users without restriction. <\/p><p>While our policy is not to share personal<br\/>information, we may disclose your personal information that we collect, or you<br\/>provide as described in this Privacy Policy for these limited purposes:<\/p><p> <\/p><p> <\/p><p> <\/p><p> <\/p><p> <\/p><p><a><span style=\"text-decoration:underline\"><strong>YOUR CHOICES ABOUT<br\/>HOW WE USE AND DISCLOSE YOUR INFORMATION<\/strong><\/span><\/a><\/p><p>You have choices<br\/>regarding the personal information you provide to us. You may contact us to opt<br\/>out of any programs or use of your information as well as you may ask us to<br\/>delete your personal information.  You<br\/>have control over your own information.<\/p><p> <\/p><p> <\/p><p><a><span style=\"text-decoration:underline\"><strong>YOUR CALIFORNIA PRIVACY RIGHTS<\/strong><\/span><\/a><span style=\"text-decoration:underline\"><strong> AND ACCESSING or CORRECTING YOUR<\/strong><\/span><strong>                                                  <\/strong><span style=\"text-decoration:underline\"><strong>PERSONAL<br\/>INFORMATION<\/strong><\/span><\/p><p><strong> <\/strong><\/p><p>California permits you to make requests to<br\/>access categories and specific pieces of personal information about you as well<br\/>as to request we delete your personal information.  Please call us at: (650) 308-4030 or send us an email at info@lecarenage.com to request access to,<br\/>correct, or delete any personal information that you have provided to us. Note<br\/>that we can only delete your personal information by also deleting your user<br\/>account. We may not be able to accommodate a request to change information if<br\/>we believe the change would violate any law or legal requirement or cause the<br\/>information to be incorrect.<\/p><p><a><strong>DATA SECURITY<\/strong><\/a><\/p><p>We have implemented measures designed to<br\/>secure your personal information from accidental loss and from unauthorized<br\/>access, use, alteration, and disclosure. All information you provide to us is<br\/>stored on secure servers behind firewalls. Any payment transactions and credit<br\/>card information will be encrypted using SSL technology. <\/p><p>The safety and security of your information<br\/>also depends on you. Where we have given you (or where you have chosen) a<br\/>password for access to certain parts of our online services, you are<br\/>responsible for keeping this password confidential. We ask you not to share<br\/>your password with anyone.<\/p><p>Unfortunately, the transmission of information<br\/>via the internet is not completely secure. Although we do our best to protect<br\/>your personal information, we cannot guarantee the security of your personal<br\/>information transmitted to our website. Any transmission of personal<br\/>information is at your own risk. We are not responsible for circumvention of<br\/>any privacy settings or security measures contained on the Website.<\/p><p>For any help, please contact us at the number<br\/>or email address above.<\/p>",
+            "text_max_width": 50
+          }
+        }
+      },
+      "block_order": [
+        "template--19543881449781__f0494451-0bfa-42ed-b364-f57b7867cffd-overline-1",
+        "template--19543881449781__f0494451-0bfa-42ed-b364-f57b7867cffd-title-1",
+        "template--19543881449781__f0494451-0bfa-42ed-b364-f57b7867cffd-text-1"
+      ],
+      "settings": {
+        "section_style": "default",
+        "enable_animation": true,
+        "alignment": "center"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "f0494451-0bfa-42ed-b364-f57b7867cffd"
+  ]
+}

@@ -1,0 +1,181 @@
+{% comment %}
+This shop uses Bloom, a growth platform for modern wineries.
+You SHOULD NOT modify the contents of this file.
+It is automatically generated and your changes will be overwritten.
+These features and content can be managed within the Bloom app or the Shopify customizer.
+
+Bloom (www.bloom.wine)
+{% endcomment %}
+
+
+          <link rel="preload" href="{{ 'bloom-uikit.min.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+          <noscript><link rel="stylesheet" href="{{ 'bloom-uikit.min.css' | asset_url }}"></noscript>
+        
+<script defer src="{{ 'bloom-uikit.min.js' | asset_url }}"></script>
+<script defer src="{{ 'bloom-uikit-icons.min.js' | asset_url }}"></script>
+<script defer src="{{ 'bloom-storefront-bundle.js' | asset_url }}"></script>
+
+          <link rel="preload" href="{{ 'bloom-storefront-bundle.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+          <noscript><link rel="stylesheet" href="{{ 'bloom-storefront-bundle.css' | asset_url }}"></noscript>
+        
+
+{%- assign club_level_id = "club-" | append: club_id -%}
+{%- if level_id != blank -%}
+  {%- assign club_level_id = club_level_id | append: '-level-' | append: level_id -%}
+{%- endif -%}
+
+{%- assign clubs = shop.metafields.bloom.clubs -%}
+
+{%- for club in clubs -%}
+  {%- for club_field in club -%}
+    {%- if club_field[0] == "id" -%}
+      {%- assign club_id_prefix = "club-" | append: club_field[1] -%}
+    {%- endif -%}
+    {%- break -%}
+  {%- endfor -%}
+  {%- if club_level_id contains club_id_prefix -%}
+    {%- assign selected_club = club -%}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- for club_field in selected_club -%}
+  {%- if club_field[0] == "id" -%}
+    {%- assign club_id_prefix = "club-" | append: club_field[1] -%}
+  {%- endif -%}
+  {%- if club_field[0] == "name" -%}
+    {%- assign club_name = club_field[1] -%}
+  {%- endif -%}
+  {%- if club_field[0] == "product_handle" -%}
+    {%- assign product_handle = club_field[1] -%}
+  {%- endif -%}
+  {%- if club_field[0] == "levels" -%}
+    {%- if club_id_prefix == club_level_id -%}
+      {%- assign number_of_levels = club_field[1] | size -%}
+    {%- else -%}
+      {%- assign number_of_levels = 1 -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{% assign product = all_products[product_handle] %}
+
+{%- if club_level_id contains "All" -%}
+{%- else -%}
+{%- endif -%}
+
+{%- if class == blank -%}
+  {%- assign class = 'Bloom__Signup__Default' -%}
+{%- endif -%}
+
+{%- for field in shop.metafields.bloom.bloomfields -%}
+  {%- if field[0] == "settings" -%}
+    {%- for setting in field[1] -%}
+      {%- if setting[0] == "app_proxy_path" -%}
+        {%- assign app_proxy_path = setting[1] -%}
+        {%- break -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- assign selected_level = blank -%}
+{%- for club_field in selected_club -%}
+  {%- if club_field[0] == "levels" -%}
+    {%- assign selected_level_index = 1 -%}
+    {%- for level in club_field[1] -%}
+      {%- assign current_level_index = forloop.index -%}
+      {%- for level_field in level -%}
+        {%- if level_field[0] == "id" -%}
+          {%- assign level_id = level_field[1] -%}
+          {%- assign level_id_prefix = "level-" | append: level_field[1] -%}
+          {%- if club_level_id contains level_id_prefix -%}
+            {%- assign selected_level = level -%}
+            {%- assign selected_level_index = current_level_index -%}
+            {%- break -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- if button_label == blank -%}
+  {%- if selected_level != blank -%}
+    {%- assign club_level_name = selected_level_name -%}
+  {%- else -%}
+    {%- assign club_level_name = club_name -%}
+  {%- endif -%}
+
+  {%- assign button_label = "Join " | append: club_level_name -%}
+{%- endif -%}
+
+{%- for field in shop.metafields.bloom.bloomfields -%}
+  {%- if field[0] == "pick_up_locations" -%}
+    {%- assign pickup_locations = field[1] -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{% if cart.attributes["Customer date of birth"] != blank %}
+  {% assign customer_date_of_birth = cart.attributes["Customer date of birth"] %}
+{% elsif customer %}
+  {% if customer.metafields.bloom.bloomfields %}
+    {%- for field in customer.metafields.bloom.bloomfields -%}
+      {%- if field[0] == "date_of_birth" -%}
+        {%- assign customer_date_of_birth = field[1] -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {% endif %}
+{% endif %}
+
+<style>
+  .Bloom__Signup__Container {
+    max-width: {{ content_max_width }}px !important;
+  }
+  .Bloom__Signup__Container .Bloom__Button {
+    border-radius: {{ button_border_radius }}px;
+  }
+  .Bloom__Signup__Container Bloom__Signup__Select, .Bloom__Signup__Container .Bloom__Signup__Input, .Bloom__Signup__Container .Bloom__DateInput--input {
+    border-radius: {{ input_border_radius }}px;
+  }
+</style>
+
+<div class="uk-scope">
+  <div class="uk-container uk-container-medium Bloom__Signup__Container">
+    <div id="signup-form" data-params='{
+      "heading": "{{ heading }}",
+      "customer": {
+        "id": "{{ customer.id }}",
+        "first_name": "{{ customer.first_name }}",
+        "last_name": "{{ customer.last_name }}",
+        "email": "{{ customer.email }}",
+        "phone": "{{ customer.phone }}"
+      },
+      "customerDob": "{{ customer_date_of_birth }}",
+      "paymentNote": "{{ payment_note }}",
+      "buttonLabel": "{{ button_label }}",
+      "buttonLoadingLabel": "{{ button_loading_label }}",
+      "pickupLocations": {{ pickup_locations | json }},
+      "showDob": {{ show_dob }},
+      "showPassword": {% if customer%}false{% else %}{{ show_password }}{% endif %},
+      "showDelivery": {{ show_delivery }},
+      "showCreditCard": {{ show_credit_card }},
+      "containerClass": "{{ class }} Bloom__Signup__Form signup-form",
+      "inputContainerClass": "Bloom__Signup__Field",
+      "inputClass": "Bloom__Signup__Input {{ input_class }}",
+      "selectClass": "{{ select_class }}",
+      "buttonClass": "{{ button_class }}",
+      "welcomePagePath": "{{ welcome_page_path }}",
+      "showDiscountCode": "{{ shop.metafields.bloom.bloomfields["settings"]["discount_field_visible"] }}",
+      "logSentryErrors": "{{ shop.metafields.bloom.bloomfields["settings"]["log_club_signup_errors_in_sentry"] }}",
+      "inputFont": {
+        "family": "{{ input_font.family | replace: '"', "&#39;" }}",
+        "fallbackFamilies": "{{ input_font.fallback_families | replace: '"', "&#39;" }}",
+        "url": "{{ input_font | font_url }}",
+        "weight": "{{ input_font.weight }}",
+        "style": "{{ input_font.style }}"
+      }
+    }'></div>
+  </div>
+</div>

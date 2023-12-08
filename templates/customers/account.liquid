@@ -1,0 +1,70 @@
+{%  include 'bloom' %}
+
+{% assign nonCurrentMember = false %}
+{% for tag in customer.tags %}
+  {% if tag contains "status - Waitlisted" %}
+    {% assign nonCurrentMember = true %}
+    {% break %}
+  {% endif %}
+{% endfor %}
+<section class="section account">
+  <div class="uk-flex uk-flex-between uk-flex-middle uk-margin-top uk-margin-large-bottom">
+    <div class="uk-width-1-1">
+      <h1 class="account__heading type-heading-1 uk-text-left uk-margin-remove-top uk-margin-remove-bottom">{{ 'customer.account.title' | t }}</h1>
+    </div>
+    <div class="account__logout uk-margin-remove-top">
+      <a class="underline" href="{{ routes.account_logout_url }}">{{ 'general.menu.logout' | t }}</a>
+    </div>
+  </div>
+  <div class="bloom-account-container">
+    {% section 'bloom-my-account-section' %}
+  </div>
+  <h2 class="account__section-heading type-heading-1 uk-text-left uk-margin-large-bottom">{{ 'customer.orders.title' | t }}</h2>
+
+  {% paginate customer.orders by 20 %}
+    {% if customer.orders.size != 0 %}
+      <div class="account__table">
+      <table class="responsive-table">
+        <thead>
+          <tr>
+            <th>{{ 'customer.orders.order_number' | t }}</th>
+            <th>{{ 'customer.orders.date' | t }}</th>
+            <th>{{ 'customer.orders.payment_status' | t }}</th>
+            <th>{{ 'customer.orders.fulfillment_status' | t }}</th>
+            <th>{{ 'customer.orders.total' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in customer.orders %}
+            <tr class="responsive-table-row">
+              <td data-label="{{ 'customer.orders.order_number' | t }}">{{ order.name | link_to: order.customer_url }}</td>
+              <td data-label="{{ 'customer.orders.date' | t }}">{{ order.created_at | date: "%B %d, %Y" }}</td>
+              <td data-label="{{ 'customer.orders.payment_status' | t }}">{{ order.financial_status_label }}</td>
+              <td data-label="{{ 'customer.orders.fulfillment_status' | t }}">{{ order.fulfillment_status_label }}</td>
+              <td data-label="{{ 'customer.orders.total' | t }}">{{ order.total_price | money }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    {% else %}
+      <p class="tc">{{ 'customer.orders.none' | t }}</p>
+    {% endif %}
+
+    {% if paginate.pages > 1 %}
+      {% render 'pagination' with
+        type: 'general.pagination.orders',
+        paginate: paginate
+      %}
+    {% endif %}
+
+  {% endpaginate %}
+{% unless is_member == true or nonCurrentMember == true %}
+  <h2 class="account__section-heading type-heading-1">{{ 'customer.account.details' | t }}</h2>
+  <div class="type-body-regular tc">
+    {{ customer.default_address | format_address }}
+    <a class="tc underline db" href="{{ routes.account_addresses_url }}">{{ 'customer.account.view_addresses' | t }} ({{ customer.addresses_count }})</a>
+  </div>
+{% endunless %}
+
+</section>

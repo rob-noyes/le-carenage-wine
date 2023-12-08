@@ -1,0 +1,328 @@
+{% liquid
+  assign id = section.id
+  assign section_style = section.settings.section_style
+  assign heading_alignment = section.settings.heading_alignment
+  assign text_max_width = section.settings.text_max_width
+  assign video = blank
+%}
+
+{% assign modifiers = '' %}
+
+{% assign modifiers = modifiers | append: ' section--' | append: section_style %}
+
+{% unless section_style == 'contrast' %}
+  {% assign modifiers = modifiers | append: ' section--bordered' %}
+{% endunless %}
+
+{% if settings.enable_reveal_animations and section.settings.enable_animation %}
+  {% assign modifiers = modifiers | append: ' animation animation--video' %}
+{% endif %}
+
+{%- capture section_content -%}
+  <div class="text-block animation--section-introduction text-block--{{ heading_alignment }}">
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+        {%- when 'overline' -%}
+          {% unless block.settings.overline == blank %}
+            <div
+              {{ block.shopify_attributes }}
+              class="text-block__item text-block__overline overline"
+            >
+              {{ block.settings.overline }}
+            </div>
+          {% endunless %}
+        {%- when 'heading' -%}
+          {%- unless block.settings.heading == blank -%}
+            <h2
+              {{ block.shopify_attributes }}
+              class="text-block__item text-block__heading type-heading-1"
+              {%- if text_max_width != blank -%}
+                style="max-width: {{ text_max_width }}rem;"
+              {%- endif -%}
+            >
+              {{ block.settings.heading }}
+            </h2>
+          {%- endunless -%}
+        {%- when 'subheading' -%}
+          {%- unless block.settings.subheading == blank -%}
+            <div
+              {{ block.shopify_attributes }}
+              class="text-block__subheading type-body-regular rte"
+              {%- if text_max_width != blank -%}
+                style="max-width: {{ text_max_width }}rem;"
+              {%- endif -%}
+            >
+              {{ block.settings.subheading }}
+            </div>
+          {%- endunless -%}
+        {%- when 'button' -%}
+          {% if block.settings.link != blank and block.settings.link_text != blank %}
+            <a
+              {{ block.shopify_attributes }}
+              href="{{ block.settings.link }}"
+              class="text-block__item text-block__button bttn bttn--secondary bttn--inline"
+            >
+              {{ block.settings.link_text }}
+            </a>
+          {% endif %}
+        {%- when 'video' -%}
+          {%- assign video = block.settings.video_url -%}
+
+          <div
+            {{ block.shopify_attributes }}
+            class="video__wrapper{% if forloop.first != true %} mt5{% endif %}{% if forloop.last != true %} mb5{% endif %}"
+          >
+            <div class="video__overlay{% unless block.settings.image == blank %} visible{% endunless %}">
+              <div class="z-5 absolute absolute--fill flex justify-around items-center">
+                {% if video != blank and block.settings.image != blank %}
+                  <button
+                    type="button"
+                    class="video__play-button"
+                    data-video-trigger
+                    aria-label="{{ 'general.accessibility.play_video' | t }}"
+                  >
+                    {% render 'icon-play', non_focusable: true %}
+                  </button>
+                {% endif %}
+              </div>
+
+              {% unless block.settings.image == blank %}
+                <div
+                  class="video__image absolute absolute--fill lazyload"
+                  data-bgset="{% render 'responsive-bg-image', image: block.settings.image %}"
+                  style="
+                    background-image: url({{ block.settings.image | img_url }});
+                    background-position: {{ block.settings.image.presentation.focal_point }};
+                  "
+                  role="img"
+                  aria-label="{{ block.settings.image.alt }}"
+                ></div>
+              {% endunless %}
+
+              <div
+                class="video__wash absolute absolute--fill o-{{ block.settings.overlay_opacity }}"
+                style="
+                background-color: {{ block.settings.overlay_color }};
+                {% if block.settings.color_overlay_gradient != blank %}
+                  background: {{ block.settings.color_overlay_gradient }};
+                {% endif %}
+                "
+              ></div>
+            </div>
+
+            {%- if video != blank -%}
+              <div class="video__container video__container--{{ section.id }}">
+                <div class="video__player video__player--{{ section.id }}"></div>
+              </div>
+            {% else %}
+              <div class="video__placeholder">
+                <div class="video__placeholder-image">
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                </div>
+              </div>
+            {% endif %}
+          </div>
+      {%- endcase -%}
+    {%- endfor -%}
+  </div>
+{%- endcapture -%}
+
+<section
+  data-section-id="{{ id }}"
+  data-section-type="video"
+  data-video-type="{{ video.type }}"
+  data-video-id="{{ video.id }}"
+  data-component="video"
+  class="section video {{ modifiers }}"
+>
+  {{ section_content }}
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.video.name",
+  "class": "section-dynamic section-borderable",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.video.settings.style_header.content"
+    },
+    {
+      "type": "select",
+      "id": "section_style",
+      "label": "t:sections.video.settings.section_style.label",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.video.settings.section_style.option_1"
+        },
+        {
+          "value": "contrast",
+          "label": "t:sections.video.settings.section_style.option_2"
+        }
+      ]
+    },
+    {
+      "id": "enable_animation",
+      "type": "checkbox",
+      "label": "t:shared.settings.section_style.enable_animation.label",
+      "info": "t:shared.settings.section_style.enable_animation.info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.video.settings.content_header.content"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "t:sections.video.settings.heading_alignment.label",
+      "default": "center",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.video.settings.heading_alignment.option_1"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.video.settings.heading_alignment.option_2"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "text_max_width",
+      "label": "t:sections.video.settings.text_max_width.label",
+      "min": 16,
+      "max": 50,
+      "step": 1,
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "overline",
+      "name": "t:sections.video.blocks.overline.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "overline",
+          "label": "t:sections.video.blocks.overline.settings.overline.label",
+          "default": "Video"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "name": "t:sections.video.blocks.heading.name",
+      "limit": 1,
+      "settings": [
+        {
+          "id": "heading",
+          "type": "text",
+          "label": "t:sections.video.blocks.heading.settings.heading.label",
+          "default": "Video Section"
+        }
+      ]
+    },
+    {
+      "type": "subheading",
+      "name": "t:sections.video.blocks.subheading.name",
+      "limit": 1,
+      "settings": [
+        {
+          "id": "subheading",
+          "type": "richtext",
+          "label": "t:sections.video.blocks.subheading.settings.subheading.label"
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "t:sections.video.blocks.button.name",
+      "limit": 1,
+      "settings": [
+        {
+          "id": "link",
+          "type": "url",
+          "label": "t:sections.video.blocks.button.settings.link.label",
+          "default": "/collections/all"
+        },
+        {
+          "id": "link_text",
+          "type": "text",
+          "label": "t:sections.video.blocks.button.settings.link_text.label",
+          "default": "Shop Now"
+        }
+      ]
+    },
+    {
+      "type": "video",
+      "name": "t:sections.video.blocks.video.name",
+      "limit": 1,
+      "settings": [
+        {
+          "id": "video_url",
+          "type": "video_url",
+          "label": "t:sections.video.blocks.video.settings.video_url.label",
+          "accept": ["youtube", "vimeo"],
+          "default": "https://www.youtube.com/watch?v=_9VUPq3SxOc"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.video.blocks.video.settings.image.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.video.blocks.video.settings.overlay_header.content"
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "min": 0,
+          "max": 100,
+          "step": 10,
+          "default": 20,
+          "label": "t:sections.video.blocks.video.settings.overlay_opacity.label"
+        },
+        {
+          "id": "color_overlay_gradient",
+          "type": "color_background",
+          "label": "t:shared.settings.color.color_overlay_gradient.label"
+        },
+        {
+          "type": "color",
+          "id": "overlay_color",
+          "label": "t:sections.video.blocks.video.settings.overlay_color.label",
+          "default": "#000"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.video.presets.video.name",
+      "blocks": [
+        {
+          "type": "overline"
+        },
+        {
+          "type": "heading"
+        },
+        {
+          "type": "subheading"
+        },
+        {
+          "type": "video"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

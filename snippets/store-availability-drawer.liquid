@@ -1,0 +1,35 @@
+<div
+  class="
+    drawer
+    store-availability-flyout
+    {% if settings.enable_reveal_animations %}
+      animation
+      animation--store-availability
+    {% endif %}
+  "
+  data-store-availability-drawer
+  aria-describedby="flyout-title"
+  aria-hidden="true"
+  role="dialog"
+>
+  <div class="store-availability-flyout__inner">
+    <div class="store-availability-flyout__header">
+      <div class="store-availability-flyout__product-info">
+        <h4 id="flyout-title" class="store-availability-flyout__store-list-product-title type-heading-1-small mt0 mb0">
+          {{ 'store_availability.general.availability' | t }}
+        </h4>
+      </div>
+      <button
+        type="button"
+        class="store-availability-flyout__close"
+        data-store-availability-close
+        aria-label="{{ 'general.accessiblity.close_modal' | t }}"
+      >
+        {% render 'icon-close', non_focusable: true %}
+      </button>
+    </div>
+    <div class="store-availability-flyout__product" data-store-availability-product></div>
+
+    <div class="store-availability-flyout__content" data-store-list-container></div>
+  </div>
+</div>

@@ -1,0 +1,105 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "enable_animation": true,
+        "content_max_width": 500
+      }
+    },
+    "4e0d6dc5-49a2-475b-adb4-f340e4686149": {
+      "type": "image-hero",
+      "blocks": {
+        "template--19552812368181__4e0d6dc5-49a2-475b-adb4-f340e4686149-16869533191632f2b8-0": {
+          "type": "heading",
+          "settings": {
+            "heading": "Explore Le Carénage",
+            "heading_text_size": 48,
+            "text_max_width": 60
+          }
+        },
+        "48f49e8d-b1d8-41c0-9d28-5af419f8a1be": {
+          "type": "subheading",
+          "settings": {
+            "subheading": "",
+            "subheading_text_size": 18,
+            "text_max_width": 40
+          }
+        }
+      },
+      "block_order": [
+        "template--19552812368181__4e0d6dc5-49a2-475b-adb4-f340e4686149-16869533191632f2b8-0",
+        "48f49e8d-b1d8-41c0-9d28-5af419f8a1be"
+      ],
+      "settings": {
+        "enable_animation": true,
+        "image_aspect": "custom",
+        "desktop_height": 55,
+        "mobile_height": 50,
+        "image": "shopify:\/\/shop_images\/Story_-_Header_-_2.png",
+        "focal_point": "image_presentation",
+        "mobile_focal_point": "image_presentation",
+        "alignment": "center_top",
+        "text_container_color": "rgba(0,0,0,0)",
+        "text_color": "#1a1818",
+        "color_text_button": "#ffffff",
+        "color_background_button": "#1a1818",
+        "overlay_color": "#000000",
+        "color_overlay_gradient": "",
+        "overlay_opacity": 0
+      }
+    },
+    "168ec80e-8609-44fc-80ec-e95d0ed60647": {
+      "type": "image-with-text",
+      "blocks": {
+        "template--19552812368181__168ec80e-8609-44fc-80ec-e95d0ed60647-168789730925c46718-1": {
+          "type": "heading",
+          "settings": {
+            "heading": "",
+            "text_max_width": 44
+          }
+        },
+        "template--19552812368181__168ec80e-8609-44fc-80ec-e95d0ed60647-168789730925c46718-2": {
+          "type": "subheading",
+          "settings": {
+            "subheading": "<h2>Marcus Stroman welcomes you to explore Le Carénage.<\/h2><h5>A boutique Northern California-based winery focused on producing Old World-inspired wines from some of the best sites in the region. <\/h5><p><\/p><p>Growing up on Long Island, Marcus wasn’t exposed to wine at an early age, but after making his Major League debut with the Toronto Blue Jays in 2014, he was introduced to the world of wine by veteran teammates who would regularly share inspiring bottles. As one of the most entrepreneurial professional athletes of his generation, Marcus knew he wanted to one step beyond collecting wine, and knew he wanted to produce his own wine. <\/p><p><\/p><p>Marcus has teamed up with esteemed Winemaker Matt Naumann of Newfound Wines to create restrained, Old World-inspired wines, focusing on selecting the very best sites in Northern California, and using a soft approach to the winemaking in the cellar. <\/p>",
+            "text_max_width": 50
+          }
+        },
+        "3bdda538-594d-4e0a-8ff4-b8f7615ba899": {
+          "type": "button",
+          "settings": {
+            "link": "shopify:\/\/pages\/wines",
+            "link_text": "Explore Wines"
+          }
+        }
+      },
+      "block_order": [
+        "template--19552812368181__168ec80e-8609-44fc-80ec-e95d0ed60647-168789730925c46718-1",
+        "template--19552812368181__168ec80e-8609-44fc-80ec-e95d0ed60647-168789730925c46718-2",
+        "3bdda538-594d-4e0a-8ff4-b8f7615ba899"
+      ],
+      "settings": {
+        "section_style": "default",
+        "enable_animation": true,
+        "image": "shopify:\/\/shop_images\/Marcus-Stroman-Le-Carenage-portraits-46.jpg",
+        "video_url": "",
+        "image_width": "one-half",
+        "aspect_ratio": "square",
+        "focal_point": "image_presentation",
+        "image_position": "left",
+        "text_alignment": "left",
+        "text_color": "#000000",
+        "text_container_color": "",
+        "color_background_gradient": "",
+        "button_background_color": "#000000"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "4e0d6dc5-49a2-475b-adb4-f340e4686149",
+    "168ec80e-8609-44fc-80ec-e95d0ed60647"
+  ]
+}

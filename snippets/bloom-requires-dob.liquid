@@ -1,0 +1,61 @@
+{% comment %}
+This shop uses Bloom, a growth platform for modern wineries.
+You SHOULD NOT modify the contents of this file.
+It is automatically generated and your changes will be overwritten.
+These features and content can be managed within the Bloom app or the Shopify customizer.
+
+Bloom (www.bloom.wine)
+{% endcomment %}
+
+{%- comment -%}
+  This is a function snippet designed to return the value of `requires_dob` which can be captured
+  by the calling template file.
+
+  example usage:
+
+  {% capture requires_dob %}{%- render 'bloom-requires-dob' -%}{% endcapture %}
+  {% assign stripped_requires_dob = requires_dob | strip %}
+  {% if stripped_requires_dob == 'true' %}{% assign requires_dob = true %}{% else %}{% assign requires_dob = false %}{% endif %}
+
+  {%- if requires_dob -%}
+    Please enter your date of birth
+  {%- endif -%}
+
+  {%- if requires_dob -%}
+    <script>
+      Bloom.storefront.state.cartRequiresDob = true;
+    </script>
+  {%- endif -%}
+
+{%- endcomment -%}
+{%- assign requires_dob = false -%}
+{%- for item in cart.items -%}
+  {%- for field in item.product.metafields.bloom.bloomfields -%}
+    {%- if field[0] == "abv" -%}
+      {%- if field[1] != blank and field[1] != "0" and field[1] != 0 -%}
+        {%- assign requires_dob = true -%}
+      {%- endif -%}
+      {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- for club in shop.metafields.bloom.clubs -%}
+    {%- for club_field in club -%}
+      {%- if club_field[0] == "name" -%}
+        {%- assign club_name = club_field[1] -%}
+        {%- for property in item.properties -%}
+          {%- if property[0] contains club_name -%}
+            {%- assign requires_dob = true -%}
+            {%- break -%}
+          {%- endif -%}
+        {%- endfor -%}
+        {%- if item.product_title contains club_name -%}
+          {%- assign requires_dob = true -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- if requires_dob -%}
+      {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endfor -%}{{- requires_dob -}}

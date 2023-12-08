@@ -1,0 +1,146 @@
+{% for block in blocks %}
+  {%- liquid
+    assign desktop_image = block.settings.image
+    assign slide_class_modifiers = ''
+    assign align = block.settings.alignment | split: "_"
+    assign text_container_color = block.settings.text_container_color
+    assign background = true
+    if text_container_color == blank or text_container_color == 'rgba(0,0,0,0)'
+      assign background = false
+    endif
+
+    assign disable_image_style = true
+
+    if image_aspect == 'original'
+      assign disable_image_style = false
+    endif
+
+    assign slide_class_modifiers = slide_class_modifiers | append: ' slideshow__slide--aspect-' | append: image_aspect
+
+    if desktop_image != blank
+      assign slide_class_modifiers = slide_class_modifiers | append: ' slideshow__slide--has-image'
+    endif
+
+    if block.settings.mobile_image != blank
+      assign slide_class_modifiers = slide_class_modifiers | append: ' slideshow__slide--has-mobile-image'
+    endif
+
+    assign brightness_button = block.settings.color_background_button | color_brightness
+    if brightness_button > 60
+      assign color_background_button_hover = block.settings.color_background_button | color_darken: 20
+      else
+      assign color_background_button_hover = block.settings.color_background_button | color_lighten: 20
+    endif
+  -%}
+
+  {% capture slide_attributes %}
+    class="slideshow__slide{{ slide_class_modifiers }}"
+    {{ block.shopify_attributes }}
+    data-index="{{ forloop.index0 }}"
+    style="
+      --overlay-background: {{ block.settings.overlay_color }};
+      {% if block.settings.color_overlay_gradient != blank %}
+        --overlay-gradient: {{ block.settings.color_overlay_gradient }};
+      {% endif %}
+      --text-container-background: {{ block.settings.text_container_color }};
+      --content-color: {{ block.settings.text_color }};
+      --heading-font-size: {{ block.settings.heading_text_size }}px;
+      --subheading-font-size: {{ block.settings.subheading_text_size }}px;
+      --heading-max-width: {{ block.settings.heading_max_width }}rem;
+      --text-max-width: {{ block.settings.text_max_width }}rem;
+      --button-text-color: {{ block.settings.color_text_button }};
+      --button-text-background: {{ block.settings.color_background_button }};
+      --button-text-background-hover: {{ color_background_button_hover }};
+    "
+  {% endcapture %}
+
+  {%- if block.settings.link_text == blank and block.settings.link != blank -%}
+    <a href="{{ block.settings.link }}" {{ slide_attributes }}>
+  {%- else -%}
+    <div {{ slide_attributes }}>
+  {%- endif -%}
+
+    {% if desktop_image == blank %}
+      {% capture current %}{% cycle 1, 2 %}{% endcapture %}
+      <div class="slideshow__placeholder slideshow__image slideshow__image--desktop slideshow__image--mobile{% unless image_is_constrained %} slideshow__image--unconstrained{% endunless %}">{{ 'lifestyle-' | append: current | placeholder_svg_tag: 'placeholder-svg image__img' }}</div>
+    {% endif %}
+
+    <div class="slideshow__overlay o-{{ block.settings.overlay_opacity }}"></div>
+
+    <div class="slideshow__content-wrap slideshow__content-wrap--{{ align[1] }}">
+      <div class="slideshow__content">
+        <div class="slideshow__content-inner slideshow__content-inner--{{ align[0] }}">
+          <div class="slideshow__content-inner-container {% if background %}slideshow__content-inner-container--has-background{% endif %}">
+          {% if block.settings.overline != blank %}
+            <h2
+              class="slideshow__overline overline"
+              data-theme-editor-setting="section.{{ id }}.block.{{ block.id }}.overline"
+            >
+              {{ block.settings.overline }}
+            </h2>
+          {% endif %}
+          {% if block.settings.title != blank %}
+            <h2
+              class="slideshow__heading type-heading-dynamic"
+              data-theme-editor-setting="section.{{ id }}.block.{{ block.id }}.title"
+            >
+              {{ block.settings.title }}
+            </h2>
+          {% endif %}
+          {% if block.settings.subheading != blank %}
+            <div
+              class="slideshow__subheading type-body-regular"
+              data-theme-editor-setting="section.{{ id }}.block.{{ block.id }}.subheading"
+            >
+              {{ block.settings.subheading }}
+            </div>
+          {% endif %}
+
+          {%- if block.settings.link != blank and block.settings.link_text != blank -%}
+            <a href="{{ block.settings.link }}" class="slideshow__link bttn bttn--inline {{ horizontal_position }}">{{ block.settings.link_text }}</a>
+          {%- endif -%}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if desktop_image != blank %}
+      {%- liquid
+        assign image_wrapper_class = 'slideshow__image slideshow__image--desktop'
+        assign image_wrapper_class = image_wrapper_class | append: ' slideshow__image--aspect-' | append: image_aspect
+      -%}
+
+      {% render 'image',
+        image: desktop_image,
+        wrapper_class: image_wrapper_class,
+        disable_style: disable_image_style,
+        focal_point: block.settings.focal_point,
+        max_width: 3000,
+        animate: true
+      %}
+    {% endif %}
+
+    {% if block.settings.mobile_image != blank %}
+      {%- liquid
+        assign mobile_image_wrapper_class = 'slideshow__image slideshow__image--mobile'
+        assign mobile_image_wrapper_class = mobile_image_wrapper_class | append: ' slideshow__image--aspect-' | append: image_aspect
+      -%}
+
+      {% render 'image',
+        image: block.settings.mobile_image,
+        wrapper_class: mobile_image_wrapper_class,
+        disable_style: disable_image_style,
+        focal_point: block.settings.mobile_focal_point,
+        max_width: 3000,
+        animate: true
+      %}
+    {% endif %}
+
+
+  {%- if block.settings.link_text == blank and block.settings.link != blank -%}
+    </a>
+  {%- else -%}
+    </div>
+  {%- endif -%}
+
+{% endfor %}

@@ -1,0 +1,89 @@
+{% render 'frame--utility-bar' with
+  id: section.id,
+  section: section,
+%}
+
+{% schema %}
+  {
+    "name": "t:sections.utility_bar.name",
+    "class": "utility-bar-section",
+    "settings": [
+      {
+        "id": "show_utility_bar",
+        "type": "checkbox",
+        "label": "t:sections.utility_bar.settings.show_utility_bar.label",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "t:sections.utility_bar.settings.social_media__header.content",
+        "info": "t:sections.utility_bar.settings.social_media__header.info"
+      },
+      {
+        "id": "show_social_icons",
+        "type": "checkbox",
+        "label": "t:sections.utility_bar.settings.show_social_icons.label",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "t:sections.utility_bar.settings.language__header.content",
+        "info": "t:sections.utility_bar.settings.language__header.info"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_locale_selector",
+        "label": "t:sections.utility_bar.settings.show_locale_selector.label",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "t:sections.utility_bar.settings.currency__header.content",
+        "info": "t:sections.utility_bar.settings.currency__header.info"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_currency_selector",
+        "label": "t:sections.utility_bar.settings.show_currency_selector.label",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "utility_bar_animation_timing",
+        "label": "t:sections.utility_bar.settings.timing.label",
+        "min": 3,
+        "max": 15,
+        "step": 1,
+        "default": 5
+      }
+    ],
+    "max_blocks": 3,
+    "blocks": [
+      {
+        "type": "announcement",
+        "name": "t:sections.utility_bar.blocks.announcement.name",
+        "settings": [
+          {
+            "type": "text",
+            "id": "text",
+            "default": "Announce something here",
+            "label": "t:sections.utility_bar.blocks.announcement.settings.title.label"
+          },
+          {
+            "type": "url",
+            "id": "link",
+            "label": "t:sections.utility_bar.blocks.announcement.settings.link.label",
+            "info": "t:sections.utility_bar.blocks.announcement.settings.link.info"
+          }
+        ]
+      }
+    ],
+    "default": {
+      "blocks": [
+        {
+          "type": "announcement"
+        }
+      ]
+    }
+  }
+{% endschema %}

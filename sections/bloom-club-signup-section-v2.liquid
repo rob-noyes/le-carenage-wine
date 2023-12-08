@@ -1,0 +1,56 @@
+{% comment %}
+This shop uses Bloom, a growth platform for modern wineries.
+You SHOULD NOT modify the contents of this file.
+It is automatically generated and your changes will be overwritten.
+These features and content can be managed within the Bloom app or the Shopify customizer.
+
+Bloom (www.bloom.wine)
+{% endcomment %}
+
+{%- assign club_level_parts = section.settings.club_level | split: "-" -%}
+{%- comment -%}
+  club_id: {{ club_level_parts[1] }}<br>
+  level_id: {{ club_level_parts[3] }}
+{%- endcomment -%}
+
+{% assign button_class = "button btn Button Bloom__Button Bloom__Button--Primary uk-button-" | append: section.settings.button_size %}
+{% assign inverted_button_class = "button btn Button Bloom__Button Bloom__Button--Inverted uk-button-" | append: section.settings.button_size %}
+{% assign select_class = 'uk-width-1-1 uk-width-expand uk-form-' | append: section.settings.input_size %}
+{% assign input_class = 'uk-width-1-1 uk-width-expand uk-form-' | append: section.settings.input_size %}
+
+{% if section.settings.apply_default_form_styles %}
+  {% assign button_class = button_class | append: ' uk-button uk-button-primary' %}
+  {% assign select_class = select_class | append: ' uk-select' %}
+  {% assign input_class = input_class | append: ' uk-input' %}
+{% endif %}
+
+{%- render 'bloom-club-signup-snippet-v2',
+  heading: section.settings.heading,
+  club_id: club_level_parts[1],
+  level_id: club_level_parts[3],
+  error_class: 'note form-error',
+  input_class: input_class,
+  input_border_radius: section.settings.input_border_radius,
+  button_class: button_class,
+  button_border_radius: section.settings.button_border_radius,
+  secondary_button_class: secondary_button_class,
+  inverted_button_class: inverted_button_class,
+  select_class: select_class,
+  input_font: section.settings.input_font,
+  content_max_width: section.settings.content_max_width,
+  payment_note: section.settings.payment_note,
+  button_label: section.settings.button_label,
+  button_loading_label: section.settings.button_loading_label,
+  add_to_cart_target: section.settings.add_to_cart_target,
+  welcome_page_path: section.settings.welcome_page_path,
+  show_password: section.settings.show_password,
+  show_dob: section.settings.show_dob,
+  show_credit_card: section.settings.show_credit_card,
+  show_options: section.settings.show_options,
+  show_delivery: section.settings.show_delivery,
+  blocks: section.blocks
+-%}
+
+{% schema %}
+{"name":"Club signup section","settings":[{"id":"heading","type":"text","label":"Heading","default":"Member information"},{"id":"club_level","type":"select","label":"Default club level","options":[{"group":"Traditional Club","value":"club-1143","label":"All levels"},{"group":"Allocation Club","value":"club-1144","label":"All levels"},{"group":"Allocation Club","value":"club-1144-level-113375","label":"Member Allocation"},{"group":"Subscription Club","value":"club-1145","label":"All levels"},{"group":"Subscription Club","value":"club-1145-level-113374","label":"Product subscriptions"}],"default":"club-1143"},{"id":"welcome_page_path","type":"text","label":"Welcome page path","placeholder":"/pages/welcome-to-the-club"},{"id":"payment_note","type":"richtext","label":"Payment note"},{"id":"button_label","type":"text","label":"Button label"},{"id":"button_loading_label","type":"text","label":"Button loading label","default":"Creating your account..."},{"id":"apply_default_form_styles","type":"checkbox","label":"Apply default form styles"},{"type":"select","id":"button_size","label":"Button size","options":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}],"default":"medium"},{"type":"range","id":"button_border_radius","label":"Button border radius","min":0,"max":40,"step":1,"unit":"px","default":0},{"type":"select","id":"input_size","label":"Input size","options":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}],"default":"medium"},{"type":"range","id":"input_border_radius","label":"Input border radius","min":0,"max":40,"step":1,"unit":"px","default":0},{"type":"range","id":"content_max_width","label":"Content max width","min":240,"max":1200,"step":60,"unit":"px","default":1200},{"type":"header","content":"Field display"},{"type":"checkbox","id":"show_password","label":"Password","default":true},{"type":"checkbox","id":"show_dob","label":"Date of birth","default":true},{"type":"checkbox","id":"show_credit_card","label":"Credit card","default":true,"info":"Legacy Bloom only. Bloom v1 tiers are managed through Bloom Admin"},{"type":"checkbox","id":"show_delivery","label":"Delivery information","default":true,"info":"Legacy Bloom only. Bloom v1 tiers are managed through Bloom Admin"}],"presets":[{"name":"Club signup","blocks":[]}]}
+{% endschema %}

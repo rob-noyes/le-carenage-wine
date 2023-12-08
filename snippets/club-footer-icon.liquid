@@ -1,0 +1,18 @@
+<div class="page-width club-footer-icon uk-margin-large-top">
+  <div class="uk-flex uk-flex-center">
+      {% for block in section.blocks %}
+        {% case block.type %}
+        {% when 'image' %}
+          <div class="uk-text-center">
+            {% if block.settings.image != blank %}
+              <div class="icon-wrapper">
+                <img src="{{ block.settings.image | img_url: 'master' }}"
+                     alt="{{ section.settings.section-header }}" class="uk-width-1-2"
+					 height="auto">
+              </div>
+            {% endif %}
+          </div>
+        {% endcase %}
+      {% endfor %}   
+  </div>
+</div>

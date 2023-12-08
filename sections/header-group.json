@@ -1,0 +1,59 @@
+{
+  "type": "header",
+  "name": "t:groups.header_group.name",
+  "sections": {
+    "utility-bar": {
+      "type": "utility-bar",
+      "blocks": {
+        "announcement-0": {
+          "type": "announcement",
+          "settings": {
+            "text": "Announce something here",
+            "link": ""
+          }
+        },
+        "announcement-1": {
+          "type": "announcement",
+          "settings": {
+            "text": "Cycle through multiple messages",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "announcement-0",
+        "announcement-1"
+      ],
+      "settings": {
+        "show_utility_bar": false,
+        "show_social_icons": true,
+        "show_locale_selector": true,
+        "show_currency_selector": true,
+        "utility_bar_animation_timing": 5
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "header_style": "default",
+        "nav_position": "inline_right",
+        "dropdown_interaction": "mousedown",
+        "show_cart_icon": false,
+        "show_search": false,
+        "show_search_mobile_icon": false,
+        "logo": "shopify:\/\/shop_images\/LEC_-_Transparent_-_Black_-_Logo.png",
+        "logo_max_size": 230,
+        "menu": "main-menu",
+        "transparent_index_header_enabled": true,
+        "transparent_logo": "shopify:\/\/shop_images\/LEC_-_Transparent_-_White_-_Logo.png",
+        "transparent_header_foreground_color": "#ffffff",
+        "transparent_header_border_color": "#ffffff",
+        "transparent_header_border_opacity": 10
+      }
+    }
+  },
+  "order": [
+    "utility-bar",
+    "header"
+  ]
+}

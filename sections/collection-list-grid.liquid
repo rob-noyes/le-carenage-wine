@@ -1,0 +1,269 @@
+{% liquid
+  assign id = section.id
+  assign section_style = section.settings.section_style
+  assign heading_alignment = section.settings.heading_alignment
+  assign overline = section.settings.overline
+  assign heading = section.settings.title
+  assign subheading = section.settings.subheading
+  assign text_max_width = section.settings.text_max_width
+  assign columns = section.settings.columns
+  assign aspect_ratio = section.settings.aspect_ratio
+  assign blocks = section.blocks
+%}
+
+{% assign modifiers = '' %}
+
+{% assign modifiers = modifiers | append: ' section--' | append: section_style %}
+
+{% unless section_style == 'contrast' %}
+  {% assign modifiers = modifiers | append: ' section--bordered' %}
+{% endunless %}
+
+{% assign modifiers = modifiers | append: ' collection-list-grid--columns-' | append: columns %}
+
+{% assign item_width = '' %}
+
+{%- case columns -%}
+  {%- when 1 -%}
+    {%- assign item_width = 'full' -%}
+  {%- when 2 -%}
+    {%- assign item_width = 'one-half' -%}
+  {%- when 3 -%}
+    {%- assign item_width = 'one-third' -%}
+  {%- when 4 -%}
+    {%- assign item_width = 'one-quarter' -%}
+{%- endcase -%}
+
+{% assign grid_modifiers = '' %}
+
+{% assign grid_modifiers = grid_modifiers | append: ' grid-display--' | append: item_width %}
+{% assign grid_modifiers = grid_modifiers | append: ' grid-display--no-products' %}
+{% assign grid_modifiers = grid_modifiers | append: ' grid-display--' | append: aspect_ratio %}
+
+{% if settings.enable_reveal_animations and section.settings.enable_animation %}
+  {% assign modifiers = modifiers | append: ' animation animation--collection-list-grid' %}
+{% endif %}
+
+{% assign includes_aspect_ratio = false %}
+
+{% if aspect_ratio != blank and aspect_ratio != 'natural' %}
+  {% assign includes_aspect_ratio = true %}
+{% endif %}
+
+<section
+  data-section-id="{{ id }}"
+  data-section-type="collection-list-grid"
+  class="section collection-list-grid{{ modifiers }}"
+>
+  {%
+    render 'text-block' with
+    id: id,
+    modifiers: 'mb5 animation--section-introduction',
+    heading_alignment: heading_alignment,
+    text_max_width: text_max_width,
+    overline: overline,
+    heading: heading,
+    subheading: subheading,
+    link: featured_collection.url,
+    link_text: link_text
+  %}
+
+  <div class="grid-display{{ grid_modifiers }}">
+    {% if blocks.size > 0 %}
+      {% for block in blocks %}
+        {% assign featured_collection = collections[block.settings.collection] %}
+
+        {% if featured_collection != empty %}
+          <a href="{{ featured_collection.url }}" class="collection-list-grid__collection">
+            {%- assign image_object = featured_collection.image
+              | default: featured_collection.products.first.featured_media.preview_image
+            -%}
+
+            {% unless image_object == blank %}
+              <div class="collection-list-grid__image grid-display__image">
+                {%
+                  render 'image' with
+                  image: image_object,
+                  disable_style: includes_aspect_ratio,
+                  animate: true
+                %}
+              </div>
+            {% endunless %}
+
+            <h2 class="collection-list-grid__title type-body-regular mt3 mb0">{{ featured_collection.title }}</h2>
+            <div class="collection-list-grid__product-count meta">
+              {{ featured_collection.products_count }}
+              {{
+                featured_collection.products_count
+                | pluralize: 'sections.featured_collections.count_text_singular',
+                  'sections.featured_collections.count_text'
+                | t
+              }}
+            </div>
+          </a>
+        {% else %}
+          {% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}
+          {% capture product_count %}{% cycle 9, 18, 6, 21 %}{% endcapture %}
+
+          <div class="collection-list-grid__collection">
+            <div class="collection-list-grid__collection-placeholder grid-display__image">
+              {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+            <h2 class="collection-list-grid__title type-body-regular mt3 mb0">
+              {{ 'homepage.onboarding.collection_title' | t }}
+            </h2>
+            <div class="collection-list-grid__product-count meta">
+              {{ product_count }}
+              {{ 'sections.featured_collections.count_text' | t }}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      {% for i in (1..columns) %}
+        {% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}
+        {% capture product_count %}{% cycle 9, 18, 6, 21 %}{% endcapture %}
+
+        <div class="collection-list-grid__collection">
+          <div class="collection-list-grid__collection-placeholder grid-display__image">
+            {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+          <h2 class="collection-list-grid__title type-body-regular mt3 mb0">
+            {{ 'homepage.onboarding.collection_title' | t }}
+          </h2>
+          <div class="collection-list-grid__product-count meta">
+            {{ product_count }}
+            {{ 'sections.featured_collections.count_text' | t }}
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.collection_list_grid.name",
+  "class": "section-dynamic section-borderable",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"],
+    "templates": ["password"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.collection_list_grid.settings.style_header.content"
+    },
+    {
+      "type": "select",
+      "id": "section_style",
+      "label": "t:sections.collection_list_grid.settings.section_style.label",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.collection_list_grid.settings.section_style.option_1"
+        },
+        {
+          "value": "contrast",
+          "label": "t:sections.collection_list_grid.settings.section_style.option_2"
+        }
+      ]
+    },
+    {
+      "id": "enable_animation",
+      "type": "checkbox",
+      "label": "t:shared.settings.section_style.enable_animation.label",
+      "info": "t:shared.settings.section_style.enable_animation.info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.collection_list_grid.settings.content_header.content"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "t:sections.collection_list_grid.settings.columns.label",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "id": "aspect_ratio",
+      "type": "select",
+      "label": "t:sections.collection_list_grid.settings.aspect_ratio.label",
+      "options": [
+        { "label": "t:sections.collection_list_grid.settings.aspect_ratio.option_1", "value": "natural" },
+        { "label": "t:sections.collection_list_grid.settings.aspect_ratio.option_2", "value": "square" },
+        { "label": "t:sections.collection_list_grid.settings.aspect_ratio.option_3", "value": "landscape" },
+        { "label": "t:sections.collection_list_grid.settings.aspect_ratio.option_4", "value": "portrait" }
+      ],
+      "default": "natural"
+    },
+    {
+      "type": "text",
+      "id": "overline",
+      "label": "t:sections.collection_list_grid.settings.overline.label",
+      "default": "Collections"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:sections.collection_list_grid.settings.title.label",
+      "default": "Collection list"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "t:sections.collection_list_grid.settings.subheading.label",
+      "default": "<p>Use this section to showcase your many collections.</p>"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "t:sections.collection_list_grid.settings.heading_alignment.label",
+      "default": "center",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.collection_list_grid.settings.heading_alignment.option_1"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.collection_list_grid.settings.heading_alignment.option_2"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "text_max_width",
+      "label": "t:sections.collection_list_grid.settings.text_max_width.label",
+      "min": 16,
+      "max": 50,
+      "step": 1,
+      "default": 36
+    }
+  ],
+  "max_blocks": 12,
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "t:sections.collection_list_grid.blocks.collection.name",
+      "settings": [
+        {
+          "id": "collection",
+          "type": "collection",
+          "label": "t:sections.collection_list_grid.blocks.collection.settings.collection.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.collection_list_grid.presets.collection_list_grid.name"
+    }
+  ]
+}
+{% endschema %}

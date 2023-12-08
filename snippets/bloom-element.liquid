@@ -1,0 +1,67 @@
+{% comment %}
+This shop uses Bloom, a growth platform for modern wineries.
+You SHOULD NOT modify the contents of this file.
+It is automatically generated and your changes will be overwritten.
+These features and content can be managed within the Bloom app or the Shopify customizer.
+
+Bloom (www.bloom.wine)
+{% endcomment %}
+
+{%- assign level_ids_array = level_ids | replace: ' ', '' | split: ',' -%}
+{%- assign release_ids_array = release_ids | replace: ' ', '' | split: ',' -%}
+{%- assign nanoseconds = "now" | date: "%N" -%}
+{%- assign snippet_guid = option | append: level_ids_array | append: nanoseconds | md5 -%}
+
+{% case type %}
+  {% when 'clubform' %}
+    <style>
+      .BloomElement__id-{{id}} .BloomElement__GroupSelector__PreferencesSelectElement {
+         width: 100%;
+         margin-bottom: 1rem;
+         background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2224%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpolygon%20fill%3D%22%23666%22%20points%3D%2212%201%209%206%2015%206%22%20%2F%3E%0A%20%20%20%20%3Cpolygon%20fill%3D%22%23666%22%20points%3D%2212%2013%209%208%2015%208%22%20%2F%3E%0A%3C%2Fsvg%3E%0A");
+         height: 40px;
+         background-repeat: no-repeat;
+         background-position: 100% 50%;
+         -webkit-appearance: none;
+         line-height: 22px;
+         padding-left: 10px;
+       }
+      .BloomElement__id-{{id}} button[data-bloom-club-join-form-button].BloomElement__GroupSelector__SubmitButton {
+         cursor: pointer;
+       }
+      .BloomElement__id-{{id}} button[data-bloom-club-join-form-button].BloomElement__GroupSelector__SubmitButton:disabled {
+         pointer-events: none;
+         cursor: default;
+         opacity: 0.4;
+       }
+      .BloomElement__id-{{id}} .BloomElement__GroupSelector__OuterLabel {
+        text-align: left;
+      }
+      .BloomElement__id-{{id}} .BloomElement__GroupSelector__OuterLabel label + select {
+        margin-top: 0.2rem;
+      }
+    </style>
+    <div class="BloomElement__id-{{id}}" data-bloom-club-join-form-id="{{ id }}"
+      data-bloom-club-join-form='{ "levelIds": "{{ level_ids_array | join: "," }}", "releaseIds": "{{ release_ids_array | join: "," }}", "action": "{{ action }}", "showLabelNames": "{{ show_label_names }}" }'>
+  {% when 'clubform-field' %}
+    <div data-bloom-club-join-form-field-id="{{ snippet_guid }}"
+      data-bloom-club-join-form-field='{ "name": "{{ name }}", "className": "{{ class }}", "prompt": "{{ prompt }}" }'>
+    </div>
+  {% when 'clubform-button' %}
+    <button class="{{ class }}" data-bloom-club-join-form-button=''>
+      {%- if label == blank -%}Join{%- else -%}{{ label }}{%- endif -%}
+    </button>
+  {% when 'endclubform' %}
+    </div>
+    <script>
+      function initBloomElements() {
+        var formContainer = document.querySelector('[data-bloom-club-join-form-id="{{ id }}"]');
+        var props = Object.assign({ id: "{{ id }}", elementContainer: formContainer }, JSON.parse(formContainer.dataset.bloomClubJoinForm || "{}"))
+        var element = bloom.elements().create('form', props)
+      }
+
+        Bloom.storefront.utilities.ready(initBloomElements);
+    </script>
+  {% else %}
+     This snippet is not configured properly
+{% endcase %}

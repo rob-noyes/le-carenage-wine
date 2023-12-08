@@ -1,0 +1,354 @@
+{% liquid
+  assign id = section.id
+
+  assign section_style = section.settings.section_style
+  assign text_position = section.settings.text_position
+
+  assign aspect_ratio = section.settings.aspect_ratio
+  assign overline = section.settings.overline
+  assign heading = section.settings.title
+  assign subheading = section.settings.subheading
+  assign text_max_width = section.settings.text_max_width
+  assign link = section.settings.link
+  assign link_text = section.settings.link_text
+  assign columns = section.settings.columns
+
+  assign blocks = section.blocks
+%}
+
+{% assign modifiers = '' %}
+
+{% assign modifiers = modifiers | append: ' section--' | append: section_style %}
+
+{% unless section_style == 'contrast' %}
+  {% assign modifiers = modifiers | append: ' section--bordered' %}
+{% endunless %}
+
+{% assign modifiers = modifiers | append: ' carousel--columns-' | append: columns %}
+
+{% assign carousel_text_position = text_position | split: '_' | first %}
+{% assign carousel_text_alignment = text_position | split: '_' | last %}
+
+{% assign modifiers = modifiers | append: ' carousel--text-position-' | append: carousel_text_position %}
+{% assign modifiers = modifiers | append: ' carousel--text-alignment-' | append: carousel_text_alignment %}
+{% assign modifiers = modifiers | append: ' carousel--items-' | append: blocks.size %}
+{% assign modifiers = modifiers | append: ' carousel--aspect-ratio-' | append: aspect_ratio %}
+
+{% assign minimum_items_for_wrap_around = columns | plus: 2 %}
+{% assign items_needed = minimum_items_for_wrap_around | minus: blocks.size %}
+
+{% if carousel_text_position == 'top' and items_needed <= 0 or blocks.size == 0 %}
+  {% assign modifiers = modifiers | append: ' carousel--columns-wrap-around' %}
+{% endif %}
+
+{% if settings.enable_reveal_animations and section.settings.enable_animation %}
+  {% assign modifiers = modifiers | append: ' animation animation--testimonials' %}
+{% endif %}
+
+{% assign image_is_constrained = true %}
+
+{% if aspect_ratio == 'natural' %}
+  {% assign image_is_constrained = false %}
+{% endif %}
+
+<section
+  data-section-id="{{ id }}"
+  data-section-type="testimonials"
+  class="section testimonials carousel{{ modifiers }}"
+  data-text-position="{{ carousel_text_position }}"
+  data-text-alignment="{{ carousel_text_alignment }}"
+>
+  {% render 'text-block' with
+    id: id,
+    modifiers: 'mb5 animation--section-introduction',
+    heading_alignment: carousel_text_alignment,
+    text_max_width: text_max_width,
+    overline: overline,
+    heading: heading,
+    subheading: subheading,
+    link: link,
+    link_text: link_text
+  %}
+
+  {% render 'carousel-navigation' %}
+
+  <div class="testimonials__slides carousel__slides" data-carousel>
+    {% if blocks.size > 0 %}
+      {%- for block in blocks -%}
+        <div class="testimonials__slide carousel__slide" {{ block.shopify_attributes }} data-index="{{ forloop.index0 }}">
+            {% if block.settings.product_image != blank %}
+              {% if block.settings.product_link != blank %}
+                <a href="{{ block.settings.product_link.url }}" class="testimonials__image carousel__slide-image">
+              {% else %}
+                <div class="testimonials__image carousel__slide-image">
+              {% endif %}
+
+              {% render 'image',
+                image: block.settings.product_image,
+                focal_point: 'image_presentation',
+                disable_style: image_is_constrained,
+              %}
+
+              {% if block.settings.product_link != blank %}
+                </a>
+              {% else %}
+                </div>
+              {% endif %}
+            {% else %}
+              {% if block.settings.product_link != blank %}
+                <a href="{{ block.settings.product_link.url }}" class="testimonials__image carousel__slide-image">
+              {% else %}
+                <div class="testimonials__image carousel__slide-image">
+              {% endif %}
+                {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+              {% if block.settings.product_link != blank %}
+                </a>
+              {% else %}
+                </div>
+              {% endif %}
+            {% endif %}
+
+
+          {% if block.settings.reviewer_image != blank or block.settings.reviewer_name != blank %}
+            <div class="testimonials__reviewer-wrapper flex mb3 mt3">
+              {% if block.settings.reviewer_image != blank %}
+                <div class="testimonials__reviewer-image">
+                  {% render 'image',
+                    image: block.settings.reviewer_image,
+                    focal_point: 'image_presentation',
+                    disable_style: true
+                  %}
+                </div>
+              {% endif %}
+
+              {% if block.settings.reviewer_name != blank %}
+                <div class="flex flex-column overline">
+                  <span class="b">{{ 'sections.testimonials.reviewed_by' | t }}</span>
+                  <span data-theme-editor-setting="section.{{ id }}.block.{{ block.id }}.reviewer_name">{{ block.settings.reviewer_name }}</span>
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% unless block.settings.rating == 0 %}
+            <div class="testimonials__stars mb2">
+              {% assign max_star_rating = 5 %}
+              {% assign solid_star_rating = block.settings.rating | floor %}
+              {% assign remaining_stars = max_star_rating | minus: block.settings.rating %}
+
+              {% for star in (1..solid_star_rating) %}
+                {% render 'icon-star' %}
+              {% endfor %}
+
+              {% if remaining_stars > 0 %}
+                {% assign remaining_stars_includes_half_star = remaining_stars | modulo: 1 %}
+                {% if remaining_stars_includes_half_star != 0 %}
+                  {% render 'icon-star-half' %}
+                {% endif %}
+
+                {% assign remaining_empty_stars = remaining_stars | floor %}
+
+                {% if remaining_empty_stars > 0 %}
+                  {% for empty_star in (1..remaining_empty_stars) %}
+                    {% render 'icon-star-empty' %}
+                  {% endfor %}
+                {% endif %}
+              {% endif %}
+            </div>
+          {% endunless %}
+
+          {% if block.settings.review != blank %}
+            <div class="testimonials__review">&#8220;<span data-theme-editor-setting="section.{{ id }}.block.{{ block.id }}.review">{{ block.settings.review }}</span>&#8221;</div>
+          {% endif %}
+        </div>
+      {%- endfor -%}
+    {% else %}
+
+      {% for i in (1..minimum_items_for_wrap_around) %}
+        <div class="testimonials__slide carousel__slide">
+          <div class="testimonials__image carousel__slide-image db mb3">
+            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+
+          <div class="testimonials__reviewer-wrapper flex mb3">
+            <div class="testimonials__reviewer-image testimonials__reviewer-placeholder">
+              {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+
+            <div class="flex flex-column overline">
+              <span class="b">{{ 'sections.testimonials.reviewed_by' | t }}</span>
+              <span>{{ 'homepage.onboarding.testimonial_author' | t }}</span>
+            </div>
+          </div>
+
+          <div class="testimonials__review">&#8220;{{ 'homepage.onboarding.testimonial_review' | t }}&#8221;</div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</section>
+
+
+{% schema %}
+  {
+    "name": "t:sections.testimonials.name",
+    "class": "section-dynamic section-borderable",
+    "disabled_on": {
+      "groups": ["header", "custom.overlay"],
+      "templates": ["password"]
+    },
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:sections.testimonials.settings.style_header.content"
+      },
+      {
+        "type": "select",
+        "id": "section_style",
+        "label": "t:sections.testimonials.settings.section_style.label",
+        "default": "default",
+        "options": [
+          {
+            "value": "default",
+            "label": "t:sections.testimonials.settings.section_style.option_1"
+          },
+          {
+            "value": "contrast",
+            "label": "t:sections.testimonials.settings.section_style.option_2"
+          }
+        ]
+      },
+      {
+        "id": "enable_animation",
+        "type": "checkbox",
+        "label": "t:shared.settings.section_style.enable_animation.label",
+        "info": "t:shared.settings.section_style.enable_animation.info",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "t:sections.testimonials.settings.content_header.content"
+      },
+      {
+        "type": "range",
+        "id": "columns",
+        "label": "t:sections.testimonials.settings.columns.label",
+        "min": 2,
+        "max": 4,
+        "step": 1,
+        "default": 3
+      },
+      {
+        "id": "aspect_ratio",
+        "type": "select",
+        "label": "t:sections.testimonials.settings.aspect_ratio.label",
+        "options": [
+          { "label": "t:sections.testimonials.settings.aspect_ratio.option_1", "value": "natural" },
+          { "label": "t:sections.testimonials.settings.aspect_ratio.option_2", "value": "square" },
+          { "label": "t:sections.testimonials.settings.aspect_ratio.option_3", "value": "landscape" },
+          { "label": "t:sections.testimonials.settings.aspect_ratio.option_4", "value": "portrait" }
+        ],
+        "default": "natural"
+      },
+      {
+        "type": "select",
+        "id": "text_position",
+        "label": "t:sections.testimonials.settings.text_position.label",
+        "options": [
+          { "value": "top_left", "label": "t:sections.testimonials.settings.text_position.option_1" },
+          { "value": "top_center", "label": "t:sections.testimonials.settings.text_position.option_2" },
+          { "value": "top_right", "label": "t:sections.testimonials.settings.text_position.option_3" },
+          { "value": "middle_left", "label": "t:sections.testimonials.settings.text_position.option_4" },
+          { "value": "middle_right", "label": "t:sections.testimonials.settings.text_position.option_5" }
+        ],
+        "default": "top_center"
+      },
+      {
+        "type": "text",
+        "id": "overline",
+        "label": "t:sections.testimonials.settings.overline.label",
+        "default": "Testimonials"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "t:sections.testimonials.settings.title.label",
+        "default": "Testimonials Section"
+      },
+      {
+        "type": "richtext",
+        "id": "subheading",
+        "label": "t:sections.testimonials.settings.subheading.label",
+        "default": "<p>Use this section to showcase your product reviews.</p>"
+      },
+      {
+        "type": "url",
+        "id": "link",
+        "label": "t:sections.testimonials.settings.link.label"
+      },
+      {
+        "type": "text",
+        "id": "link_text",
+        "label": "t:sections.testimonials.settings.link_text.label"
+      },
+      {
+        "type": "range",
+        "id": "text_max_width",
+        "label": "t:sections.testimonials.settings.text_max_width.label",
+        "min": 16,
+        "max": 50,
+        "step": 1,
+        "default": 36
+      }
+    ],
+    "blocks": [
+      {
+        "type": "testimonial",
+        "name": "t:sections.testimonials.blocks.testimonial.name",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "product_image",
+            "label": "t:sections.testimonials.blocks.testimonial.settings.product_image.label"
+          },
+          {
+            "type": "url",
+            "id": "product_link",
+            "label": "t:sections.testimonials.blocks.testimonial.settings.product_link.label"
+          },
+          {
+            "id": "rating",
+            "type": "range",
+            "label": "t:sections.testimonials.blocks.testimonial.settings.rating.label",
+            "default": 0,
+            "min": 0,
+            "max": 5,
+            "step": 0.5
+          },
+          {
+            "type": "image_picker",
+            "id": "reviewer_image",
+            "label": "t:sections.testimonials.blocks.testimonial.settings.reviewer_image.label"
+          },
+          {
+            "type": "text",
+            "id": "reviewer_name",
+            "label": "t:sections.testimonials.blocks.testimonial.settings.reviewer_name.label",
+            "default": "First Lastname"
+          },
+          {
+            "id": "review",
+            "type": "richtext",
+            "label": "t:sections.testimonials.blocks.testimonial.settings.review.label",
+            "default": "<p>I absolutely love this product, but my favourite thing about it was the customer service and easy returns. I found what worked for me with ease. Thank you store!</p>"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "t:sections.testimonials.presets.testimonials.name"
+      }
+    ]
+  }
+{% endschema %}

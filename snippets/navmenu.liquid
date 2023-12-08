@@ -1,0 +1,152 @@
+{%- capture navmenu_classes -%}
+  nav
+  nav--depth-{{ depth }}
+  {% if is_submenu %}nav__submenu{% endif %}
+{%- endcapture -%}
+
+{% assign menu_title = false %}
+{% if is_submenu %}
+  {% assign list = menu.links %}
+  {% assign menu_title = sub_menu_title %}
+  {% assign menu_text_color = 'default' %}
+{% else %}
+  {% assign list = linklists[menu].links %}
+  {% assign menu_title = linklists[menu].title %}
+{% endif %}
+
+<ul
+  class="list ma0 pa0 lh-copy {{ menu_text_color }} {{ navmenu_classes | strip_newlines }}"
+  {% if has_triggers and is_submenu %}
+    data-nav-submenu
+  {% endif %}
+  {% if sub_nav_id %}
+    id="{{ sub_nav_id }}"
+  {% endif %}
+>
+  {% for link in list %}
+    {% assign d = depth | plus: 1 %}
+    {% assign show_meganav = false %}
+    {% assign link_is_parent = false %}
+
+    {% assign show_subnav = true %}
+    {% if d > max_depth or linklists[link.handle] == blank %}
+      {% assign show_subnav = false %}
+    {% endif %}
+
+    {% if blocks.size > 0 %}
+      {% for block in blocks %}
+        {% assign meganav_trigger = block.settings.dropdown_parent_link | handle | strip %}
+        {% if link.handle == meganav_trigger and depth == 1 and link.levels > 0 %}
+          {% assign show_meganav = true %}
+          {% assign shopify_attributes = block.shopify_attributes %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {% comment %} Simple nav item {% endcomment %}
+    {% unless show_subnav or show_meganav %}
+      <li class="nav__item nav__item-{{ link.handle }}">
+        <a
+          class="nav__link {% if link.active %}active{% endif %} {% if depth == 1 %}nav__item-primary{% endif %}"
+          href="{{ link.url }}"
+          {% if link.active %}
+            aria-current="true"
+          {% endif %}
+        >
+          {{- link.title -}}
+        </a>
+      </li>
+
+      {% comment %} Item with children or mega nav {% endcomment %}
+    {% else %}
+      {% assign link_is_parent = true %}
+
+      {%- capture navmenu_item_classes -%}
+        nav__item
+        nav__item-parent
+        nav__item-id-{{ link.handle }}
+        {% if show_meganav %}nav__item-parent--meganav{% endif %}
+      {%- endcapture -%}
+
+      {%- capture nav_link_classes -%}
+        nav__link
+        nav__link-parent
+        {% if link.active %}active{% endif %}
+        {% if depth == 1 %}nav__item-primary{% endif %}
+      {%- endcapture -%}
+
+      {%- capture sub_nav_id -%}header-sub-menu--{{ link.title | handle }}{%- endcapture -%}
+      {%- if sub_menu_title -%}
+        {%- capture sub_nav_id -%}header-sub-menu--{{ sub_menu_title | handle }}-{{ link.title | handle }}{%- endcapture -%}
+      {%- endif -%}
+
+      <li
+        class="{{ navmenu_item_classes | strip_newlines }}"
+        {% if has_triggers %}
+          data-navmenu-trigger data-navigation-dropdown-trigger
+        {% endif %}
+        {% if has_triggers and show_meganav %}
+          data-navmenu-meganav-trigger
+        {% endif %}
+      >
+        <a
+          class="{{ nav_link_classes | strip_newlines }}"
+          href="{{ link.url }}"
+          aria-expanded="false"
+          aria-controls="{{ sub_nav_id }}"
+        >
+          {{- link.title -}}
+          <span class="arrow">{% render 'icon-inline-chevron-down' %}</span></a
+        >
+
+        {% comment %} Item with a meganav {% endcomment %}
+        {% if show_meganav %}
+          {%- capture meganav_classes -%}
+            nav__submenu
+            nav__meganav
+            {% if is_site_nav %}nav__meganav--desktop{% endif %}
+            {% if settings.enable_reveal_animations %}
+              animation
+              animation--mega-navigation
+            {% endif %}
+          {%- endcapture -%}
+
+          <div
+            class="z-5 absolute w-100 left-0 {{ meganav_classes }}"
+            data-nav-submenu
+            data-meganav-menu
+            data-navigation-dropdown
+            id="{{ sub_nav_id }}"
+          >
+            <div
+              class="
+                mega-navigation-wrapper
+                shadow-3
+              "
+            >
+              {%
+                render 'mega-navigation' with
+                menu: link.handle,
+                depth: d,
+                blocks: blocks,
+                link: link,
+              %}
+            </div>
+          </div>
+
+          {% comment %} Item with simple dropdown {% endcomment %}
+        {% else %}
+          {%
+            render 'navmenu' with
+            menu: linklists[link.handle],
+            depth: d,
+            is_submenu: true,
+            sub_nav_id: sub_nav_id,
+            sub_menu_title: link.title,
+            has_triggers: true,
+          %}
+        {% endif %}
+      </li>
+    {% endunless %}
+  {% endfor %}
+</ul>

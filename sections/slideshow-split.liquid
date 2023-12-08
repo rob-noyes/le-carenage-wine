@@ -1,0 +1,405 @@
+{% liquid
+  assign id = section.id
+
+  assign desktop_height = section.settings.desktop_height
+  assign mobile_height = section.settings.mobile_height
+  assign timer = section.settings.timer
+
+  assign overline = section.settings.overline
+  assign title = section.settings.title
+  assign subheading = section.settings.subheading
+  assign link = section.settings.link
+  assign link_text = section.settings.link_text
+
+  assign text_container_color = section.settings.text_container_color
+  assign text_color = section.settings.text_color
+  assign text_max_width = section.settings.text_max_width
+  assign heading_max_width = section.settings.heading_max_width
+  assign align = section.settings.alignment | split: '_'
+  assign horizontal_text_position = align[0]
+  assign vertical_text_position = align[1]
+  assign blocks = section.blocks
+  assign background = true
+  if text_container_color == blank or text_container_color == 'rgba(0,0,0,0)'
+    assign background = false
+  endif
+%}
+
+{% assign time_in_ms = timer | times: 1000 %}
+{% capture current %}{% cycle 1, 2 %}{% endcapture %}
+
+{% assign modifiers = '' %}
+
+{% assign modifiers = modifiers | append: ' slideshow-split--align-' | append: vertical_text_position %}
+{% assign modifiers = modifiers | append: ' slideshow-split--justify-' | append: horizontal_text_position %}
+
+{% if blocks.size == 1 %}
+  {% assign modifiers = modifiers | append: ' slideshow-split--is-single' %}
+{% endif %}
+
+{% if settings.enable_reveal_animations and section.settings.enable_animation %}
+  {% assign modifiers = modifiers | append: ' animation animation--slideshow-split' %}
+{% endif %}
+
+{% assign show_nav_dots = true %}
+
+<section
+  data-section-id="{{ section.id }}"
+  data-section-type="slideshow-split"
+  class="slideshow-split{{ modifiers }}"
+  data-timer="{{ time_in_ms }}"
+  data-slide-count="{{ blocks.size }}"
+  style="
+    --desktop-height: {{ desktop_height }}vh;
+    --mobile-height: {{ mobile_height }}vh;
+    --text-container-background: {{ text_container_color }};
+    --heading-font-size: {{ section.settings.heading_text_size }}px;
+    --subheading-font-size: {{ section.settings.subheading_text_size }}px;
+  "
+>
+  <div class="slideshow-split__content z-1">
+    <div class="slideshow-split__content-inner">
+      <div class="slideshow-split__content-inner-container animation--section-introduction {% if background %}animation--section-introduction-background{% endif %}">
+        {% if overline != blank %}
+          <h2
+            class="slideshow-split__overline overline"
+            data-theme-editor-setting="section.{{ id }}.overline"
+            style="color: {{ text_color }};"
+          >
+            {{ overline }}
+          </h2>
+        {% endif %}
+        {% if title != blank %}
+          <h2
+            class="slideshow-split__heading type-heading-dynamic"
+            data-theme-editor-setting="section.{{ id }}.title"
+            style="color: {{ text_color }}; max-width: {{ heading_max_width }}rem;"
+          >
+            {{ title }}
+          </h2>
+        {% endif %}
+        {% if subheading != blank %}
+          <div
+            class="slideshow-split__subheading type-body-regular"
+            data-theme-editor-setting="section.{{ id }}.subheading"
+            style="color: {{ text_color }}; max-width: {{ text_max_width }}rem;"
+          >
+            {{ subheading }}
+          </div>
+        {% endif %}
+
+        {%- if link != blank and link_text != blank -%}
+          <a
+            href="{{ link }}"
+            class="slideshow-split__link bttn bttn--inline"
+            data-theme-editor-setting="section.{{ id }}.link_text"
+          >
+            {{ link_text }}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+  {%- if blocks.size > 1 -%}
+    <div class="slideshow__nav visually-hidden">
+      <button
+        type="button"
+        class="slideshow__button slideshow__button-previous"
+        aria-label="{{ 'general.accessibility.carousel_previous' | t }}"
+        data-control="prev"
+      >
+        {{ 'general.accessibility.carousel_previous' | t }}
+      </button>
+      <button
+        class="slideshow__button slideshow__button-pause"
+        data-control="pause"
+        aria-label="{{ 'general.accessibility.pause' | t }}"
+      >
+        {{ 'general.accessibility.pause' | t }}
+      </button>
+      <button
+        type="button"
+        class="slideshow__button slideshow__button-next"
+        aria-label="{{ 'general.accessibility.carousel_next' | t }}"
+        data-control="next"
+      >
+        {{ 'general.accessibility.carousel_next' | t }}
+      </button>
+    </div>
+  {%- endif -%}
+  <div
+    class="slideshow-split__underlay hide"
+    style="background-color: {{ overlay_color }};"
+  ></div>
+
+  <div class="slideshow-split__slideshow">
+    {% if blocks.size == 2 %}
+      {% for i in (1..2) %}
+        {%
+          render 'slideshow-split-blocks' with
+          blocks: blocks,
+          current: current
+        %}
+      {% endfor %}
+    {% elsif blocks.size > 0 %}
+      {%
+        render 'slideshow-split-blocks' with
+        blocks: blocks,
+        current: current
+      %}
+    {% else %}
+      {% for i in (i..3) %}
+        <div class="slideshow-split__slide">
+          <div class="slideshow__placeholder slideshow-split__image">
+            {{ 'lifestyle-' | append: current | placeholder_svg_tag: 'placeholder-svg image__img' }}
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  {% render 'page-dots', blocks: blocks %}
+
+  <div
+    class="slideshow-split__overlay o-{{ section.settings.overlay_opacity }}"
+    style="
+      --overlay-background: {{ section.settings.overlay_color }};
+      {% if section.settings.color_overlay_gradient != blank %}
+        --overlay-gradient: {{ section.settings.color_overlay_gradient }};
+      {% endif %}
+    "
+  ></div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.slideshow_split.name",
+  "class": "section-dynamic",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:shared.settings.section_style.style_header.content"
+    },
+    {
+      "id": "enable_animation",
+      "type": "checkbox",
+      "label": "t:shared.settings.section_style.enable_animation.label",
+      "info": "t:shared.settings.section_style.enable_animation.info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:shared.settings.content_header.content"
+    },
+    {
+      "type": "range",
+      "id": "desktop_height",
+      "label": "t:sections.slideshow_split.settings.desktop_height.label",
+      "unit": "%",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "mobile_height",
+      "label": "t:sections.slideshow_split.settings.mobile_height.label",
+      "unit": "%",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "default": 100
+    },
+    {
+      "id": "timer",
+      "type": "range",
+      "label": "t:sections.slideshow_split.settings.timer.label",
+      "default": 7,
+      "min": 5,
+      "max": 15,
+      "step": 1
+    },
+    {
+      "type": "text",
+      "id": "overline",
+      "label": "t:sections.slideshow_split.settings.overline.label",
+      "default": "Small heading"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:sections.slideshow_split.settings.title.label",
+      "default": "The Slideshow Split"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "t:sections.slideshow_split.settings.subheading.label",
+      "default": "<p>When one image isn't enough. Use an arrangement of editorial photos with a similar tone and feel for a unique storytelling sequence.</p>"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:sections.slideshow_split.settings.link.label"
+    },
+    {
+      "type": "text",
+      "id": "link_text",
+      "label": "t:sections.slideshow_split.settings.link_text.label",
+      "default": "Shop now"
+    },
+    {
+      "id": "alignment",
+      "type": "select",
+      "label": "t:sections.slideshow_split.settings.alignment.label",
+      "options": [
+        { "label": "t:sections.slideshow_split.settings.alignment.options__1.label", "value": "left_top" },
+        { "label": "t:sections.slideshow_split.settings.alignment.options__2.label", "value": "center_top" },
+        { "label": "t:sections.slideshow_split.settings.alignment.options__3.label", "value": "right_top" },
+        { "label": "t:sections.slideshow_split.settings.alignment.options__4.label", "value": "left_center" },
+        { "label": "t:sections.slideshow_split.settings.alignment.options__5.label", "value": "center_center" },
+        { "label": "t:sections.slideshow_split.settings.alignment.options__6.label", "value": "right_center" },
+        { "label": "t:sections.slideshow_split.settings.alignment.options__7.label", "value": "left_bottom" },
+        { "label": "t:sections.slideshow_split.settings.alignment.options__8.label", "value": "center_bottom" },
+        { "label": "t:sections.slideshow_split.settings.alignment.options__9.label", "value": "right_bottom" }
+      ],
+      "default": "left_center"
+    },
+    {
+      "id": "heading_text_size",
+      "type": "range",
+      "label": "t:sections.slideshow_split.settings.heading_text_size.label",
+      "unit": "px",
+      "min": 32,
+      "max": 54,
+      "step": 1,
+      "default": 48
+    },
+    {
+      "id": "subheading_text_size",
+      "type": "range",
+      "label": "t:sections.slideshow_split.settings.subheading_text_size.label",
+      "unit": "px",
+      "min": 14,
+      "max": 18,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "heading_max_width",
+      "label": "t:sections.slideshow_split.settings.heading_max_width.label",
+      "min": 16,
+      "max": 60,
+      "step": 1,
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "text_max_width",
+      "label": "t:sections.slideshow_split.settings.text_max_width.label",
+      "min": 16,
+      "max": 50,
+      "step": 1,
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "t:sections.slideshow_split.settings.color_header.content"
+    },
+    {
+      "type": "color",
+      "id": "text_container_color",
+      "label": "t:sections.slideshow_split.settings.text_container_color.label",
+      "default": "transparent"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:sections.slideshow_split.settings.text_color.label",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "t:sections.slideshow_split.settings.overlay_color.label",
+      "default": "#000000"
+    },
+    {
+      "id": "color_overlay_gradient",
+      "type": "color_background",
+      "label": "t:shared.settings.color.color_overlay_gradient.label"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "t:sections.slideshow_split.settings.overlay_opacity.label",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "default": 20
+    }
+  ],
+  "max_blocks": 8,
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.slideshow_split.blocks.slide.settings.image_picker.label",
+          "info": "t:sections.slideshow_split.blocks.slide.settings.image_picker.info"
+        },
+        {
+          "type": "image_picker",
+          "id": "mobile_image",
+          "label": "t:sections.slideshow_split.blocks.slide.settings.mobile_image.label",
+          "info": "t:sections.slideshow_split.blocks.slide.settings.mobile_image.info"
+        },
+        {
+          "id": "focal_point",
+          "type": "select",
+          "label": "t:sections.slideshow_split.blocks.slide.settings.focal_point.label",
+          "options": [{"label":"t:shared.settings.focal_point.options__0.label","value":"image_presentation"},{"label":"t:shared.settings.focal_point.options__1.label","value":"left_top"},{"label":"t:shared.settings.focal_point.options__2.label","value":"center_top"},{"label":"t:shared.settings.focal_point.options__3.label","value":"right_top"},{"label":"t:shared.settings.focal_point.options__4.label","value":"left_center"},{"label":"t:shared.settings.focal_point.options__5.label","value":"center_center"},{"label":"t:shared.settings.focal_point.options__6.label","value":"right_center"},{"label":"t:shared.settings.focal_point.options__7.label","value":"left_bottom"},{"label":"t:shared.settings.focal_point.options__8.label","value":"center_bottom"},{"label":"t:shared.settings.focal_point.options__9.label","value":"right_bottom"}],
+          "default": "image_presentation"
+        },
+        {
+          "id": "mobile_focal_point",
+          "type": "select",
+          "label": "t:sections.slideshow_split.blocks.slide.settings.mobile_focal_point.label",
+          "options": [{"label":"t:shared.settings.focal_point.options__0.label","value":"image_presentation"},{"label":"t:shared.settings.focal_point.options__1.label","value":"left_top"},{"label":"t:shared.settings.focal_point.options__2.label","value":"center_top"},{"label":"t:shared.settings.focal_point.options__3.label","value":"right_top"},{"label":"t:shared.settings.focal_point.options__4.label","value":"left_center"},{"label":"t:shared.settings.focal_point.options__5.label","value":"center_center"},{"label":"t:shared.settings.focal_point.options__6.label","value":"right_center"},{"label":"t:shared.settings.focal_point.options__7.label","value":"left_bottom"},{"label":"t:shared.settings.focal_point.options__8.label","value":"center_bottom"},{"label":"t:shared.settings.focal_point.options__9.label","value":"right_bottom"}],
+          "default": "image_presentation"
+        },
+        {
+          "type": "url",
+          "id": "video_url",
+          "label": "t:sections.slideshow_split.blocks.slide.settings.video_url.label",
+          "info": "t:sections.slideshow_split.blocks.slide.settings.video_url.info"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.slideshow_split.presets.slideshow_split.name",
+      "blocks": [
+        {
+          "type": "slide"
+        },
+        {
+          "type": "slide"
+        },
+        {
+          "type": "slide"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

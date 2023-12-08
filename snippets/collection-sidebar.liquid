@@ -1,0 +1,159 @@
+{% assign chip_options = settings.chip_options | downcase | split: ', ' %}
+{% assign swatch_options = settings.swatch_options | downcase | split: ', ' %}
+
+<div class="collection-sidebar">
+  <form class="collection-sidebar__form" data-filer-sidebar-form data-filer-modal-wrapper data-filter-form>
+    {%- if show_filters -%}
+      {%- comment -%} Keep product type within form {%- endcomment -%}
+      {%- if collection.current_type -%}
+        <input type="hidden" name="q" value="{{ collection.current_type | escape }}">
+      {%- endif -%}
+
+      {%- comment -%} Keep product vendor within form {%- endcomment -%}
+      {%- if collection.current_vendor -%}
+        <input type="hidden" name="q" value="{{ collection.current_vendor | escape }}">
+      {%- endif -%}
+
+      {% for filter in collection.filters %}
+        <div class="collection-sidebar__group" data-group="{{ filter.label }}">
+          {%-
+            render 'collection-sidebar-heading' with
+            heading: filter.label,
+            collapse_filter_groups: collapse_filter_groups
+          -%}
+
+          {%- case filter.type -%}
+            {%- when 'boolean', 'list' -%}
+              {%- liquid
+                assign group_name = filter.label | downcase
+                assign list_modifiers = ''
+                assign type = 'checkbox'
+                if show_filter_swatches
+                  if swatch_options contains group_name
+                    assign type = 'swatch'
+                    assign list_modifiers = list_modifiers | append: ' filter-drawer__list--swatch'
+                  endif
+                endif
+                if show_filter_chips
+                  if chip_options contains group_name
+                    assign type = 'chip'
+                    assign list_modifiers = list_modifiers | append: ' filter-drawer__list--chip'
+                  endif
+                endif
+              -%}
+
+              <ul
+                class="filter-drawer__list{{ list_modifiers }}"
+                {% if collapse_filter_groups %}
+                  style="display: none;"
+                {% endif %}
+              >
+                {%- for filter_value in filter.values -%}
+                  {%
+                    render 'filter-item' with
+                    type: type,
+                    forloop: forloop,
+                    filter_value: filter_value,
+                    scope: 'sidebar'
+                  %}
+                {%- endfor -%}
+              </ul>
+            {%- when 'price_range' -%}
+              {% liquid
+                assign max_price_amount = filter.range_max | money | strip_html | escape
+              %}
+              <div
+                class="filter-drawer__price-range"
+                data-price-range
+                {% if collapse_filter_groups %}
+                  style="display: none;"
+                {% endif %}
+              >
+                <p class="filter-drawer__price-range-title">
+                  {{ 'collections.filters.max_price' | t: price: max_price_amount }}
+                </p>
+                <div class="filter-drawer__slider" data-range-slider></div>
+
+                <div class="filter-drawer__price-range-input-wrapper">
+                  <div class="filter-drawer__price-range-input">
+                    <span class="filter-drawer__price-range-currency">{{ cart.currency.symbol }}</span>
+                    <input
+                      data-min-range-input
+                      data-range-input="price-min"
+                      data-filter-item
+                      class="input"
+                      name="{{ filter.min_value.param_name }}"
+                      id="sidebar-filter-{{ filter.label | escape }}-from"
+                      {%- if filter.min_value.value -%}
+                        value="{{ filter.min_value.value | divided_by: 100 }}"
+                      {%- endif -%}
+                      type="number"
+                      placeholder="0"
+                      min="0"
+                      max="{{ filter.range_max | divided_by: 100 | ceil }}"
+                    >
+                    <label
+                      class="filter-drawer__price-range-label visually-hidden"
+                      for="sidebar-filter-{{ filter.label | escape }}-from"
+                    >
+                      {{- 'collections.filters.from' | t -}}
+                    </label>
+                  </div>
+                  <span class="filter-drawer__price-range-separator">&ndash;</span>
+                  <div class="filter-drawer__price-range-input">
+                    <span class="filter-drawer__price-range-currency">{{ cart.currency.symbol }}</span>
+                    <input
+                      data-max-range-input
+                      data-range-input="price-max"
+                      data-filter-item
+                      class="input"
+                      name="{{ filter.max_value.param_name }}"
+                      id="sidebar-filter-{{ filter.label | escape }}-to"
+                      {%- if filter.max_value.value -%}
+                        value="{{ filter.max_value.value | divided_by: 100 }}"
+                      {%- endif -%}
+                      type="number"
+                      placeholder="{{ filter.range_max | divided_by: 100 | ceil }}"
+                      min="0"
+                      max="{{ filter.range_max | divided_by: 100 | ceil }}"
+                    >
+                    <label
+                      class="filter-drawer__price-range-label visually-hidden"
+                      for="sidebar-filter-{{ filter.label | escape }}-to"
+                    >
+                      {{- 'collections.filters.to' | t -}}
+                    </label>
+                  </div>
+                </div>
+              </div>
+          {%- endcase -%}
+        </div>
+      {% endfor %}
+    {%- endif -%}
+
+    {% if show_sort %}
+      {%- assign heading = 'collections.sorting.title' | t -%}
+      <div class="collection-sidebar__group" data-group="{{ heading }}">
+        {%-
+          render 'collection-sidebar-heading' with
+          heading: heading,
+          collapse_filter_groups: collapse_filter_groups
+        -%}
+        <ul
+          data-sort-by="{{ collection.sort_by }}"
+          {% if collapse_filter_groups %}
+            style="display: none;"
+          {% endif %}
+        >
+          {% for option in collection.sort_options %}
+            {%
+              render 'filter-sort-item' with
+              option: option,
+              scope: 'sidebar'
+            %}
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </form>
+</div>

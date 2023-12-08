@@ -1,0 +1,163 @@
+{% comment %}
+  Renders a product card
+
+  Accepts:
+  - product: {Object} Product Liquid object
+  - collection: {Object} Collection Liquid object
+  - aspect_ratio: {String} Image aspect ratio (optional)
+  - swatches_enabled: {Boolean} Shows swatches in product card (optional)
+
+  Usage:
+  {% render 'product-item', product: product, swatches_enabled: section.settings.show_swatches %}
+{% endcomment %}
+
+{% assign quick_shop_enabled = false %}
+
+{% if settings.cart_quick_shop_enabled and product.available %}
+  {% assign quick_shop_enabled = true %}
+{% endif %}
+
+{% assign includes_aspect_ratio = false %}
+
+{% if aspect_ratio != blank and aspect_ratio != 'natural' %}
+  {% assign includes_aspect_ratio = true %}
+{% endif %}
+
+{%- capture quick_add_button -%}
+  <button type="button" data-quick-add="{{ product.handle }}" class="product-item__quick-shop-button active bttn" aria-expanded="false" aria-controls="cart-flyout-drawer">
+    <span>{{ 'products.product.add_to_quick_shop' | t }}</span>
+  </button>
+{%- endcapture -%}
+
+<div class="product-item{% if includes_aspect_ratio %} product-item--{{ aspect_ratio }}{% endif %}">
+  {% if product.featured_media != blank or product.media.size > 1 %}
+    <a
+      href="{{ product.url | within: collection }}"
+      class="product-item__image-wrapper db mb3{% if product.available == false and settings.product_listing_show_sold_out_badge %} o-50{% endif %}"
+      aria-label="{{ product.title }}"
+    >
+      {% if quick_shop_enabled %}
+        {{ quick_add_button }}
+      {% endif %}
+
+      {% if product.media.size > 1 %}
+        <div class="product-item__images">
+          {% comment %} used for size {% endcomment %}
+          <div class="product-item__sizer">
+            {% render 'image',
+              image: product.featured_media.preview_image,
+              id: product.featured_media.id,
+              disable_style: includes_aspect_ratio
+            %}
+          </div>
+          <div class="product-item__image first">
+            {% render 'image',
+              image: product.featured_media.preview_image,
+              id: product.featured_media.id,
+              disable_style: includes_aspect_ratio
+            %}
+          </div>
+
+          {%- if settings.show_secondary_image_on_hover -%}
+            {% # Check to make sure the second image isn't already featured %}
+            {% if product.media[1].id == product.featured_media.id %}
+              {% assign image_two = product.media[0].preview_image %}
+            {% else %}
+              {% assign image_two = product.media[1].preview_image %}
+            {% endif %}
+
+            <div class="product-item__image not-first">
+              {% render 'image', image: image_two, id: image_two.id, disable_style: true %}
+            </div>
+          {%- endif -%}
+        </div>
+      {% else %}
+        <div class="product-item__image">
+          {% render 'image',
+            image: product.featured_media.preview_image,
+            id: product.featured_media.id,
+            disable_style: includes_aspect_ratio
+          %}
+        </div>
+      {% endif %}
+    </a>
+
+    {% comment %} SALE BADGE {% endcomment %}
+    {% if settings.product_listing_show_sale_badge and product.compare_at_price > product.price and product.available %}
+      <div class="badge type-body-small ttu lh-title absolute top-0 right-0 mt3 mr3 bg-sale same-as-bg">
+        {{ 'products.product.on_sale' | t }}
+      </div>
+    {% elsif settings.product_listing_show_sold_out_badge and product.available == false %}
+      {% comment %} SOLD OUT BADGE {% endcomment %}
+      <div class="badge type-body-small ttu lh-title absolute top-0 right-0 mt3 mr3 bg-sold-out same-as-bg">
+        {{ 'products.product.sold_out' | t }}
+      </div>
+    {% endif %}
+  {% else %}
+    <a
+      href="{{ product.url | within: collection }}"
+      class="product-item__image-wrapper db mb3{% unless product.available %} o-50{% endunless %}"
+      aria-label="{{ product.title }}"
+    >
+      {% if quick_shop_enabled %}
+        {{ quick_add_button }}
+      {% endif %}
+
+      <div class="product-item__image">
+        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+    </a>
+  {% endif %}
+
+  <div class="product-item__details-wrapper relative">
+    {% comment %} PRODUCT SWATCHES {% endcomment %}
+    {% if swatches_enabled %}
+      {%- liquid
+        assign file_extension = 'png'
+        assign swatch_options = settings.swatch_options | downcase | split: ', '
+        assign swatch_exists = false
+      -%}
+      {%- for option in product.options_with_values -%}
+        {%- assign option_name = option.name | downcase -%}
+        {%- if swatch_options contains option_name -%}
+          {%- liquid
+            assign swatch_exists = true
+            break
+          -%}
+        {%- endif -%}
+      {% endfor %}
+
+      {%- if swatch_exists -%}
+        <a
+          href="{{ product.url | within: collection  }}"
+          class="product-item__swatches-wrapper absolute"
+          tabindex="-1"
+          aria-hidden="true"
+        >
+          {%- for option in product.options_with_values -%}
+            {%- assign option_name = option.name | downcase -%}
+            {%- if swatch_options contains option_name -%}
+              <p class="product-item__swatch-heading mt0 mb1">
+                {{ 'collections.general.swatch_heading' | t: option_name: option.name }}
+              </p>
+              <div class="product-item__swatches">
+                {% for color in option.values %}
+                  <div
+                    class="product-item__swatch"
+                    style="background-image: url({{ color | handle | append: '.' | append: file_extension | file_url }}); background-color: {{ color }};"
+                  ></div>
+                {% endfor %}
+              </div>
+            {%- endif -%}
+          {% endfor %}
+        </a>
+      {%- endif -%}
+    {% endif %}
+
+    <div class="product-item__details">
+      <a href="{{ product.url | within: collection  }}">{{ product.title }}</a>
+
+      {% render 'product-item-price', product: product %}
+    </div>
+  </div>
+</div>

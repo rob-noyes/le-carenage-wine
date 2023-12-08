@@ -1,0 +1,79 @@
+{{ 'wines.css' | asset_url | stylesheet_tag }}
+
+<div class="wine_grid">
+    <div class="wine_grid_header_container">
+        <h2 class="text-block__subheading type-body-regular wine_grid_header">{{ section.settings.header_text }}</h2>
+        <div class="text-block__subheading type-body-regular wind_grid_header_text">{{ section.settings.header_subtext }}</div>
+    </div>
+   <div class="wine_grid_container">
+        {% for block in section.blocks %}
+            <div class="wine_block">
+                <div class="image_container">
+                    <img src="{{ block.settings.wine_image | img_url:'1000x'}}" loading="lazy">
+                </div>
+                <div class="wine_grid_text_container">
+                    <h4 class="wine_grid_block_header">{{ block.settings.wine_title }}</h4>
+                    <a class="bttn" href="{{ block.settings.wine_link }}">{{ block.settings.wine_cta_link }}</a>
+                </div>
+            </div>
+        {% endfor %}
+   </div>
+</div>
+
+{% schema %}
+    {
+        "name": "Wine Grid",
+        "settings": [    
+            {
+                "type": "color",
+                "id": "background_color",
+                "label": "Background Color"
+            },
+            {
+                "type": "text",
+                "id": "header_text",
+                "label": "Header Text",
+                "default": "Le Carénage Wines"
+            },
+            {
+                "type": "richtext",
+                "id": "header_subtext",
+                "label": "Sub Text"
+            }
+        ],
+        "blocks": [
+            {
+                "type": "block",
+                "name": "Wine Block",
+                "settings": [
+                    {
+                        "type": "image_picker",
+                        "id": "wine_image",
+                        "label": "Wine Image"
+                    },
+                    {
+                        "type": "text",
+                        "id": "wine_title",
+                        "label": "Wine Title"
+                    },
+                    {
+                        "type": "text",
+                        "id": "wine_cta_link",
+                        "label": "Button Text",
+                        "default": "LEARN MORE"
+                    },
+                    {
+                        "type": "url",
+                        "id": "wine_link",
+                        "label": "Button Link"
+                    }
+                ]
+            }
+        ],
+        "presets": [
+            {
+                "name": "Wine Grid"
+            }
+        ]
+    }
+{% endschema %}

@@ -1,0 +1,121 @@
+{%- if comment.status == 'pending' -%}
+  {%- assign number_of_comments = article.comments_count | plus: 1 -%}
+{%- else -%}
+  {%- assign number_of_comments = article.comments_count -%}
+{%- endif -%}
+
+<div class="comments">
+  {% if number_of_comments > 0 %}
+    <h2 class="comments__count type-heading-2 mt5">{{ 'blogs.comments.comments_with_count' | t: count: number_of_comments }}</h2>
+
+    {% paginate article.comments by 5 %}
+
+      {% comment %}
+        #comments is required, it is used as an anchor link by Shopify.
+      {% endcomment %}
+      <div id="comments">
+        <ul class="comments__list">
+          {% comment %}
+            If a comment was just submitted with no blank field, show it.
+          {% endcomment %}
+          {% if comment.status == 'pending' %}
+            <li id="{{ comment.id }}" class="comment mt3">
+              {% render 'comment' with comment: comment %}
+            </li>
+          {% endif %}
+
+          {% for comment in article.comments %}
+            <li id="{{ comment.id }}" class="comment mt3">
+              {% render 'comment' with comment: comment %}
+            </li>
+          {% endfor %}
+        </ul>
+
+        {%- if paginate.pages > 1 -%}
+          {% render 'pagination' with paginate: paginate %}
+        {%- endif -%}
+
+      </div>
+    {% endpaginate %}
+  {% endif %}
+
+  {% form 'new_comment', article %}
+
+    {%- assign formId = 'CommentForm' -%}
+
+    <h2 class="comments__leave-comment-title type-heading-2 mt3">{{ 'blogs.comments.title' | t }}</h2>
+
+    {%- assign post_message = 'blogs.comments.success' | t -%}
+    {%- if blog.moderated? and comment.status == 'pending' -%}
+      {%- assign post_message = 'blogs.comments.success_moderated' | t -%}
+    {%- elsif comment.status == 'unapproved' or comment.status == 'spam' -%}
+      {%- assign post_message = 'blogs.comments.unapproved' | t -%}
+    {%- endif -%}
+
+    {% render 'form-status' with form: form, form_id: formId, success_message: post_message %}
+
+    <div>
+
+      <div class="relative mb2">
+        <input
+          type="text"
+          name="comment[author]"
+          placeholder="{{ 'blogs.comments.name' | t }}"
+          id="{{ formId }}-author"
+          {% if form.errors contains 'author' %}aria-describedby="{{ formId}}-author-error"{% endif %}
+          required
+        >
+        <label for="{{ formId }}-author" class="label--above">{{ 'blogs.comments.name' | t }}</label>
+        {% if form.errors contains 'author' %}
+          <div id="{{ formId }}-author-error" class="comments__error">
+            <span class="visually-hidden">{{ 'general.accessibility.error' | t }} </span>
+            <span>{{ 'blogs.comments.name' | t }} {{ form.errors.messages['author'] }}.</span>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="relative mb2">
+        <input
+          type="email"
+          name="comment[email]"
+          placeholder="{{ 'blogs.comments.email' | t }}"
+          id="{{ formId }}-email"
+          {% if form.errors contains 'email' %}aria-describedby="{{ formId}}-email-error"{% endif %}
+        >
+        <label for="{{ formId }}-email" class="label--above">{{ 'blogs.comments.email' | t }}</label>
+        {% if form.errors contains 'email' %}
+          <div id="{{ formId}}-email-error" class="comments__error">
+            <span class="visually-hidden">{{ 'general.accessibility.error' | t }} </span>
+            <span>{{ form.errors.translated_fields['email'] | capitalize }} {{ form.errors.messages['email'] }}.</span>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="relative mb2">
+        <textarea
+          name="comment[body]"
+          placeholder="{{ 'blogs.comments.message' | t }}"
+          id="{{ formId }}-body"
+          {% if form.errors contains 'body' %}aria-describedby="{{ formId}}-body-error"{% endif %}
+          required
+        >
+          {{- form.body -}}
+        </textarea>
+        <label for="{{ formId }}-body" class="label--above">{{ 'blogs.comments.message' | t }}</label>
+        {% if form.errors contains 'body' %}
+          <div id="{{ formId}}-body-error" class="comments__error">
+            <span class="visually-hidden">{{ 'general.accessibility.error' | t }} </span>
+            <span>{{ 'blogs.comments.message' | t }} {{ form.errors.messages['body'] }}.</span>
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+
+    {% if blog.moderated? %}
+      <p>{{ 'blogs.comments.moderated' | t }}</p>
+    {% endif %}
+
+    <button type="submit" class="bttn">{{ 'blogs.comments.post' | t }}</button>
+  {% endform %}
+</div>

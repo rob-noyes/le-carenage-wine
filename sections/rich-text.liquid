@@ -1,0 +1,221 @@
+{% liquid
+  assign id = section.id
+  assign section_style = section.settings.section_style
+  assign alignment = section.settings.alignment
+%}
+
+{% assign modifiers = '' %}
+
+{% assign modifiers = modifiers | append: ' section--' | append: section_style %}
+{% assign modifiers = modifiers | append: ' section--spacing-tall' %}
+{% assign modifiers = modifiers | append: ' rich-text--' | append: alignment %}
+
+{% unless section_style == 'contrast' %}
+  {% assign modifiers = modifiers | append: ' section--bordered' %}
+{% endunless %}
+
+{% if settings.enable_reveal_animations and section.settings.enable_animation %}
+  {% assign modifiers = modifiers | append: ' animation animation--rich-text' %}
+{% endif %}
+
+<section
+  data-section-id="{{ section.id }}"
+  data-section-type="rich-text"
+  class="section rich-text{{ modifiers }}"
+>
+  <div class="rich-text__inner text-block animation--section-introduction">
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+        {% when 'overline' %}
+          <div
+            {{ block.shopify_attributes }}
+            class="rich-text__overline text-block__item text-block__overline overline"
+            data-theme-editor-setting="section.{{ id }}.overline/escape"
+          >
+            {{ block.settings.overline }}
+          </div>
+        {%- when 'title' -%}
+          <h2
+            {{ block.shopify_attributes }}
+            class="rich-text__title text-block__item text-block__heading type-heading-1"
+            data-theme-editor-setting="section.{{ id }}.title/escape"
+            style="max-width: {{ block.settings.text_max_width }}rem;"
+          >
+            {{ block.settings.title }}
+          </h2>
+        {%- when 'text' -%}
+          <div
+            {{ block.shopify_attributes }}
+            class="rich-text__subheading text-block__subheading type-body-regular rte"
+            data-theme-editor-setting="section.{{ id }}.text"
+            style="max-width: {{ block.settings.text_max_width }}rem;"
+          >
+            {{ block.settings.text }}
+          </div>
+        {%- when 'button' -%}
+          {%- if block.settings.link_text != blank and block.settings.link != blank -%}
+            <a
+              {{ block.shopify_attributes }}
+              href="{{ block.settings.link }}"
+              class="text-block__item text-block__button bttn bttn--secondary bttn--inline mt4"
+              data-theme-editor-setting="section.{{ id }}.link_text/escape"
+            >
+              {{ block.settings.link_text }}
+            </a>
+          {%- endif -%}
+      {%- endcase -%}
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.rich_text.name",
+  "class": "section-dynamic section-borderable",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.rich_text.settings.style_header.content"
+    },
+    {
+      "type": "select",
+      "id": "section_style",
+      "label": "t:sections.rich_text.settings.section_style.label",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.rich_text.settings.section_style.option_1"
+        },
+        {
+          "value": "contrast",
+          "label": "t:sections.rich_text.settings.section_style.option_2"
+        }
+      ]
+    },
+    {
+      "id": "enable_animation",
+      "type": "checkbox",
+      "label": "t:shared.settings.section_style.enable_animation.label",
+      "info": "t:shared.settings.section_style.enable_animation.info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.rich_text.settings.content_header.content"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "t:sections.rich_text.settings.alignment.label",
+      "default": "center",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.rich_text.settings.alignment.option_1"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.rich_text.settings.alignment.option_2"
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "overline",
+      "name": "t:sections.rich_text.blocks.overline.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "overline",
+          "label": "t:sections.rich_text.blocks.overline.settings.overline.label"
+        }
+      ]
+    },
+    {
+      "type": "title",
+      "name": "t:sections.rich_text.blocks.title.name",
+      "limit": 1,
+      "settings": [
+        {
+          "id": "title",
+          "type": "text",
+          "label": "t:sections.rich_text.blocks.title.settings.title.label",
+          "default": "This is the Rich text section"
+        },
+        {
+          "type": "range",
+          "id": "text_max_width",
+          "label": "t:shared.settings.text_max_width.label",
+          "min": 16,
+          "max": 100,
+          "step": 1,
+          "default": 36
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "t:sections.rich_text.blocks.text.name",
+      "limit": 1,
+      "settings": [
+        {
+          "id": "text",
+          "type": "richtext",
+          "label": "t:sections.rich_text.blocks.text.settings.text.label",
+          "default": "<p>Use this text area to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+        },
+        {
+          "type": "range",
+          "id": "text_max_width",
+          "label": "t:shared.settings.text_max_width.label",
+          "min": 16,
+          "max": 100,
+          "step": 1,
+          "default": 36
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "t:sections.rich_text.blocks.button.name",
+      "limit": 1,
+      "settings": [
+        {
+          "id": "link",
+          "type": "url",
+          "label": "t:sections.rich_text.blocks.button.settings.link.label",
+          "default": "/collections/all"
+        },
+        {
+          "id": "link_text",
+          "type": "text",
+          "label": "t:sections.rich_text.blocks.button.settings.link_text.label",
+          "default": "Shop Now"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Rich text",
+      "blocks": [
+        {
+          "type": "overline"
+        },
+        {
+          "type": "title"
+        },
+        {
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

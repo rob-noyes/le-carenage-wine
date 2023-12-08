@@ -1,0 +1,59 @@
+{% assign file_extension = 'png' %}
+
+{%- if scope -%}
+  {%- assign scope = scope | prepend: '--' -%}
+{%- endif -%}
+
+<li class="filter-item filter-item--{{ type }}{% if type == 'swatch' or type == 'chip' %} inline{% endif %}" data-type="{{ type }}">
+  <label
+    data-filter
+    data-filter-item-label
+    class="filter-item__content filter-item__content--{{ type }} no-transition {% if filter_value.count == 0 and filter_value.active == false %}filter-item__content--disabled{% endif %}"
+    for="filter--{{ filter_value.param_name | url_escape | escape }}--{{ filter_value.label | url_escape | escape }}{{ scope }}"
+  >
+    <input
+      type="checkbox"
+      name="{{ filter_value.param_name }}"
+      data-value-escaped="{{ filter_value.value | url_escape }}"
+      value="{{ filter_value.value }}"
+      class="filter-item__input visually-hidden"
+      id="filter--{{ filter_value.param_name | url_escape | escape }}--{{ filter_value.label | url_escape | escape }}{{ scope }}"
+      {% if filter_value.active -%}checked{% endif %}
+      {%- if key != blank and val != blank -%}
+        data-{{ key }}="{{ val | handle }}"
+      {%- endif -%}
+      {%- if type == 'swatch' -%}
+        aria-label="{{ filter_value.label }}"
+      {%- endif -%}
+      {% if filter_value.count == 0 and filter_value.active == false %}disabled{% endif %}
+      data-filter="{{ filter_value.param_name }}={{ filter_value.value }}"
+      data-filter-item
+    />
+
+    {%- if type == 'checkbox' -%}
+      <div class="filter-item__checkbox">
+        {% render 'icon-check' %}
+      </div>
+      <span class="filter-item__label type-body-regular">
+        {{ filter_value.label }}
+      </span>
+      <span class="filter-item__count">{{ filter_value.count }}</span>
+    {%- elsif type == 'swatch' -%}
+      <div
+        class="filter-item__swatch"
+        style="background-image: url({{ filter_value.label | handle | append: '.' | append: file_extension | file_url }}); background-color: {{ filter_value.label | handle }};"
+        tabindex="0"
+        aria-label="{{ filter_value.label }}"
+      >
+      </div>
+    {%- elsif type == 'chip' -%}
+      <div 
+        class="filter-item__chip"
+        tabindex="0"
+        aria-label="{{ filter_value.label }}"
+      >
+        {{ filter_value.label }}
+      </div>
+    {%- endif -%}
+  </label>
+</li>

@@ -1,0 +1,849 @@
+{% comment %}
+This shop uses Bloom, a growth platform for modern wineries.
+You SHOULD NOT modify the contents of this file.
+It is automatically generated and your changes will be overwritten.
+These features and content can be managed within the Bloom app or the Shopify customizer.
+
+Bloom (www.bloom.wine)
+{% endcomment %}
+
+  <script src='https://js.stripe.com/v3/' defer></script>
+
+<script  src="{{ 'bloom-storefront-dependencies.js' | asset_url }}"></script>
+
+{% render 'bloom-js-polyfills' %}
+{% render 'bloom-common-data' %}
+
+<script type="text/javascript">
+
+window.Bloom.storefront.settings = window.Bloom.storefront.settings || {};
+window.Bloom.storefront.state = window.Bloom.storefront.state || {};
+window.Bloom.storefront.data.customer = window.Bloom.storefront.data.customer || {
+  id: "{{ customer.id }}",
+  firstName: "{{ customer.first_name }}",
+  lastName: "{{ customer.last_name }}",
+  phone: "{{ customer.phone }}",
+  email: "{{ customer.email }}",
+  hasAccount: {% if customer %}{{ customer.has_account }}{% else %}null{% endif %},
+  addresses: [{% for address in customer.addresses %}{{ address | json }}{% if forloop.last == false %},{% endif %}{% endfor %}],
+  tags: "{{ customer.tags | join: ',' }}"
+}
+window.Bloom.storefront.data.billingCountries = window.Bloom.storefront.data.billingCountries || {{ shop.metafields.bloom.billing_countries | json }};
+window.Bloom.storefront.data.shippingCountries = window.Bloom.storefront.data.shippingCountries || {{ shop.metafields.bloom.shipping_countries | json }};
+window.Bloom.storefront.data.products = window.Bloom.storefront.data.products || []
+
+</script>
+
+  {% render 'bloom-product-data' %}
+  {% render 'bloom-variant-data' %}
+
+<script type="text/javascript">
+
+Bloom.storefront.data.settings = Bloom.storefront.data.settings || {}
+Bloom.storefront.data.settings.app_proxy_path = Bloom.storefront.data.settings.app_proxy_path || '/apps/wine-club'
+
+Bloom.storefront.settings.clickEvents = ['click', 'mousedown', 'mouseup', 'dblclick']
+Bloom.storefront.settings.dob = {
+  show: {{ settings.bloom_cart_dob_show }},
+  minimumAge: {{ settings.bloom_cart_dob_minimum_age }},
+  cartAttributeName: "Customer date of birth"
+}
+Bloom.storefront.settings.cart = Bloom.storefront.settings.cart || Bloom.storefront.utilities._.keysToCamel(
+  {})
+Bloom.storefront.settings.isBloomV1 = true;
+
+Bloom.Cookie = function(name) {
+  var current = new Date();
+  var expiresAt = new Date(current.getFullYear(), current.getMonth() + 1, current.getDate())
+  var json = {}
+  var path = "/";
+
+  var load = function() {
+    try {
+      return json = JSON.parse(atob(decodeURIComponent(docCookies.getItem(name))))
+    } catch (e) {
+      docCookies.removeItem(name)
+      return json = {}
+    }
+  }
+
+  var save = function() {
+    docCookies.setItem(name, btoa(JSON.stringify(json)), expiresAt, path, null, true, 'none')
+  }
+
+  Object.assign(this, {
+    getValue: function(key) {
+      load()
+      return json && json[key]
+    },
+    setValue: function(key, value, expiresAt) {
+      load()
+      json[key] = value
+      save()
+    },
+    clear: function() {
+      docCookies.removeItem(name, path, null, true, 'none')
+    }
+  })
+}
+
+</script>
+
+
+          <link rel="preload" href="{{ 'bloom-shopify.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+          <noscript><link rel="stylesheet" href="{{ 'bloom-shopify.css' | asset_url }}"></noscript>
+        
+<script defer src="{{ 'bloom-shopify.js' | asset_url }}"></script>
+
+<script type="text/javascript">
+
+window.bloom = window.bloom || {}
+
+Bloom.storefront.utilities._.formatDateString = function(dateString) {
+  if (!dateString || typeof dateString.padStart !== "function") { return dateString }
+  formattedDateString = dateString.split('-').map(function(datePart) { return datePart.padStart(2, "0") }).join('-')
+  var date = new Date(formattedDateString)
+  if (date.toString() !== "Invalid Date") {
+    return formattedDateString
+  } else {
+    return dateString
+  }
+}
+
+Bloom.storefront.utilities._.setDob = function(dob) {
+  var dobString = Bloom.storefront.utilities._.formatDateString(dob);
+  var date = new Date(dobString||"");
+  if (date.toString() !== "Invalid Date") {
+    Bloom.storefront.state.dob = dobString;
+  } else {
+    Bloom.storefront.state.dob = "";
+  }
+}
+
+Bloom.storefront.utilities._.getDobObject = function() {
+  var dobString = Bloom.storefront.utilities._.formatDateString(Bloom.storefront.state.dob);
+  var date = new Date(dobString);
+  if (date.toString() !== "Invalid Date") {
+    var splitDobString = dobString.split('-')
+    if (splitDobString.length > 0) {
+      return {
+        date: date,
+        dateString: dobString,
+        year: splitDobString[0],
+        month: splitDobString[1],
+        day: splitDobString[2]
+      }
+    }
+  } else {
+    return {}
+  }
+}
+
+Bloom.storefront.utilities._.dobIsValid = function() {
+  var dob = Bloom.storefront.utilities._.getDobObject().date
+  var legalAge = (new Date().setFullYear( new Date().getFullYear() - Bloom.storefront.settings.dob.minimumAge ))
+  return dob < legalAge
+}
+
+Bloom.storefront.utilities._.saveDobToCart = function() {
+  var dobString = Bloom.storefront.utilities._.getDobObject().dateString
+  if (dobString) {
+    var attributes = {}
+    attributes[Bloom.storefront.settings.dob.cartAttributeName] = dobString
+    fetch('/cart/update.js', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ attributes: attributes })
+    });
+  }
+}
+
+Bloom.storefront.utilities._.setDob("{{ cart.attributes['Customer date of birth'] }}")
+Bloom.storefront.state.cartRequiresDob = false;
+
+{% capture requires_dob %}{%- render 'bloom-requires-dob' -%}{% endcapture %}
+{% assign stripped_requires_dob = requires_dob | strip %}
+{% if stripped_requires_dob == 'true' %}{% assign requires_dob = true %}{% else %}{% assign requires_dob = false %}{% endif %}
+
+{%- if requires_dob -%}
+  Bloom.storefront.state.cartRequiresDob = true;
+{%- endif -%}
+
+Bloom.storefront.utilities.getJSON = function(url, successCallback, failCallback) {
+  var request = new XMLHttpRequest();
+  var errorMessage = "An unexpected error occured. Please try again later.";
+  request.open('GET', url, true);
+  request.onload = function() {
+    var json = JSON.parse(request.responseText);
+    if (request.status >= 200 && request.status < 400) {
+      successCallback(json)
+    } else {
+      failCallback(json)
+    }
+  };
+  request.onerror = function() {
+    failCallback(errorMessage)
+  };
+  request.send();
+};
+
+Bloom.storefront.utilities.postFormData = function(url, data, successCallback, failCallback) {
+  var request = new XMLHttpRequest();
+  request.open('POST', url, true);
+  request.onload = function() {
+    var json = JSON.parse(request.responseText);
+    if (request.status >= 200 && request.status < 400) {
+      successCallback(json)
+    } else {
+      failCallback(json)
+    }
+  };
+  request.onerror = function(error) {
+    failCallback(error)
+  };
+  request.send(data);
+}
+
+Bloom.storefront.utilities._.toCamel = (s) => {
+  return s.replace(/([-_][a-z0-9])/ig, ($1) => {
+    return $1.toUpperCase()
+      .replace('-', '')
+      .replace('_', '');
+  });
+};
+
+Bloom.storefront.utilities._.isObject = function (o) {
+  return o === Object(o) && !Array.isArray(o) && typeof o !== 'function';
+};
+
+Bloom.storefront.utilities._.keysToCamel = function (o) {
+  if (Bloom.storefront.utilities._.isObject(o)) {
+    const n = {};
+
+    Object.keys(o)
+      .forEach((k) => {
+        n[Bloom.storefront.utilities._.toCamel(k)] = Bloom.storefront.utilities._.keysToCamel(o[k]);
+      });
+
+    return n;
+  } else if (Array.isArray(o)) {
+    return o.map((i) => {
+      return Bloom.storefront.utilities._.keysToCamel(i);
+    });
+  }
+
+  return o;
+};
+
+Bloom.storefront.utilities.addToCart = function(variantOrMembershipLevelId, quantity, properties, target) {
+  variantOrMembershipLevelId = variantOrMembershipLevelId || ''
+  quantity = quantity || 1
+  properties = properties || {}
+  target = target || 'cart'
+  if (['cart', 'checkout', 'ajax_cart'].includes(target)) {
+    return bloom.shoppingCart().add([{ id: variantOrMembershipLevelId, quantity: quantity, properties: properties }]).then(function(response) {
+      if (target === 'checkout') {
+        bloom.goToBloomCheckout()
+      } else if (target === 'ajax_cart') {
+        bloom.openThemeAjaxCart({ variant: variantOrMembershipLevelId, quantity: quantity || 1 })
+      } else {
+        bloom.goToShopifyCart()
+      }
+    })
+  } else {
+    if (!Bloom.storefront.utilities._.recurringOptions) return
+    var membershipLevel = Bloom.storefront.data.clubs.flatMap(function(c) { return c.levels }).find(function(l) { return l.id === parseInt(variantOrMembershipLevelId) })
+    var selectionsAttributes = Bloom.storefront.utilities._.recurringOptions.membershipSelectionsForLineItemProperties(membershipLevel, properties, quantity)
+    var bloomStorage = bloom.storage()
+    var idempotencyKey = bloomStorage.getItem("membership.idempotencyKey") || Bloom.storefront.utilities._.generateHash()
+    bloomStorage.setItem('membership', {
+      membershipLevelId: variantOrMembershipLevelId,
+      frequencyId: membershipLevel.frequencies[0].id,
+      selectionsAttributes: selectionsAttributes,
+      idempotencyKey: idempotencyKey
+    })
+    window.location = target
+  }
+}
+
+Bloom.storefront.utilities._coverButton = function(button, i) {
+  var checkoutButtonContainer = Bloom.storefront.utilities._.closestAncestor(button, '[data-bloom-checkout-container]');
+  var checkoutBlocker;
+  var buttonComputedStyles = window && window.getComputedStyle(button);
+  var originalDisplay = button.style.display;
+  if (!checkoutButtonContainer) {
+    checkoutButtonContainer = document.createElement("span");
+    checkoutButtonContainer.setAttribute('data-bloom-checkout-container', "");
+    checkoutButtonContainer.style.position = 'relative';
+    checkoutButtonContainer.style.display = buttonComputedStyles.display;
+    checkoutButtonContainer.style.margin = buttonComputedStyles.margin;
+    checkoutButtonContainer.style.width = button.style.width;
+    checkoutBlocker = document.createElement("span");
+    checkoutBlocker.setAttribute('data-bloom-checkout-blocker', "");
+    checkoutBlocker.style.position = "absolute";
+    checkoutBlocker.style.left = "0px";
+    checkoutBlocker.style.top = "0px";
+    checkoutBlocker.style.right = "0px";
+    checkoutBlocker.style.bottom = "0px";
+    checkoutBlocker.style.zIndex = "1";
+    button.style.display = "none";
+    button.style.margin = "0px";
+    button.style.opacity = "0.3"
+    button.insertAdjacentElement('afterend', checkoutButtonContainer);
+    button.style.display = originalDisplay;
+    checkoutButtonContainer.appendChild(button);
+    checkoutButtonContainer.appendChild(checkoutBlocker);
+  }
+}
+
+Bloom.storefront.utilities._uncoverButton = function(button, i) {
+  var checkoutButtonContainer = Bloom.storefront.utilities._.closestAncestor(button, '[data-bloom-checkout-container]');
+  if (checkoutButtonContainer) {
+    checkoutButtonContainer.insertAdjacentElement('afterend', button);
+    button.style.margin = checkoutButtonContainer.style.margin;
+    button.style.opacity = "1"
+    checkoutButtonContainer.parentNode.removeChild(checkoutButtonContainer);
+  }
+
+  Bloom.storefront.utilities._.getCart(function(cart) {
+    var form = Bloom.storefront.utilities._.closestAncestor(button, "form")
+    Bloom.storefront.utilities._.refreshFormActionDiscountCodeForCart(form, cart);
+  })
+}
+
+Bloom.storefront.utilities.disableCheckout = function() {
+  Array.prototype.forEach.call(document.querySelectorAll('[href*="checkout"]'), Bloom.storefront.utilities._coverButton)
+  Array.prototype.forEach.call(document.querySelectorAll('[name="checkout"]'), Bloom.storefront.utilities._coverButton)
+  Array.prototype.forEach.call(document.querySelectorAll('[action*="checkout"] [type="submit"]'), Bloom.storefront.utilities._coverButton)
+}
+
+Bloom.storefront.utilities.enableCheckout = function() {
+  Array.prototype.forEach.call(document.querySelectorAll('[href*="checkout"]'), Bloom.storefront.utilities._uncoverButton)
+  Array.prototype.forEach.call(document.querySelectorAll('[name="checkout"]'), Bloom.storefront.utilities._uncoverButton)
+  Array.prototype.forEach.call(document.querySelectorAll('[action*="checkout"] [type="submit"]'), Bloom.storefront.utilities._uncoverButton)
+}
+
+Bloom.storefront.utilities.cartItemHasAlcohol = function(item) {
+  return !!parseInt((Bloom.storefront.data.products.find(function(p) { return p.id.toString() === item.product_id.toString() })||{}).abv)
+}
+
+Bloom.storefront.utilities.cartItemIsRecharge = function(item) {
+  return Object.keys(item.properties || []).some(function(p) { return p.toLowerCase().includes("shipping_interval") });
+}
+
+Bloom.storefront.utilities.cartItemIsRecurring = function(item) {
+  var clubNames = ["subscription"].concat(Bloom.storefront.data.clubs.map(function(c) { return c.name.toLowerCase() }))
+  return clubNames.includes(item.product_title.toLowerCase()) || Object.keys(item.properties || []).some(function(p) { return clubNames.includes(p.toLowerCase()) })
+}
+
+Bloom.storefront.utilities.cartItemRequiresDob = function(item) {
+  return Bloom.storefront.utilities.cartItemHasAlcohol(item) || Bloom.storefront.utilities.cartItemIsRecurring(item)
+}
+
+Bloom.storefront.utilities.cartRequiresDob = function(cart) {
+  return !!cart.items.some(Bloom.storefront.utilities.cartItemRequiresDob)
+}
+
+Bloom.storefront.utilities._.checkoutIsBlocked = function() {
+  return Bloom.storefront.settings.dob.show && Bloom.storefront.state.cartRequiresDob && !Bloom.storefront.utilities._.dobIsValid();
+}
+
+Bloom.storefront.utilities.renderCheckout = function() {
+  Bloom.storefront.utilities._.ignoreDom()
+  if (Bloom.storefront.utilities._.checkoutIsBlocked()) {
+    Bloom.storefront.utilities.disableCheckout();
+  } else {
+    Bloom.storefront.utilities.enableCheckout();
+  }
+  Bloom.storefront.utilities._.observeDom()
+}
+
+Bloom.storefront.utilities._.initializeClubSignups = function(event) {
+  var el = Bloom.storefront.utilities._.closestAncestor(event.target, '[data-bloom-club-signup]');
+  var clubInput = el.querySelector('[data-bloom-club-signup-club]')
+  var targetInput = el.querySelector('[data-bloom-club-signup-target]')
+  var defaultVariantInput = el.querySelector('[data-bloom-club-signup-default-variant]')
+  var levelInput = el.querySelector('[data-bloom-club-signup-level]')
+  var variantInput = el.querySelector('[data-bloom-club-signup-variant]')
+  var optionsInput = el.querySelector('[data-bloom-club-signup-variant]')
+  var button = el.querySelector('[data-bloom-club-signup-button]')
+
+  if (variantInput && variantInput.options) {
+    var selectedLevelId = variantInput.options[variantInput.selectedIndex].dataset.bloomClubSignupOption;
+    var options = Bloom.storefront.utilities.makeArray(el.querySelectorAll('[data-bloom-club-signup-options]')).forEach(function(optionsEl) {
+      var isSelected = optionsEl.dataset.bloomClubSignupOptions === selectedLevelId
+      if (isSelected) {
+        optionsEl.style.display = "inherit"
+      } else {
+        optionsEl.style.display = "none"
+      }
+      Bloom.storefront.utilities.makeArray(optionsEl.querySelectorAll('input')).forEach(function(input) {
+        input.disabled = !isSelected
+        input.checked = false
+      })
+    })
+  }
+
+  button.addEventListener('click', function(event) {
+    var options = []
+    Bloom.storefront.utilities.makeArray(el.querySelectorAll('[data-bloom-club-signup-options-input]')).forEach(function(option) {
+      if (option.checked) {
+        options.push(option.value)
+      }
+    })
+    var levelName = ((variantInput.options||[])[(variantInput.selectedIndex||0)]||{}).text || (levelInput||{}).value
+    var variantId = variantInput.value || defaultVariantInput.value
+    var properties = {}
+    properties[clubInput.value] = levelName
+
+    if (options.length > 0) {
+      var keyName = 'Selection'
+      if (options.length > 1) {
+        keyName = keyName + 's'
+      }
+      properties[keyName] = options.join(', ')
+    }
+
+    Bloom.storefront.utilities.addToCart(variantId, 1, properties, targetInput.value)
+  })
+}
+
+Bloom.storefront.utilities._.disableButton = function(button) {
+  var spinner = document.createElement('span');
+  spinner.classList.add("uk-vertical-align-middle");
+  spinner.setAttribute('data-uk-spinner', '');
+  spinner.style.marginLeft = "0.5em"
+  button.parentNode.insertBefore(spinner, button.nextSibling);
+  // HACK: Some forms rely on checking the value of the button that was clicked. Bizarrely,
+  // Chrome doesn't include the buttons value in the POST request if you disable the button
+  // on submit. We get around that here by setting a slight timeout before disabling.
+  setTimeout(function() {
+    button.disabled = true;
+  })
+}
+
+Bloom.storefront.utilities._.enableButton = function(button) {
+  Bloom.storefront.utilities.makeArray(button.parentNode.querySelectorAll('[data-uk-spinner]')).forEach(function(el) {
+    el.parentNode.removeChild(el);
+  })
+  button.disabled = false;
+}
+
+Bloom.storefront.utilities._.handleClubSignupSubmit = function(event) {
+  Bloom.storefront.utilities._.cancelEvent(event)
+  var form = event.target
+  var errorEl = form.querySelector('[data-bloom-club-signup-error]')
+  var button = form.querySelector('[data-bloom-club-signup-button]')
+  errorEl.style.display = "none";
+  Bloom.storefront.utilities._.disableButton(button)
+  var formData = new FormData(form);
+  Bloom.storefront.utilities.postFormData(Bloom.storefront.data.settings.app_proxy_path + '/api/members', formData, function(response) {
+    window.location = response.redirect_url
+  }, function(error) {
+    errorEl.innerHTML = error;
+    errorEl.style.display = "block";
+    Bloom.storefront.utilities._.enableButton(button)
+  })
+}
+
+Bloom.storefront.utilities._.initializeDobSelectors = function() {
+  Bloom.storefront.utilities.makeArray(document.querySelectorAll('[data-date-selector]')).forEach(function(el) {
+    if (!Bloom.storefront.state.cartRequiresDob) {
+      el.style.display = 'none';
+    } else {
+      el.style.display = 'inline-block';
+    }
+  })
+
+  Bloom.storefront.utilities.renderCheckout();
+}
+
+Bloom.storefront.utilities._.handleDateInputChange = function(event) {
+  var dateInputEl = Bloom.storefront.utilities._.closestAncestor(event.target, '[data-date-input]')
+  var dateString = Bloom.storefront.utilities._.getDateInputValue(dateInputEl)
+  Bloom.storefront.utilities._.setDob(dateString)
+  Bloom.storefront.utilities._.saveDobToCart()
+  Bloom.storefront.utilities._.renderDateInputs()
+}
+
+Bloom.storefront.utilities._.getDateInputValue = function(dateInputEl) {
+  var dobMonthSelect = dateInputEl.querySelector('[data-date-input-select="month"]')
+  var dobDaySelect = dateInputEl.querySelector('[data-date-input-select="day"]')
+  var dobYearSelect = dateInputEl.querySelector('[data-date-input-select="year"]')
+
+  if (!(dobMonthSelect && dobDaySelect && dobYearSelect)) return;
+
+  var month = dobMonthSelect.options[dobMonthSelect.selectedIndex].value
+  var day = dobDaySelect.options[dobDaySelect.selectedIndex].value
+  var year = dobYearSelect.options[dobYearSelect.selectedIndex].value
+
+  return year && month && day && Bloom.storefront.utilities._.formatDateString(year + '-' + month + '-' + day)
+}
+
+Bloom.storefront.utilities._.setDateInputNumberOfDays = function(dateInputEl) {
+  Bloom.storefront.utilities._.ignoreDom()
+  var dobMonthSelect = dateInputEl.querySelector('[data-date-input-select="month"]')
+  var dobDaySelect = dateInputEl.querySelector('[data-date-input-select="day"]')
+  var dobYearSelect = dateInputEl.querySelector('[data-date-input-select="year"]')
+
+  if (!(dobMonthSelect && dobDaySelect && dobYearSelect)) return;
+
+  var month = dobMonthSelect.options[dobMonthSelect.selectedIndex].value
+  var day = dobDaySelect.options[dobDaySelect.selectedIndex].value
+  var year = dobYearSelect.options[dobYearSelect.selectedIndex].value
+  var currentDobString = year && month && day && (year + '-' + month + '-' + day)
+
+  var currentDaysCount = dobDaySelect.querySelectorAll('option').length - 1
+  var newDaysCount = new Date(year || new Date().getFullYear(), month || new Date().getMonth() + 1, 0).getDate()
+
+  if (currentDaysCount !== newDaysCount) {
+    dobDaySelect.innerHTML = '<option value="">Day</option>'
+    for (var i = 1; i <= newDaysCount; i++) {
+      var option = document.createElement("option");
+      option.value = i;
+      option.text = i;
+      if (i === parseInt(day)) {
+        option.selected = true
+      }
+      dobDaySelect.appendChild(option);
+    }
+  }
+  Bloom.storefront.utilities._.observeDom()
+}
+
+Bloom.storefront.utilities._.renderDateInputs = function() {
+  var dateInputs = Bloom.storefront.utilities.makeArray(document.querySelectorAll('[data-date-input]'))
+  dateInputs.forEach(Bloom.storefront.utilities._.setDateInputValue)
+  dateInputs.forEach(Bloom.storefront.utilities._.setDateInputNumberOfDays)
+}
+
+Bloom.storefront.utilities._.setDateInputValue = function(dateInputEl) {
+  var dobObject = Bloom.storefront.utilities._.getDobObject()
+  if (dobObject.dateString) {
+    var dobMonthSelect = dateInputEl.querySelector('[data-date-input-select="month"]')
+    var dobDaySelect = dateInputEl.querySelector('[data-date-input-select="day"]')
+    var dobYearSelect = dateInputEl.querySelector('[data-date-input-select="year"]')
+
+    var dateElementMap = { year: dobYearSelect, month: dobMonthSelect, day: dobDaySelect }
+    Object.keys(dateElementMap).forEach(function(dateElement) {
+      var el = dateElementMap[dateElement]
+      if (el) {
+        Bloom.storefront.utilities.makeArray(el.querySelectorAll('option')).forEach(function(option, i) {
+          if (option.value.toString() === dobObject[dateElement].toString()) {
+            el.selectedIndex = i
+          }
+        })
+      }
+    })
+  }
+}
+
+Bloom.storefront.utilities.domModified = Bloom.storefront.utilities.debounce(function() {
+  Bloom.storefront.utilities.triggerCustomEvent(document, 'bloom:domModified', {})
+});
+
+Bloom.storefront.utilities._.getDiscountCodeForCart = function(cart) {
+  if (!window.RecurringOptions) return;
+  if (!!Bloom.storefront.data.settings.use_v1_discounts) return;
+  var discount = Bloom.storefront.utilities._.recurringOptions.discountForCustomerTagsAndLineItems(
+    Bloom.storefront.data.customer.tags,
+    cart.items,
+    Bloom.storefront.data.settings.automatic_discount_codes
+  )
+  return (discount||{}).code
+};
+
+Bloom.storefront.utilities._.hasNonCodeDiscount = function() {
+  if (!!Bloom.storefront.data.settings.use_v1_discounts) { return true; }
+  return (typeof discountNinja !== 'undefined') && discountNinja.DiscountedCart.GetAppliedPromotions().length
+}
+
+Bloom.storefront.utilities._.doNativeCheckout = function(cart) {
+  var hasNonCodeDiscount = Bloom.storefront.utilities._.hasNonCodeDiscount();
+  var hasRechargeItem = cart.items.some(Bloom.storefront.utilities.cartItemIsRecharge);
+  var cartHasRecurring = cart.items.some(Bloom.storefront.utilities.cartItemIsRecurring);
+  return hasNonCodeDiscount || hasRechargeItem || (!Bloom.storefront.data.settings.always_use_bloom_checkout && !cartHasRecurring);
+};
+
+Bloom.storefront.utilities._.getCart = Bloom.storefront.utilities.debounce(function(successCallback) {
+  return fetch('/cart.js')
+    .then(function(response) {
+      return response.json()
+    })
+    .then(function(data) {
+      successCallback(data)
+    });
+});
+
+Bloom.storefront.utilities.handleCheckoutClick = function(event) {
+  var form = Bloom.storefront.utilities._.closestAncestor(event.target, "form");
+  var inputButton = Bloom.storefront.utilities._.closestAncestor(event.target, "input");
+  var button = Bloom.storefront.utilities._.closestAncestor(event.target, "button");
+  var anchor = Bloom.storefront.utilities._.closestAncestor(event.target, "a");
+  var submitElement = form || anchor || button;
+  var isNativeCheckoutRetry = ((submitElement||{}).dataset||{}).bloomNativeCheckoutRetry == 'true';
+
+  if (!isNativeCheckoutRetry && (Bloom.storefront.utilities._.checkoutIsBlocked() || !Bloom.storefront.utilities._.hasNonCodeDiscount())) {
+    Bloom.storefront.utilities._.cancelEvent(event)
+  }
+  Bloom.storefront.utilities._.getCart(function(cart) {
+    var doNativeCheckout = Bloom.storefront.utilities._.doNativeCheckout(cart)
+    if (!doNativeCheckout) {
+      Bloom.storefront.utilities._.cancelEvent(event)
+    }
+    if (Bloom.storefront.utilities._.checkoutIsBlocked()) { return false }
+    if (Bloom.storefront.utilities._.hasNonCodeDiscount()) { return true }
+    var discountCode = Bloom.storefront.utilities._.refreshFormActionDiscountCodeForCart(form, cart);
+
+    if (doNativeCheckout && !isNativeCheckoutRetry && !!submitElement) {
+      submitElement.setAttribute('data-bloom-native-checkout-retry', 'true')
+      if (!!discountCode && !!Bloom.storefront.data.settings.strong_checkout_control) {
+        Bloom.storefront.utilities.checkout(discountCode, { target: 'shopify' })
+      } else {
+        button && button.click();
+        inputButton && inputButton.click();
+        anchor && anchor.click();
+        event.target && event.target.click();
+      }
+    } else if (doNativeCheckout && !submitElement) {
+      Bloom.storefront.utilities.checkout(discountCode, { target: 'shopify' })
+    } else if (!doNativeCheckout) {
+      (button||{}).disabled = true;
+      (inputButton||{}).disabled = true;
+      (anchor||{}).disabled = true;
+      ((event||{}).target||{}).disabled = true;
+      try {
+        Bloom.storefront.utilities.checkout(discountCode, { target: 'bloom' })
+      } catch (e) {
+        (button||{}).disabled = false;
+        (inputButton||{}).disabled = false;
+        (anchor||{}).disabled = false;
+        ((event||{}).target||{}).disabled = false;
+      }
+    }
+  })
+}
+
+Bloom.storefront.utilities._.refreshFormActionDiscountCodeForCart = function(form, cart) {
+  if (!!Bloom.storefront.data.settings.use_v1_discounts) return;
+  var formActionUrl = new URL((form||{}).action || window.location.pathname, window.location.origin);
+  var formActionParams = new URLSearchParams(formActionUrl.search);
+  var discountCode = formActionParams.get('discount');
+  if (!discountCode) {
+    discountCode = Bloom.storefront.utilities._.getDiscountCodeForCart(cart);
+  }
+  if (discountCode && form) {
+    if (!!Bloom.storefront.data.settings.strong_checkout_control) {
+      formActionUrl.pathname = "/checkout"
+    }
+    formActionParams.set('discount', discountCode);
+    form.action = formActionUrl.pathname + '?' + formActionParams.toString();
+  }
+  return discountCode;
+}
+
+Bloom.storefront.utilities.checkout = function(discountCode, options) {
+  options = Object.assign({ target: 'bloom' }, options)
+  if (discountCode) {
+    bloom.setDiscountCode(discountCode)
+  }
+  if (options.target === 'bloom') {
+    bloom.goToBloomCheckout()
+  } else {
+    bloom.goToShopifyCheckout()
+  }
+}
+
+Bloom.storefront.utilities._.domObserver = new MutationObserver(function(mutationsList, observer) {
+  for(var i = 0; i < mutationsList.length; i++) {
+    var mutation = mutationsList[i]
+    // console.log(mutation)
+    if (mutation.type === 'childList') {
+      Bloom.storefront.utilities.domModified()
+    }
+  }
+})
+
+Bloom.storefront.utilities._.observeDom = function() {
+  Bloom.storefront.utilities._.domObserver.observe(document, { childList: true, subtree: true });
+}
+
+Bloom.storefront.utilities._.ignoreDom = function() {
+  Bloom.storefront.utilities._.domObserver.disconnect();
+}
+
+Bloom.storefront.utilities._.observeDom()
+
+Bloom.storefront.utilities._.handleCheckoutClickEvents = function(el, i) {
+  Bloom.storefront.settings.clickEvents.forEach(function(eventName) {
+    el.addEventListener(eventName, Bloom.storefront.utilities.handleCheckoutClick)
+  })
+}
+
+if (window.RecurringOptions) {
+  Bloom.storefront.utilities._.recurringOptions = new window.RecurringOptions(
+    Bloom.storefront.data.clubs.filter(function(c) { return ["traditional", "allocation"].includes(c.clubType) }),
+    Bloom.storefront.data.clubs.filter(function(c) { return ["subscription"].includes(c.clubType) }),
+    Bloom.storefront.data.subscriptionVariants
+  )
+}
+
+Bloom.storefront.utilities.ready(function() {
+  Bloom.storefront.utilities.makeArray(document.querySelectorAll('[href*="checkout"]')).forEach(Bloom.storefront.utilities._.handleCheckoutClickEvents);
+  Bloom.storefront.utilities.makeArray(document.querySelectorAll('[name="checkout"]')).forEach(Bloom.storefront.utilities._.handleCheckoutClickEvents);
+  Bloom.storefront.utilities.makeArray(document.querySelectorAll('[action*="checkout"] [type="submit"]')).forEach(Bloom.storefront.utilities._.handleCheckoutClickEvents);
+
+  Bloom.storefront.utilities.makeArray(document.querySelectorAll('[name="checkout_url"]')).forEach(function(el, i) {
+    if (el.value.includes('checkout')) {
+      el.value = '/cart';
+    }
+  });
+
+  Bloom.storefront.utilities.makeArray(document.querySelectorAll("[action='/account/activate']")).forEach(function(el) {
+    var input = document.createElement("input");
+    input.setAttribute("type", "hidden");
+    input.setAttribute("name", "return_to");
+    input.setAttribute("value", new URL(window.location.href).searchParams.get("return_to") || "");
+    el.appendChild(input);
+  });
+
+  // Redirect back to cart after forgot password flow to ensure club member benefits are applied
+  Bloom.storefront.utilities.makeArray(document.querySelectorAll("[action='/account/reset']")).forEach(function(el) {
+    var input = document.createElement("input");
+    input.setAttribute("type", "hidden");
+    input.setAttribute("name", "return_to");
+    input.setAttribute("value", new URL(window.location.href).searchParams.get("return_to") || "/cart");
+    el.appendChild(input);
+  });
+
+  Bloom.storefront.utilities.domModified()
+
+  var bloomShopify = new BloomShopify()
+  window.bloom = Object.assign(window.bloom, bloomShopify)
+});
+
+if (Bloom.storefront.data.settings.is_sales_channel) {
+  Bloom.storefront.settings.clickEvents.forEach(function(eventName) {
+    Bloom.storefront.utilities.addDelegatedEventListener(eventName, '[href*="checkout"]', Bloom.storefront.utilities.handleCheckoutClick)
+    Bloom.storefront.utilities.addDelegatedEventListener(eventName, '[name="checkout"]', Bloom.storefront.utilities.handleCheckoutClick)
+    Bloom.storefront.utilities.addDelegatedEventListener(eventName, '[action*="checkout"] [type="submit"]', Bloom.storefront.utilities.handleCheckoutClick)
+  })
+}
+
+Bloom.storefront.utilities.addDelegatedEventListener('blur', '[data-date-input-select]', Bloom.storefront.utilities._.handleDateInputChange)
+Bloom.storefront.utilities.addDelegatedEventListener('change', '[data-date-input-select]', Bloom.storefront.utilities._.handleDateInputChange)
+Bloom.storefront.utilities.addDelegatedEventListener('blur', '[data-date-selector]', Bloom.storefront.utilities._.initializeDobSelectors)
+Bloom.storefront.utilities.addDelegatedEventListener('change', '[data-date-selector]', Bloom.storefront.utilities._.initializeDobSelectors)
+
+// Bloom.storefront.utilities.addDelegatedEventListener('blur', '[data-bloom-club-signup-variant]', Bloom.storefront.utilities._.initializeClubSignups)
+// Bloom.storefront.utilities.addDelegatedEventListener('change', '[data-bloom-club-signup-variant]', Bloom.storefront.utilities._.initializeClubSignups)
+
+Bloom.storefront.utilities.addDelegatedEventListener('submit', '[data-bloom-club-signup]', Bloom.storefront.utilities._.handleClubSignupSubmit)
+
+Bloom.storefront.utilities.addDelegatedEventListener('click', '[data-bloom-click-disable]', function(event) { Bloom.storefront.utilities._.disableButton(event.target) })
+
+Bloom.storefront.utilities.addDelegatedEventListener('change', '[name^="attributes"]', function(event) {
+  var attributeName = event.target.getAttribute("name").substring(11, event.target.getAttribute("name").length-1);
+  var request = new XMLHttpRequest();
+  request.open('POST', '/cart/update.js', true);
+  request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+  var hasFilledInGiftField = Array.from(document.querySelectorAll('[name^="attributes"]'))
+  .some(function(a) {
+      var attributeName = a.getAttribute('name').substring(11, a.getAttribute("name").length-1)
+      return a.value && ['To', 'From', 'Gift message'].map(function (gF) { return gF.toLowerCase() }).includes(attributeName.toLowerCase())
+    })
+  var attributes = {}
+  attributes[attributeName] = event.target.value
+  attributes['Gift'] = hasFilledInGiftField ? 'Yes' : ''
+  request.send(Object.keys(attributes).map(function(key) {
+    return 'attributes[' + key + ']' + '=' + attributes[key].toString()
+  }).join('&'));
+})
+
+document.addEventListener('bloom:domModified', function(e) {
+  Bloom.storefront.utilities.getJSON('/cart.js', function(cart) {
+    Bloom.storefront.state.cartRequiresDob = Bloom.storefront.utilities.cartRequiresDob(cart)
+    Bloom.storefront.utilities._.setDob(cart.attributes["Customer date of birth"])
+
+    Bloom.storefront.utilities._.renderDateInputs()
+    Bloom.storefront.utilities._.initializeDobSelectors()
+  }, function(error) {
+    console.log(error)
+  })
+})
+
+</script>
+
+<style>
+  .Bloom__DateOfBirth__Default .Bloom__DateInput--input_wrapper {
+    display: inline-block;
+  }
+
+  .Bloom__DateOfBirth__Default select {
+    min-width: 5.5em;
+    padding: 8px 10px !important;
+    line-height: 1.42 !important;
+  }
+
+  .Bloom__DateOfBirth__Default select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("https://bloomapp-production.herokuapp.com/assets/ico-select.svg");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+    text-indent: 0.01px;
+    text-overflow: '';
+    cursor: pointer;
+  }
+
+  {% assign possible_primary_button_background_setting_names = "button_background, color_button_bg, color_button" | split: ', ' %}
+  {% assign possible_primary_button_foreground_setting_names = "button_text_color, color_button_text" | split: ', ' %}
+  {% assign possible_secondary_button_background_setting_names = "secondary_button_background, button_text_color, color_button_text" | split: ', ' %}
+  {% assign possible_secondary_button_foreground_setting_names = "secondary_button_text_color, button_background, color_button_bg, color_button" | split: ', ' %}
+
+  {% for setting_name in possible_primary_button_background_setting_names %}
+    {% if settings[setting_name] %}
+      {% assign primary_button_background = settings[setting_name] %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+
+  {% for setting_name in possible_primary_button_foreground_setting_names %}
+    {% if settings[setting_name] %}
+      {% assign primary_button_foreground = settings[setting_name] %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+
+  {% for setting_name in possible_secondary_button_background_setting_names %}
+    {% if settings[setting_name] %}
+      {% assign secondary_button_background = settings[setting_name] %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+
+  {% for setting_name in possible_secondary_button_foreground_setting_names %}
+    {% if settings[setting_name] %}
+      {% assign secondary_button_foreground = settings[setting_name] %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+
+  .Bloom__Button--Primary, .uk-dialog .Bloom__Button--Primary, .Bloom__Button--Primary:hover {
+    background-color: {{ primary_button_background }};
+    border: 1px solid {{ primary_button_background }};
+    color: {{ primary_button_foreground }};
+  }
+  .Bloom__Button--Secondary, .uk-dialog .Bloom__Button--Secondary, .Bloom__Button--Secondary:hover {
+    background-color: {{ secondary_button_background }};
+    border: 1px solid {{ secondary_button_background }};
+    color: {{ secondary_button_foreground }};
+  }
+  .Bloom__Button--Inverted, .uk-dialog .Bloom__Button--Inverted, .Bloom__Button--Inverted:hover {
+    background-color: {{ primary_button_foreground }};
+    border: 1px solid {{ primary_button_background }};
+    color: {{ primary_button_background }};
+  }
+</style>

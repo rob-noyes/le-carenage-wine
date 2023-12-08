@@ -1,0 +1,66 @@
+{% comment %}
+This shop uses Bloom, a growth platform for modern wineries.
+You SHOULD NOT modify the contents of this file.
+It is automatically generated and your changes will be overwritten.
+These features and content can be managed within the Bloom app or the Shopify customizer.
+
+Bloom (www.bloom.wine)
+{% endcomment %}
+
+{% if year_input_name == blank %}
+  {% assign year_input_name = "date[year]" %}
+{% endif %}
+{% if month_input_name == blank %}
+  {% assign month_input_name = "date[month]" %}
+{% endif %}
+{% if day_input_name == blank %}
+  {% assign day_input_name = "date[day]" %}
+{% endif %}
+{% assign date = date | replace: '-0', '-' |  split: '-' %}
+{% assign selected_date_year = date[0] %}
+{% assign selected_date_month = date[1] %}
+{% assign selected_date_day = date[2] %}
+{% assign month_names = "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec" | split: ',' %}
+{% assign end_year = "now" | date: "%Y" %}
+{% assign begin_year = end_year | minus: 120 %}
+{% for d in (28..31) %}
+  {% assign last_day_of_month = d %}
+  {% assign next_day = d | plus: 1 %}
+  {% assign next_date_of_month = selected_date_year | append: '-' | append: selected_date_month | append: '-' | append: next_day %}
+  {% assign next_day_of_month = next_date_of_month | date: "%d" %}
+  {% if next_day_of_month == '01' %}
+    {% break %}
+  {% endif %}
+{% endfor %}
+
+<div class="Bloom__DateInput--wrapper {{ wrapper_class }}" style="{{ wrapper_style }}" data-date-input="">
+  <span class="Bloom__DateInput--input_wrapper {{ input_wrapper_class }}" style="{{ input_wrapper_style }}">
+    <select name="{{ month_input_name }}" aria-describedby="{{ describedby }}" title="Month" id="{{ month_input_name | handleize | replace: '-', '_' }}" class="Bloom__DateInput--input {{ input_class }}" data-date-input-select="month" style="{{ input_style }}">
+      <option value="">Month</option>
+      {% for m in month_names %}
+        {% assign m_string = forloop.index | downcase %}
+        <option {% if selected_date_month == m_string %}selected{% endif %} value="{{ forloop.index }}">{{ m }}</option>
+      {% endfor %}
+    </select>
+  </span>
+
+  <span class="Bloom__DateInput--input_wrapper {{ input_wrapper_class }}" style="{{ input_wrapper_style }}">
+    <select name="{{ day_input_name }}" aria-describedby="{{ describedby }}" title="Day" id="{{ day_input_name | handleize | replace: '-', '_' }}" class="Bloom__DateInput--input {{ input_class }}" data-date-input-select="day" style="{{ input_style }}">
+      <option value="">Day</option>
+      {% for d in (1..last_day_of_month) %}
+        {% assign d_string = d | downcase %}
+        <option {% if selected_date_day == d_string %}selected{% endif %} value="{{ d }}">{{ d }}</option>
+      {% endfor %}
+    </select>
+  </span>
+
+  <span class="Bloom__DateInput--input_wrapper {{ input_wrapper_class }}" style="{{ input_wrapper_style }}">
+    <select name="{{ year_input_name }}" aria-describedby="{{ describedby }}" title="Year" id="{{ year_input_name | handleize | replace: '-', '_' }}" class="Bloom__DateInput--input {{ input_class }}" data-date-input-select="year" style="{{ input_style }}">
+      <option value="">Year</option>
+      {% for y in (begin_year..end_year) reversed %}
+        {% assign y_string = y | downcase %}
+        <option {% if selected_date_year == y_string %}selected{% endif %} value="{{ y }}">{{ y }}</option>
+      {% endfor %}
+    </select>
+  </span>
+</div>

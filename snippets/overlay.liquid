@@ -1,0 +1,108 @@
+{%- assign alignment = alignment | split: '_' -%}
+{%- assign vertical = alignment[1] -%}
+{%- assign horizontal = alignment[0] -%}
+
+{%- capture vertical_position -%}
+  {%- if vertical == "top" -%}
+    justify-start
+  {%- elsif vertical == "center" -%}
+    justify-around
+  {%- else -%}
+    justify-end
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- capture horizontal_position -%}
+  {%- if horizontal == "left" -%}
+    mr-auto
+  {%- elsif horizontal == "center" -%}
+    center tc
+  {%- else -%}
+    ml-auto tr
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- capture container_horizontal_position -%}
+  {%- if horizontal == "left" -%}
+    self-start
+  {%- elsif horizontal == "center" -%}
+    self-center
+  {%- else -%}
+    self-end
+  {%- endif -%}
+{%- endcapture -%}
+
+<div class="content-overlay z-3 absolute absolute--fill flex flex-column {{ vertical_position }}" {% if text_color != blank %}style="color: {{ text_color }}"{% endif %}>
+
+  {%- if contain == true -%}
+    <div class="content-overlay__container">
+  {%- endif -%}
+
+  <div
+    class="content-overlay__inner {{ container_horizontal_position }}"
+    {% unless text_container_color == blank %}
+      style="background-color: {{ text_container_color }};"
+    {% endunless %}
+  >
+    {%- if overline != blank -%}
+      <h3
+        class="content-overlay__overline overline mt0 mb0 {{ horizontal_position }}"
+        data-theme-editor-setting="section.{{ section_id }}.block.{{ id }}.overline"
+        {%- if text_max_width != blank -%} style="max-width: {{ text_max_width }}rem;"{%- endif -%}
+      >
+        {{ overline }}
+      </h3>
+    {%- endif -%}
+
+    {%- if heading != blank -%}
+      <h3
+        class="content-overlay__heading type-heading-1 {{ horizontal_position }}"
+        data-theme-editor-setting="section.{{ section_id }}.block.{{ id }}.heading"
+        {%- if text_max_width != blank -%} style="max-width: {{ text_max_width }}rem;"{%- endif -%}
+      >
+        {{ heading }}
+      </h3>
+    {%- endif -%}
+
+    {%- if subheading != blank -%}
+      <div
+        class="content-overlay__subheading type-body-regular {{ horizontal_position }}"
+        data-theme-editor-setting="section.{{ section_id }}.block.{{ id }}.subheading"
+        {%- if text_max_width != blank -%} style="max-width: {{ text_max_width }}rem;"{%- endif -%}
+      >
+        {{ subheading }}
+      </div>
+    {%- endif -%}
+
+    {%- if richtext != blank -%}
+      <div
+        class="content-overlay__subheading rte type-body-regular {{ horizontal_position }}"
+        data-theme-editor-setting="section.{{ section_id }}.block.{{ id }}.richtext"
+        {%- if text_max_width != blank -%} style="max-width: {{ text_max_width }}rem;"{%- endif -%}
+      >
+        {{ richtext }}
+      </div>
+    {%- endif -%}
+
+    {% unless parent_block_is_link %}
+      {%- if link != blank and link_label != blank -%}
+        <a
+          href="{{ link }}"
+          class="bttn bttn--secondary content-overlay__button content-overlay__button--{{ id }} {{ horizontal_position }}"
+          data-theme-editor-setting="section.{{ section_id }}.block.{{ id }}.link_text"
+          style="color: {{ link_text_color }}; border-color: {{ link_border_color }};"
+        >
+          {{ link_label }}
+        </a>
+      {%- endif -%}
+    {% endunless %}
+  </div>
+
+  {%- if contain == true -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{% if overlay_color != blank %}
+  <div class="z-1 absolute absolute--fill o-{{ overlay_opacity }}" style="background: {{ overlay_color }};"></div>
+{% endif %}

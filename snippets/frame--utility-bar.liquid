@@ -1,0 +1,97 @@
+{% liquid
+  assign timing_in_ms = section.settings.utility_bar_animation_timing | times: 1000
+  assign show_locale_selector = section.settings.show_locale_selector
+  assign show_currency_selector = section.settings.show_currency_selector
+
+  assign has_announcements = false
+  assign locale_selector = false
+  assign currency_selector = false
+
+  if section.blocks.size > 0
+    assign has_announcements = true
+  endif
+
+  if show_locale_selector and shop.published_locales.size > 1
+    assign locale_selector = true
+  endif
+
+  if show_currency_selector and shop.enabled_currencies.size > 1
+    assign currency_selector = true
+  endif
+
+  assign brightness_text = settings.color_utility_bar_text | color_brightness
+  if brightness_text > 127
+    assign text_color_meta = settings.color_utility_bar_text | color_darken: 8
+  else
+    assign text_color_meta = settings.color_utility_bar_text | color_lighten: 8
+  endif
+%}
+
+<div
+  class="
+    utility-bar
+    {% unless has_announcements %}
+      utility-bar--has-announcements
+    {% endunless %}
+    {% if settings.color_utility_bar_background == settings.color_header_bg %}
+      utility-bar--has-border
+    {% endif %}
+    {% unless section.settings.show_utility_bar %}
+      is-hidden
+    {% endunless %}
+  "
+  data-section-id="{{ id }}"
+  data-section-type="utility-bar"
+  data-timing="{{ timing_in_ms }}"
+  style="
+    --s-color-background: {{ settings.color_utility_bar_background }};
+    --s-color-text: {{ settings.color_utility_bar_text }};
+    --s-color-text-meta: {{ text_color_meta }};
+    --s-color-gradient-overlay: {{ settings.color_utility_bar_background | color_to_rgb | replace: 'rgb', 'rgba' | replace: ')', ', 100)' }};
+    --s-color-gradient-overlay-transparent: {{ settings.color_utility_bar_background | color_to_rgb | replace: 'rgb', 'rgba' | replace: ')', ', 0)' }};
+  "
+>
+  <div class="utlity-bar__social-icons">
+    {%- if section.settings.show_social_icons -%}
+      {%- render 'social-icons' -%}
+    {%- endif -%}
+  </div>
+
+  {%- if has_announcements -%}
+    <div class="utility-bar__announcements-container">
+      <div class="utility-bar__announcements">
+        {% for block in section.blocks %}
+          <div
+            class="utility-bar__announcement-item"
+            data-index="{{ forloop.index0 }}"
+            aria-hidden="{% if forloop.index0 == 0%}true{% else %}false{% endif %}"
+            {{ block.shopify_attributes }}
+          >
+            <div class="utility-bar__announcement-item-content type-body-small">
+              {%- if block.settings.link != blank -%}
+                <a class="utility-bar__link color-inherit" href="{{ block.settings.link }}">
+                  {{ block.settings.text | escape }}
+                </a>
+              {%- else -%}
+                {{ block.settings.text | escape }}
+              {%- endif -%}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="announcement-bar__gradient-gap announcement-bar__gradient-gap--right"></div>
+      <div class="announcement-bar__gradient-gap announcement-bar__gradient-gap--left"></div>
+    </div>
+  {%- endif -%}
+
+  <div class="utility-bar__disclosure-container">
+    {%- if locale_selector or currency_selector -%}
+      {% render 'cross-border' with
+        show_locale: locale_selector,
+        show_currency: currency_selector,
+        id: 'utility-bar'
+      %}
+    {%- endif -%}
+  </div>
+</div>

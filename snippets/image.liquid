@@ -1,0 +1,55 @@
+{%- liquid
+  assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.'
+  assign height = image.height | times: 1.0 | default: 1.0
+  assign width = image.width | times: 1.0 | default: 1.0
+
+  if id == blank
+    assign id = image.id
+  endif
+
+  if focal_point == 'image_presentation' and image.presentation.focal_point == '50.0% 50.0%'
+    assign focal_point = 'center'
+  endif
+
+  if focal_point
+    if focal_point == 'image_presentation'
+      assign focal_alignment = image.presentation.focal_point
+    else
+      assign focal_alignment = focal_point | replace: '_', ' '
+    endif
+  endif
+
+  assign padding_top = height | divided_by: width | times: 100 | append: '%'
+-%}
+
+<div
+  class="
+    image
+    {% if animate %}image--animate{% endif %}
+    {% unless disable_style %}image--{{ id }}{% endunless %}
+    {{ wrapper_class }}
+  "
+  style="
+    {%- if focal_alignment and object_fit != 'contain' -%}--focal-alignment: {{ focal_alignment }};{%- endif -%}
+    {%- if object_fit != blank and aspect_ratio != 'natural' -%}--object-fit: {{ object_fit }};{%- endif -%}
+  "
+>
+  <img
+    class="image__img lazyload {{ image_class }}"
+    src="{{ image | img_url: '300x300' }}"
+    data-src="{{ img_url }}"
+    data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+    data-aspectratio="{{ image.aspect_ratio }}"
+    data-sizes="auto"
+    alt="{{ image.alt | escape }}"
+  >
+  <div class="image__shimmer"></div>
+</div>
+
+{%- unless disable_style -%}
+  <style>
+    .image--{{ id }} {
+      padding-top: {{ padding_top }};
+    }
+  </style>
+{%- endunless -%}

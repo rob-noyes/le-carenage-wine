@@ -1,0 +1,159 @@
+{% liquid
+  assign id = section.id
+  assign section_style = section.settings.section_style
+  assign timer = section.settings.timer
+  assign max_width = section.settings.text_max_width
+  assign blocks = section.blocks
+%}
+
+{% assign time_in_ms = timer | times: 1000 %}
+
+{% assign modifiers = '' %}
+
+{% assign modifiers = modifiers | append: ' section--' | append: section_style %}
+{% assign modifiers = modifiers | append: ' section--spacing-tall' %}
+
+{% unless section_style == 'contrast' %}
+  {% assign modifiers = modifiers | append: ' section--bordered' %}
+{% endunless %}
+
+{% if settings.enable_reveal_animations and section.settings.enable_animation %}
+  {% assign modifiers = modifiers | append: ' animation animation--quote' %}
+{% endif %}
+
+{% if blocks.size > 0 %}
+  <section
+    data-section-id="{{ id }}"
+    data-section-type="quote"
+    class="section{{ modifiers }} quote"
+    data-timer="{{ time_in_ms }}"
+  >
+    {% render 'carousel-navigation' %}
+    <div class="quote__container">
+      {% for block in blocks %}
+        {% unless block.settings.quote == blank %}
+          <div
+            class="quote__item"
+            {{ block.shopify_attributes }}
+            data-index="{{ forloop.index0 }}"
+          >
+            <h3
+              class="quote__text mt0 mb4 center"
+              {%- if max_width != blank -%}
+                style="max-width: {{ max_width }}em;"
+              {%- endif -%}
+            >
+              &ldquo;<span data-theme-editor-setting="section.{{ id }}.block.{{ block.id }}.quote">
+                {{- block.settings.quote | replace: '<p>', '' | replace: '</p>', '' -}}</span
+              >&rdquo;
+            </h3>
+
+            {% unless block.settings.author == blank %}
+              <span class="quote__author overline">
+                &mdash;<span data-theme-editor-setting="section.{{ id }}.block.{{ block.id }}.author">
+                  {{- block.settings.author -}}
+                </span>
+              </span>
+            {% endunless %}
+          </div>
+        {% endunless %}
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "t:sections.quote.name",
+  "class": "section-dynamic section-borderable",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.quote.settings.style_header.content"
+    },
+    {
+      "type": "select",
+      "id": "section_style",
+      "label": "t:sections.quote.settings.section_style.label",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.quote.settings.section_style.option_1"
+        },
+        {
+          "value": "contrast",
+          "label": "t:sections.quote.settings.section_style.option_2"
+        }
+      ]
+    },
+    {
+      "id": "enable_animation",
+      "type": "checkbox",
+      "label": "t:shared.settings.section_style.enable_animation.label",
+      "info": "t:shared.settings.section_style.enable_animation.info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.quote.settings.content_header.content"
+    },
+    {
+      "id": "timer",
+      "type": "range",
+      "label": "t:sections.quote.settings.timer.label",
+      "default": 7,
+      "min": 3,
+      "max": 15,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "text_max_width",
+      "label": "t:sections.quote.settings.text_max_width.label",
+      "min": 16,
+      "max": 50,
+      "step": 1,
+      "default": 28
+    }
+  ],
+  "max_blocks": 6,
+  "blocks": [
+    {
+      "type": "quote",
+      "name": "t:sections.quote.blocks.quote.name",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "quote",
+          "label": "t:sections.quote.blocks.quote.settings.quote.label",
+          "default": "<p>Absolutely unparalleled products and service. I'm confident that this store will be the next big thing in its industry, and that its products will be timeless.</p>"
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "t:sections.quote.blocks.quote.settings.author.label",
+          "default": "Steve Jordans"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.quote.presets.quote.name",
+      "blocks": [
+        {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>Absolutely unparalleled products and service. I'm confident that this store will be the next big thing in its industry, and that its products will be timeless.</p>",
+            "author": "Steve Jordans"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

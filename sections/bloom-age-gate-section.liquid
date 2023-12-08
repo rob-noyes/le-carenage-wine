@@ -1,0 +1,768 @@
+{% comment %}
+This shop uses Bloom, a growth platform for modern wineries.
+You SHOULD NOT modify the contents of this file.
+It is automatically generated and your changes will be overwritten.
+These features and content can be managed within the Bloom app or the Shopify customizer.
+
+Bloom (www.bloom.wine)
+{% endcomment %}
+
+
+          <link rel="preload" href="{{ 'bloom-uikit.min.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+          <noscript><link rel="stylesheet" href="{{ 'bloom-uikit.min.css' | asset_url }}"></noscript>
+        
+<script defer src="{{ 'bloom-uikit.min.js' | asset_url }}"></script>
+<script defer src="{{ 'bloom-uikit-icons.min.js' | asset_url }}"></script>
+
+<script src="https://unpkg.com/tabbable/dist/index.umd.js"></script>
+<script src="https://unpkg.com/focus-trap/dist/focus-trap.umd.js"></script>
+<script>
+Bloom.AgeGate = function() {
+  var MIN_AGE_COOKIE_KEY = 'isMinimumAge'
+  var DOB_COOKIE_KEY = 'dateOfBirth'
+
+  var config = {
+    modalOptions: {
+      escClose: false,
+      bgClose: false,
+      stack: true
+    },
+    requireFullDob: {{ section.settings.require_full_dob }},
+    requireFullDobMobile: {{ section.settings.require_full_dob_mobile }},
+    minimumAge: {{ section.settings.minimum_age }},
+    redirectUrl: '{{ section.settings.redirect_url }}'
+  }
+  var cookie = new Bloom.Cookie('bloom_ag');
+  var ageGate;
+  var continueButton;
+  var onSuccessCallback;
+
+
+  function requireFullDob() {
+    return window.matchMedia('(max-width: 639px)').matches ? config.requireFullDobMobile : config.requireFullDob
+  }
+
+  function onSuccess(callback) {
+    onSuccessCallback = callback;
+  }
+
+  function handleYesClick(event) {
+    storeResponse(event)
+    if (requireFullDob() && dobIsValid() && !dobIsValid(config.minimumAge)) {
+      redirect(event)
+    } else {
+      checkAge(true)
+    }
+  }
+
+  function handleDelegatedYesClick(e) {
+    try {
+      Bloom.storefront.utilities._.handleDelegatedEvent.call(document, e, '[data-bloom-age-gate-yes]', handleYesClick)
+    } catch (e) {
+      try {
+        handleYesClick(e);
+      } catch (e) {
+        var background = document.querySelector('#bloom-age-gate-background');
+        var foreground = document.querySelector('#bloom-age-gate-foreground');
+        background && background.remove();
+        foreground && foreground.remove();
+      }
+    }
+  }
+
+  function redirect(event) {
+    window.location = config.redirectUrl || "http://centurycouncil.org/"
+  }
+
+  function handleDelegatedNoClick(e) {
+    Bloom.storefront.utilities._.handleDelegatedEvent.call(document, e, '[data-bloom-age-gate-no]', redirect)
+  }
+
+  function handleInputSelect(event) {
+    if (requireFullDob()) {
+      var ageGate = Bloom.storefront.utilities._.closestAncestor(event.target, "#bloom-age-gate-foreground")
+      var continueButton = ageGate.querySelector('[data-bloom-age-gate-yes]')
+      checkButton(continueButton)
+    }
+  }
+
+  function handleResize(event) {
+    ageGate = ageGate || document.querySelector("#bloom-age-gate-foreground")
+    if (!ageGate) return;
+    continueButton = continueButton || ageGate.querySelector('[data-bloom-age-gate-yes]')
+    checkButton(continueButton)
+  }
+
+  function handleDelegatedInputSelect(event) {
+    Bloom.storefront.utilities._.handleDelegatedEvent.call(document, event, '[data-date-input-select]', handleInputSelect)
+  }
+
+  function checkButton(button) {
+    button.disabled = requireFullDob() ? !dobIsValid(0, inputDateOfBirth()) : false
+  }
+
+  function show() {
+    var background = document.querySelector('#bloom-age-gate-background');
+    var foreground = document.querySelector('#bloom-age-gate-foreground');
+    var continueButton = foreground.querySelector('[data-bloom-age-gate-yes]');
+    if (background) {
+      UIkit.modal(background, config.modalOptions).show();
+    }
+    if (foreground) {
+      UIkit.modal(foreground, config.modalOptions).show();
+    }
+    if (foreground) {
+      Bloom.AgeGate.trap = focusTrap.createFocusTrap('#bloom-age-gate-foreground');
+      if (Bloom.AgeGate.trap) {
+        setTimeout(Bloom.AgeGate.trap.activate, 0)
+      }
+    }
+    checkButton(continueButton)
+  }
+
+  function hide() {
+    Bloom.AgeGate.trap && Bloom.AgeGate.trap.deactivate();
+    var background = document.querySelector('#bloom-age-gate-background')
+    var foreground = document.querySelector('#bloom-age-gate-foreground')
+
+    if (background) {
+      UIkit.modal(background).hide();
+    }
+    if (foreground) {
+      UIkit.modal(foreground).hide();
+    }
+  }
+
+  function inputDateOfBirth() {
+    ageGate = ageGate || document.querySelector("#bloom-age-gate-foreground")
+    var dateInputEl = ageGate.querySelector('[data-date-input]')
+    var dateString = Bloom.storefront.utilities._.getDateInputValue(dateInputEl)
+    return Bloom.storefront.utilities._.formatDateString(dateString)
+  }
+
+  function dobIsValid(minimumAge, dob) {
+    minimumAge = minimumAge || 0
+    if (typeof dob === "undefined") {
+      dob = cookie.getValue(DOB_COOKIE_KEY)
+    }
+    var dobString = Bloom.storefront.utilities._.formatDateString(dob)
+    var dobDate = dobString && new Date(dobString)
+    var legalAge = (new Date().setFullYear( new Date().getFullYear() - minimumAge ))
+    return !!dobDate && dobDate < legalAge
+  }
+
+  function cookieDateOfBirth() {
+    return cookie.getValue(DOB_COOKIE_KEY)
+  }
+
+  function isMinAge() {
+    return cookie.getValue(MIN_AGE_COOKIE_KEY)
+  }
+
+  function checkAge(userSubmitted) {
+    console.log("inside checkAge")
+    userSubmitted = userSubmitted || false;
+    if ((requireFullDob() && dobIsValid(config.minimumAge)) || (!requireFullDob() && isMinAge())) {
+      hide()
+      if (userSubmitted) {
+        if (typeof onSuccessCallback == 'function') {
+          onSuccessCallback({
+            dob: cookieDateOfBirth(),
+            isMinAge: isMinAge()
+          })
+        }
+      }
+    } else {
+      show()
+    }
+  }
+
+  function storeResponse(event) {
+    var current = new Date();
+    var expiresAt = new Date(current.getFullYear(), current.getMonth() + 1, current.getDate())
+    if (requireFullDob()) {
+      cookie.setValue(DOB_COOKIE_KEY, inputDateOfBirth(), expiresAt)
+    } else {
+      cookie.setValue(MIN_AGE_COOKIE_KEY, true, expiresAt)
+    }
+  }
+
+  function clearResponse() {
+    cookie.clear()
+  }
+
+  function destroy() {
+    cookie = undefined
+    document.removeEventListener('click', handleDelegatedYesClick, false)
+    document.removeEventListener('click', handleDelegatedNoClick, false)
+    document.removeEventListener('blur', handleDelegatedInputSelect, false)
+    document.removeEventListener('change', handleDelegatedInputSelect, false)
+    window.removeEventListener('resize', handleResize)
+  }
+
+  document.addEventListener('click', handleDelegatedYesClick, false)
+  document.addEventListener('click', handleDelegatedNoClick, false)
+  document.addEventListener('blur', handleDelegatedInputSelect, false)
+  document.addEventListener('change', handleDelegatedInputSelect, false)
+  window.addEventListener('resize', handleResize)
+
+  Object.assign(this, {
+    checkAge: checkAge,
+    isMinAge: isMinAge,
+    dateOfBirth: cookieDateOfBirth,
+    onSuccess: onSuccess,
+    clearResponse: clearResponse,
+    destroy: destroy
+  })
+}
+
+window.BloomController = function() {
+  var ageGate = new Bloom.AgeGate()
+
+  Object.assign(this, {
+    getIsMinAge: ageGate.isMinAge,
+    getDateOfBirth: ageGate.dateOfBirth,
+    checkAge: ageGate.checkAge,
+    clearAgeGateResponse: ageGate.clearResponse,
+    onAgeGateSuccess: ageGate.onSuccess
+  })
+}
+
+window.bloom = window.bloom || {}
+var bloomController = new BloomController()
+window.bloom = Object.assign(window.bloom, bloomController)
+
+
+document.addEventListener('shopify:section:load', function() {
+  bloom.checkAge()
+})
+document.addEventListener('shopify:section:unload', function() {
+  Bloom.storefront.utilities.makeArray(document.querySelectorAll('#bloom-age-gate-background')).forEach(function(el) {
+    el.parentNode.removeChild(el);
+  })
+  Bloom.storefront.utilities.makeArray(document.querySelectorAll('#bloom-age-gate-foreground')).forEach(function(el) {
+    el.parentNode.removeChild(el);
+  })
+})
+</script>
+
+<style>
+  #bloom-age-gate-background .uk-modal-dialog {
+    padding: 0 !important;
+  }
+  #bloom-age-gate-background.uk-modal, #bloom-age-gate-foreground.uk-modal {
+    {% unless section.settings.background_image and section.settings.background_overlay %}
+      background: none !important;
+    {% endunless %}
+  }
+  #bloom-age-gate-background.uk-modal {
+    z-index: 2147483646; /* +1 higher than OneTrust cookie consent banner */
+  }
+  #bloom-age-gate-foreground.uk-modal {
+    z-index: 2147483647; /* maximum allowed z-index value */
+  }
+  .Bloom__AgeGate a {
+    text-decoration: underline;
+  }
+  .Bloom__AgeGate--constrained {
+    max-width: {{ section.settings.content_max_width }}px !important;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .Bloom__AgeGate__Dialog {
+    box-shadow: {% if section.settings.modal_drop_shadow %}0 14px 25px rgba(0,0,0,.16){% else %}none{% endif %} !important;
+  }
+  .Bloom__AgeGate__Dialog:hover {
+    box-shadow: {% if section.settings.modal_drop_shadow %}0 14px 25px rgba(0,0,0,.16){% else %}none{% endif %} !important;
+  }
+  .Bloom__AgeGate__Heading {
+    font-family: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    font-weight: {{ section.settings.heading_font.weight }};
+    font-style: {{ section.settings.heading_font.style }};
+    font-size: {{ section.settings.heading_font_size }}px;
+  }
+  .Bloom__AgeGate__Prompt {
+    font-family: {{ section.settings.prompt_font.family }}, {{ section.settings.prompt_font.fallback_families }};
+    font-weight: {{ section.settings.prompt_font.weight }};
+    font-style: {{ section.settings.prompt_font.style }};
+    font-size: {{ section.settings.prompt_font_size }}px;
+  }
+  .Bloom__AgeGate__Legal {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .Bloom__AgeGate__Legal, .Bloom__AgeGate__Legal * {
+    font-family: {{ section.settings.legal_font.family }}, {{ section.settings.legal_font.fallback_families }};
+    font-weight: {{ section.settings.legal_font.weight }};
+    font-style: {{ section.settings.legal_font.style }};
+    font-size: {{ section.settings.legal_font_size }}px;
+    text-transform: none;
+    line-height: inherit;
+  }
+  .Bloom__AgeGate__Dialog {
+    max-width: {{ section.settings.modal_max_width }}px !important;
+    border-radius: {{ section.settings.modal_border_radius }}px;
+    padding: {{ section.settings.modal_padding }}px;
+  }
+  .Bloom__AgeGate__Button {
+    border-radius: {{ section.settings.button_border_radius }}px;
+  }
+  .Bloom__AgeGate__HeaderImage {
+    margin-top: {{ section.settings.header_image_position }}px;
+    height: {{ section.settings.header_image_size }}px;
+    padding: {{ section.settings.header_image_padding }}px;
+    box-sizing: content-box !important;
+    object-fit: contain;
+  }
+  .Bloom__AgeGate__Dob select {
+    border-radius: {{ section.settings.select_border_radius }}px;
+  }
+
+  .Bloom__AgeGate__Dob .uk-input:focus, .Bloom__AgeGate__Dob .uk-select:focus, .Bloom__AgeGate__Dob .uk-textarea:focus, .Bloom__AgeGate__Button:focus {
+    box-shadow: rgb(255, 255, 255) 0px 0px 0px 0px, {{section.settings.button_focus_color }} 0px 0px 0px 2px, rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    border-color: transparent;
+  }
+  {{ section.settings.stylesheet }}
+</style>
+
+{%- assign is_page_gated = true -%}
+{%- assign allow_list = linklists[section.settings.allow_list] -%}
+{%- if allow_list.handle != blank -%}
+  {%- for link in allow_list.links -%}
+    {%- if request.path == link.url -%}
+      {%- assign is_page_gated = false -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+{% if section.settings.enable and is_page_gated %}
+  <div id="bloom-age-gate-background" role="dialog" class="uk-modal-full">
+      <div class="uk-modal-dialog">
+          <div class="uk-grid-collapse uk-child-width-1-1 uk-flex-middle" uk-grid>
+              <div class="uk-background-cover" style="background-color: {{ section.settings.background }}; {% if section.settings.background_image %}background-image: url({{ section.settings.background_image | img_url: 'master' }}); background-repeat: no-repeat;{% endif %}" uk-height-viewport></div>
+          </div>
+      </div>
+  </div>
+
+  <div id="bloom-age-gate-foreground" role="dialog" class="Bloom__AgeGate uk-flex-top">
+      <div class="Bloom__AgeGate__Dialog uk-modal-dialog uk-modal-body uk-margin-auto-vertical uk-text-center uk-card uk-card-hover">
+          {% if section.settings.header_image %}
+            <img src="{{ section.settings.header_image | img_url: 'x400' }}" height="{{ section.settings.header_image_size }}" alt="{{ section.settings.header_image.alt }}" class="Bloom__AgeGate__HeaderImage uk-align-center uk-margin-bottom" />
+          {% endif %}
+
+          {% if section.settings.heading %}
+            <p class="Bloom__AgeGate__Heading Bloom__AgeGate--constrained uk-margin-small-bottom">{{ section.settings.heading }}</p>
+          {% endif %}
+
+          {% assign dob_display = 'none' %}
+          {% assign dob_inputs_class = '' %}
+          {% assign yes_no_inputs_class = '' %}
+          {% if section.settings.require_full_dob and section.settings.require_full_dob_mobile %}
+            {% assign dob_display = 'both' %}
+            {% assign dob_inputs_class = 'uk-visible' %}
+            {% assign yes_no_inputs_class = 'uk-hidden' %}
+          {% elsif section.settings.require_full_dob %}
+            {% assign dob_display = 'desktop' %}
+            {% assign dob_inputs_class = 'uk-visible@s' %}
+            {% assign yes_no_inputs_class = 'uk-visible uk-hidden@s' %}
+          {% elsif section.settings.require_full_dob_mobile %}
+            {% assign dob_display = 'mobile' %}
+            {% assign dob_inputs_class = 'uk-visible uk-hidden@s' %}
+            {% assign yes_no_inputs_class = 'uk-visible@s' %}
+          {% endif %}
+
+          <div class="uk-margin-small-bottom">
+            {% if dob_display != 'none' %}
+
+              {% if section.settings.prompt %}
+                <p id="bloom-age-gate-prompt" class="Bloom__AgeGate__Prompt Bloom__AgeGate--constrained {{ dob_inputs_class }} uk-margin-bottom">{{ section.settings.prompt }}</p>
+              {% endif %}
+
+              <div class="Bloom__AgeGate__Dob Bloom__AgeGate--constrained {{ dob_inputs_class }}">
+                {% assign input_class = 'uk-select uk-width-expand uk-form-' | append: section.settings.select_size %}
+                {%- render 'bloom-date-input-snippet',
+                  describedby: "bloom-age-gate-prompt",
+                  date: cart.attributes["Customer date of birth"],
+                  wrapper_class: 'uk-grid uk-grid-small uk-margin-bottom',
+                  input_wrapper_class: 'uk-width-expand',
+                  input_class: input_class
+                -%}
+              </div>
+
+              <button class="Bloom__AgeGate__Button Bloom__AgeGate--constrained {{ dob_inputs_class }} uk-width-1-1 uk-button uk-button-{{ section.settings.button_size }} uk-button-secondary button Button Bloom__Button Bloom__Button--Primary uk-margin-small-bottom" data-bloom-age-gate-yes="">{{ section.settings.button_submit_label }}</button>
+            {% endif %}
+
+            {% if dob_display != 'both' %}
+              {% if section.settings.prompt_min_age %}
+                <p id="bloom-age-gate-prompt-min-age" class="Bloom__AgeGate__Prompt Bloom__AgeGate--constrained {{ yes_no_inputs_class }} uk-margin-bottom">{{ section.settings.prompt_min_age }}</p>
+              {% endif %}
+              <button name="confirm-age" aria-describedby="bloom-age-gate-prompt-min-age" class="Bloom__AgeGate__Button Bloom__AgeGate--constrained {{ yes_no_inputs_class }} uk-width-1-1 uk-button uk-button-{{ section.settings.button_size }} uk-button-secondary button Button Bloom__Button Bloom__Button--Primary uk-margin-small-bottom" data-bloom-age-gate-yes="">{{ section.settings.button_continue_label }}</button>
+              <button name="deny-age" aria-describedby="bloom-age-gate-prompt-min-age" class="Bloom__AgeGate__Button Bloom__AgeGate--constrained {{ yes_no_inputs_class }} uk-width-1-1 uk-button uk-button-{{ section.settings.button_size }} uk-button-default button Button Bloom__Button Bloom__Button--Inverted uk-margin-small-bottom" data-bloom-age-gate-no="{{ section.settings.redirect_url }}">{{ section.settings.button_cancel_label }}</button>
+            {% endif %}
+          </div>
+
+          <div class="Bloom__AgeGate__Legal Bloom__AgeGate--constrained">
+            {{ section.settings.legal }}
+          </div>
+      </div>
+  </div>
+
+  <script>
+      Bloom.storefront.utilities.ready(bloom.checkAge);
+  </script>
+{% endif %}
+
+{% schema %}
+{
+   "name":"Bloom Age Gate",
+   "settings":[
+      {
+         "type":"header",
+         "content":"General settings"
+      },
+      {
+         "type":"checkbox",
+         "id":"enable",
+         "label":"Enable age gate",
+         "default":false
+      },
+      {
+        "type": "link_list",
+        "id": "allow_list",
+        "label": "Allow List",
+        "info": "A navigation list of pages where the age gate will not show"
+      },
+      {
+         "type":"checkbox",
+         "id":"require_full_dob",
+         "label":"Require full date of birth (desktop)",
+         "default":true
+      },
+      {
+         "type":"checkbox",
+         "id":"require_full_dob_mobile",
+         "label":"Require full date of birth (mobile)",
+         "default":false
+      },
+      {
+         "type":"header",
+         "content":"Logo or brand image"
+      },
+      {
+         "type":"image_picker",
+         "id":"header_image",
+         "label":"Header image"
+      },
+      {
+         "type":"range",
+         "id":"header_image_position",
+         "label":"Header image position",
+         "min":-300,
+         "max":0,
+         "step":3,
+         "unit":"px",
+         "default":0
+      },
+      {
+         "type":"range",
+         "id":"header_image_size",
+         "label":"Header image size",
+         "min":32,
+         "max":160,
+         "step":8,
+         "unit":"px",
+         "default":96
+      },
+      {
+         "type":"range",
+         "id":"header_image_padding",
+         "label":"Header image padding",
+         "min":0,
+         "max":48,
+         "step":4,
+         "unit":"px",
+         "default":0
+      },
+      {
+         "type":"text",
+         "id":"heading",
+         "label":"Heading",
+         "default":"Welcome"
+      },
+      {
+         "type":"header",
+         "content":"Full date of birth prompt"
+      },
+      {
+         "type":"text",
+         "id":"prompt",
+         "label":"Prompt text",
+         "default":"Please enter your birth date"
+      },
+      {
+         "type":"text",
+         "id":"button_submit_label",
+         "label":"Submit button label",
+         "default":"Submit"
+      },
+      {
+         "type":"select",
+         "id":"minimum_age",
+         "label":"Minimum age requirement",
+         "options":[
+            {
+               "value":"0",
+               "label":"None"
+            },
+            {
+               "value":"18",
+               "label":"18"
+            },
+            {
+               "value":"19",
+               "label":"19"
+            },
+            {
+               "value":"20",
+               "label":"20"
+            },
+            {
+               "value":"21",
+               "label":"21"
+            }
+         ],
+         "default":"21",
+         "info":"When asking for full date of birth, customer will be required to input a date of sufficient age"
+      },
+      {
+         "type":"header",
+         "content":"Minimum age prompt"
+      },
+      {
+         "type":"text",
+         "id":"prompt_min_age",
+         "label":"Prompt text",
+         "default":"Are you 21 years old or older?"
+      },
+      {
+         "type":"text",
+         "id":"button_continue_label",
+         "label":"Yes button label",
+         "default":"Yes"
+      },
+      {
+         "type":"text",
+         "id":"button_cancel_label",
+         "label":"No button label",
+         "default":"No"
+      },
+      {
+         "type":"text",
+         "id":"redirect_url",
+         "label":"Redirect URL",
+         "info":"Where to redirect underage visitors",
+         "default":"http://centurycouncil.org/"
+      },
+      {
+         "type":"header",
+         "content":"Styles"
+      },
+      {
+         "type":"checkbox",
+         "id":"modal_drop_shadow",
+         "label":"Apply drop shadow",
+         "default":false
+      },
+      {
+         "type":"color",
+         "id":"background",
+         "label":"Background & accent color",
+         "default":"#FFFFFF"
+      },
+      {
+         "type":"image_picker",
+         "id":"background_image",
+         "label":"Background image"
+      },
+      {
+         "type":"checkbox",
+         "id":"background_overlay",
+         "label":"Apply background image overlay",
+         "default":true
+      },
+      {
+         "type":"range",
+         "id":"modal_max_width",
+         "label":"Modal max width",
+         "min":360,
+         "max":600,
+         "step":20,
+         "unit":"px",
+         "default":360
+      },
+      {
+         "type":"range",
+         "id":"content_max_width",
+         "label":"Content max width",
+         "min":240,
+         "max":540,
+         "step":20,
+         "unit":"px",
+         "default":240
+      },
+      {
+         "type":"range",
+         "id":"modal_padding",
+         "label":"Modal padding",
+         "min":10,
+         "max":60,
+         "step":10,
+         "unit":"px",
+         "default":30
+      },
+      {
+         "type":"range",
+         "id":"modal_border_radius",
+         "label":"Modal border radius",
+         "min":0,
+         "max":40,
+         "step":1,
+         "unit":"px",
+         "default":0
+      },
+      {
+         "type":"select",
+         "id":"select_size",
+         "label":"Select field size",
+         "options":[
+            {
+               "value":"small",
+               "label":"Small"
+            },
+            {
+               "value":"medium",
+               "label":"Medium"
+            },
+            {
+               "value":"large",
+               "label":"Large"
+            }
+         ],
+         "default":"medium"
+      },
+      {
+         "type":"range",
+         "id":"select_border_radius",
+         "label":"Select field border radius",
+         "min":0,
+         "max":40,
+         "step":1,
+         "unit":"px",
+         "default":0
+      },
+      {
+         "type":"select",
+         "id":"button_size",
+         "label":"Button size",
+         "options":[
+            {
+               "value":"small",
+               "label":"Small"
+            },
+            {
+               "value":"medium",
+               "label":"Medium"
+            },
+            {
+               "value":"large",
+               "label":"Large"
+            }
+         ],
+         "default":"large"
+      },
+      {
+         "type":"range",
+         "id":"button_border_radius",
+         "label":"Button border radius",
+         "min":0,
+         "max":40,
+         "step":1,
+         "unit":"px",
+         "default":0
+      },
+      {
+         "type":"color",
+         "id":"button_focus_color",
+         "label":"Button focus color",
+         "default":"#000"
+      },
+      {
+         "type":"font_picker",
+         "label":"Heading font",
+         "id":"heading_font",
+         "default":"helvetica_n4"
+      },
+      {
+         "type":"range",
+         "id":"heading_font_size",
+         "label":"Heading font size",
+         "min":8,
+         "max":32,
+         "step":1,
+         "unit":"px",
+         "default":20
+      },
+      {
+         "type":"font_picker",
+         "label":"Prompt text font",
+         "id":"prompt_font",
+         "default":"helvetica_n3"
+      },
+      {
+         "type":"range",
+         "id":"prompt_font_size",
+         "label":"Prompt text font size",
+         "min":8,
+         "max":32,
+         "step":1,
+         "unit":"px",
+         "default":18
+      },
+      {
+         "type":"header",
+         "content":"Footer text"
+      },
+      {
+         "type":"richtext",
+         "id":"legal",
+         "label":"Footer text",
+         "default":"<p>Provide information to the visitor about underage drinking and a link to more information.<\/p>",
+         "info": "If needed, add a footer message. Often times this is legal text."
+      },
+      {
+         "type":"font_picker",
+         "label":"Footer text font",
+         "id":"legal_font",
+         "default":"helvetica_n4"
+      },
+      {
+         "type":"range",
+         "id":"legal_font_size",
+         "label":"Footer font size",
+         "min":8,
+         "max":32,
+         "step":1,
+         "unit":"px",
+         "default":16
+      },
+      {
+         "type": "header",
+         "content": "🍷"
+      },
+      {
+         "type": "paragraph",
+         "content": "Made by Bloom"
+      }
+   ]
+}
+{% endschema %}

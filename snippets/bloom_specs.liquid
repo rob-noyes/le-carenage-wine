@@ -1,0 +1,233 @@
+<div class="bloom-specs">
+  <ul>
+    {% if product.metafields.bloom.bloomfields.abv != blank %}
+      <li>
+        <span class="spec-label">Alcohol</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.abv }}%</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.acidity != blank %}
+      <li>
+        <span class="spec-label">Acidity</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.acidity }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.acidity_rating != blank %}
+      <li>
+        <span class="spec-label">Acidity Rating</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.acidity_rating }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.aging != blank %}
+      <li>
+        <span class="spec-label">Aging</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.aging }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.appellation != blank %}
+      <li>
+        <span class="spec-label">Appellation</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.appellation }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.bottling_date != blank %}
+      <li>
+        <span class="spec-label">Bottling Date</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.bottling_date }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.country != blank %}
+      <li>
+        <span class="spec-label">Country</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.country }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.disgorgement != blank %}
+      <li>
+        <span class="spec-label">Disgorgement</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.disgorgement }}</span>
+      </li>
+    {% endif %}
+
+    {% if product.metafields.bloom.bloomfields.dosage != blank %}
+      <li>
+        <span class="spec-label">Dosage</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.dosage }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.farming != blank %}
+      <li>
+        <span class="spec-label">Farming</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.farming }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.fruit != blank %}
+      <li>
+        <span class="spec-label">Fruit</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.fruit }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.harvest_date != blank %}
+      <li>
+        <span class="spec-label">Harvest Date</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.harvest_date }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.importer != blank %}
+      <li>
+        <span class="spec-label">Importer</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.importer }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.ph != blank %}
+      <li>
+        <span class="spec-label">ph</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.ph }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.producer != blank %}
+      <li>
+        <span class="spec-label">Producer</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.producer }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.proof != blank %}
+      <li>
+        <span class="spec-label">Proof</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.proof }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.region != blank %}
+      <li>
+        <span class="spec-label">Region</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.region }}</span>
+      </li>
+    {% endif %}
+
+    {% if product.metafields.bloom.bloomfields.residual_sugar != blank %}
+      <li>
+        <span class="spec-label">Residual sugar</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.residual_sugar }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.sensory_profile != blank %}
+      <li>
+        <span class="spec-label">Sensory Profile</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.sensory_profile }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.serving_temperature != blank %}
+      <li>
+        <span class="spec-label">Serving Temperature</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.serving_temperature }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.sub_region != blank %}
+      <li>
+        <span class="spec-label">Sub-region</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.sub_region }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.sulfites_added != blank %}
+      <li>
+        <span class="spec-label">Sulfites Added</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.sulfites_added }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.sweetness != blank %}
+      <li>
+        <span class="spec-label">Sweetness</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.sweetness }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.wine_type != blank %}
+      <li>
+        <span class="spec-label">Type</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.wine_type }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.varietal != blank %}
+      <li>
+        <span class="spec-label">Varietal</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.varietal }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.vineyard != blank %}
+      <li>
+        <span class="spec-label">Vineyard</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.vineyard }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.village != blank %}
+      <li>
+        <span class="spec-label">Village</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.village }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.vintage != blank %}
+      <li>
+        <span class="spec-label">Vintage</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.vintage }}</span>
+      </li>
+    {% endif %}
+    {% if product.metafields.bloom.bloomfields.winemaker != blank %}
+      <li>
+        <span class="spec-label">Winemaker</span>
+        <span class="spec-value">{{ product.metafields.bloom.bloomfields.winemaker }}</span>
+      </li>
+    {% endif %}
+  </ul>
+</div>
+<div class="bloom-notes">
+  {% if product.metafields.bloom.bloomfields.awards_and_accolades != blank %}
+    <div>
+      <h3>Awards</h3>
+      {{ product.metafields.bloom.bloomfields.awards_and_accolades }}
+    </div>
+  {% endif %}
+  {% if product.metafields.bloom.bloomfields.food_pairing != blank %}
+    <div>
+      <h3>Food Pairing</h3>
+      {{ product.metafields.bloom.bloomfields.food_pairing }}
+    </div>
+  {% endif %}
+  {% if product.metafields.bloom.bloomfields.product_notes != blank %}
+    <div>
+      <h3>Product Notes</h3>
+      {{ product.metafields.bloom.bloomfields.product_notes }}
+    </div>
+  {% endif %}
+  {% if product.metafields.bloom.bloomfields.production_notes != blank %}
+    <div>
+      <h3>Production Notes</h3>
+      {{ product.metafields.bloom.bloomfields.production_notes }}
+    </div>
+  {% endif %}
+  {% if product.metafields.bloom.bloomfields.tasting_notes != blank %}
+    <div>
+      <h3>Tasting Notes</h3>
+      {{ product.metafields.bloom.bloomfields.tasting_notes }}
+    </div>
+  {% endif %}
+  {% if product.metafields.bloom.bloomfields.vineyard_notes != blank %}
+    <div>
+      <h3>Vineyard Notes</h3>
+      {{ product.metafields.bloom.bloomfields.vineyard_notes }}
+    </div>
+  {% endif %}
+  {% if product.metafields.bloom.bloomfields.winemaker_notes != blank %}
+    <div>
+      <h3>Winemaker Notes</h3>
+      {{ product.metafields.bloom.bloomfields.winemaker_notes }}
+    </div>
+  {% endif %}
+</div>
+<div class="bloom-downloads">
+  {% if product.metafields.bloom.bloomfields.downloads != blank %}
+    <h3>Downloads</h3>
+    {% assign download_object = product.metafields.bloom.bloomfields.downloads %}
+    {% if download_object[0].url %}
+      <a href="{{ download_object[0].url }}" target="_blank" download>{{ download_object[0].title }}</a>
+    {% endif %}
+  {% endif %}
+</div>

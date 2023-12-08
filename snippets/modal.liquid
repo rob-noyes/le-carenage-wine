@@ -1,0 +1,17 @@
+<div class="modal" id="modal" data-modal>
+  <div class="modal__inner">
+  <div class="modal__header">
+    <a 
+      href="#" 
+      class="modal__close-icon" 
+      data-modal-close
+      aria-label="{{ 'general.accessibility.close_modal' | t }}"
+      aria-expanded="true"
+      aria-controls="modal"
+    >
+      {% render 'icon-close' %}
+    </a>
+  </div>
+    <div class="modal__content rte"></div>
+  </div>
+</div>

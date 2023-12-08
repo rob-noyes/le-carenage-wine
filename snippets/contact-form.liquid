@@ -1,0 +1,82 @@
+{% form 'contact', class: 'contact__form' %}
+
+  {% assign form_id = "ContactForm" %}
+  {% assign success_msg = 'contact.form.post_success' | t %}
+  {% render 'form-status', form: form, form_id: form_id, success_message: success_msg %}
+
+  <div class="contact__form-input-side-by-side">
+    <div class="relative">
+      <input
+        type="text"
+        name="contact[name]"
+        id="{{ form_id }}-name"
+        class="input"
+        placeholder="{{ 'contact.form.name' | t }}"
+        value="{% if form[name] %}{{ form[name] }}{% elsif customer %}{{ customer.name }}{% endif %}"
+        {% if form.errors contains 'name' %}aria-describedby="{{ form_id }}-name-error"{% endif %}
+        required
+      />
+      <label for="{{ form_id }}-name" class="label--above">
+        {{ 'contact.form.name' | t }}
+      </label>
+    </div>
+
+    <div class="relative">
+      <input
+        type="email"
+        name="contact[email]"
+        id="{{ form_id }}-email"
+        class="input {% if form.errors contains 'email' %}input-error{% endif %}"
+        placeholder="{{ 'contact.form.email' | t }}"
+        value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+        spellcheck="false"
+        autocomplete="email"
+        autocorrect="off"
+        autocapitalize="off"
+        {% if form.errors contains 'email' %}aria-describedby="{{ form_id }}-email-error"{% endif %}
+        required
+      >
+      <label for="{{ form_id }}-email" class="label--above">
+        {{ 'contact.form.email' | t }}
+      </label>
+    </div>
+  </div>
+
+  <div class="relative">
+    <input
+      type="tel"
+      name="contact[phone]"
+      id="{{ form_id }}-phone"
+      class="input-reset input w-100"
+      placeholder="{{ 'contact.form.phone' | t }}"
+      value="{% if form[phone] %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}"
+      pattern="[0-9\-]*"
+    >
+    <label for="{{ form_id }}-phone" class="label--above">
+      {{ 'contact.form.phone' | t }}
+    </label>
+  </div>
+
+  <div class="relative">
+    <textarea
+      rows="10"
+      name="contact[body]"
+      id="{{ form_id }}-body"
+      class="input-reset input w-100"
+      placeholder="{{ 'contact.form.message' | t }}"
+      {% if form.errors contains 'body' %}aria-describedby="{{ form_id }}-body-error"{% endif %}
+      required
+    >
+
+      {%- if form.body -%}
+        {{- form.body -}}
+      {%- endif -%}
+    </textarea>
+    <label for="{{ form_id }}-body" class="label--above">
+      {{ 'contact.form.message' | t }}
+    </label>
+  </div>
+
+  <button type="submit" class="bttn bttn--full bttn--primary">{{ 'contact.form.submit' | t }}</button>
+
+{% endform %}

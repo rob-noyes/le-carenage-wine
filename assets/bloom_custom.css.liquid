@@ -1,0 +1,130 @@
+/* ================
+CUSTOM STYLES - Bloom    
+================ */
+/* Account */
+.section.account {
+  max-width:1200px;
+  margin: 0 auto;
+}
+.Bloom__MyAccount__Container h1, h2, h3, h4 {
+  font-family: var(--font-heading), sans-serif;
+}
+.Bloom__MyAccount__Container a:hover {
+  opacity: 1;
+}
+#headlessui-dialog-4 {
+  z-index: 300 !important;
+}
+.product-card input, 
+.product-card button.h-10 {
+  height: inherit !important;
+}
+.product-card button.h-10 {
+  width: 38px !important;
+}
+.product-card .justify-end.pb-6 div:empty {
+  margin-top: 0 !important;
+}
+
+/* Cart Age gate default overrides */
+.cart__drawer .Bloom__DateOfBirth__Default {
+  width: 100%;
+  margin-bottom: 5px;
+}
+.cart__drawer .Bloom__DateOfBirth__Default p {
+  margin-bottom: 5px;
+}
+.cart__drawer .Bloom__DateOfBirth__Default .Bloom__DateInput--wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+.cart__drawer .Bloom__DateOfBirth__Default .Bloom__DateInput--wrapper > span {
+  width: 32%;
+}
+.cart__drawer
+  .Bloom__DateOfBirth__Default
+  .Bloom__DateInput--input_wrapper
+  > select {
+  width: 100%;
+}
+.cart__drawer span[data-bloom-checkout-container] {
+  width: 100%;
+}
+
+/* Product Spec styling (optional)*/
+.bloom-specs .spec-label {
+  display: inline-block;
+  font-weight: bold;
+}
+.bloom-specs .spec-label:after {
+  content: ": ";
+  white-space: pre;
+}
+
+/* Gift message styling (optional) */
+.Bloom__GiftMessage-Container .inner-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.Bloom__GiftMessage-Container .inner-container input {
+  width: 48%;
+  border: 1px solid #ddd;
+  padding: 12px 14px;
+}
+
+.Bloom__GiftMessage-Container textarea {
+  width: 100%;
+  max-height: 120px;
+  border: 1px solid #ddd;
+  padding: 12px 14px;
+  cursor: text;
+}
+
+/* Age gate */
+.Bloom__AgeGate__Dialog button {
+  text-transform: var(--button-text-transform);
+  font-family: var(--font-body);
+  font-weight: var(--font-body-weight);
+  font-size: var(--font-size-button);
+  letter-spacing: var(--font-letter-spacing-button);
+}
+.Bloom__AgeGate__Dialog button:disabled {
+  background-color: #cecece;
+  color: #484848;
+  border-color: #e5e5e5;
+  opacity: 1;
+}
+
+/* Signup */
+.Bloom__Signup__Form select {
+    appearance: none;
+    background-image: url(https://bloomapp-production.herokuapp.com/assets/ico-select.svg);
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 28px;
+    text-indent: 0.01px;
+}
+.Bloom__Signup__Form .Bloom__Signup__Submit {
+  justify-content: center;
+}
+.Bloom__Signup__Form button {
+  text-transform: var(--button-text-transform);
+  font-family: var(--font-body);
+  font-weight: var(--font-body-weight);
+  font-size: var(--font-size-button);
+  letter-spacing: var(--font-letter-spacing-button);
+  height: var(--height-button);
+  padding: 0 calc(4px * 5);
+  line-height: 1.81em;
+}
+
+/* Misc */
+.footer__heading 
+{
+  font-family: var(--font-body);
+  text-transform: uppercase;
+}
+.footer__bottom {
+  align-items: start;
+}

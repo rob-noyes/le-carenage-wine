@@ -1,0 +1,168 @@
+{% assign modifiers = '' %}
+
+{% assign modifiers = modifiers | append: ' list-collections--columns--columns-' | append: columns %}
+
+{% if collection_title_alignment == 'center' %}
+  {% assign modifiers = modifiers | append: ' list-collections--title-center' %}
+{% endif %}
+
+{% assign item_width = '' %}
+{% assign paginate_by = '' %}
+
+{%- case columns -%}
+  {%- when 2 -%}
+    {%- assign item_width = 'one-half' -%}
+    {% assign paginate_by = 8 %}
+  {%- when 3 -%}
+    {%- assign item_width = 'one-third' -%}
+    {% assign paginate_by = 12 %}
+  {%- when 4 -%}
+    {%- assign item_width = 'one-quarter' -%}
+    {% assign paginate_by = 12 %}
+{%- endcase -%}
+
+{% assign grid_modifiers = '' %}
+
+{% assign grid_modifiers = grid_modifiers | append: ' grid-display--' | append: item_width %}
+{% assign grid_modifiers = grid_modifiers | append: ' grid-display--no-products' %}
+{% assign grid_modifiers = grid_modifiers | append: ' grid-display--' | append: aspect_ratio %}
+
+{% assign includes_aspect_ratio = false %}
+
+{% if aspect_ratio != blank and aspect_ratio != 'natural' %}
+  {% assign includes_aspect_ratio = true %}
+{% endif %}
+
+<section
+  class="list-collections section{{ modifiers }}"
+  data-section-id="{{ id }}"
+  data-section-type="list-collections"
+>
+  <h1 class="type-heading-1 tc ma0 mb5">{{ page_title }}</h1>
+
+  {% if display == 'all' %}
+    {% paginate collections by paginate_by %}
+      <div class="grid-display{{ grid_modifiers }}">
+        {% for collection in collections %}
+          <a href="{{ collection.url }}" class="list-collections--columns__collection">
+            {%- assign image_object = collection.image
+              | default: collection.products.first.featured_media.preview_image
+            -%}
+
+            {% if image_object != blank %}
+              <div class="list-collections--columns__image grid-display__image">
+                {%
+                  render 'image' with
+                  image: image_object,
+                  disable_style: includes_aspect_ratio
+                %}
+              </div>
+            {% else %}
+              <div class="list-collections--columns__collection-placeholder grid-display__image">
+                {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+            {% endif %}
+
+            <h2 class="list-collections--columns__title type-body-regular mt3 mb0">{{ collection.title }}</h2>
+
+            {% if show_product_count %}
+              <div class="list-collections--columns__product-count meta">
+                {{ collection.products_count }}
+                {{ 'list-collections.general.count_text' | t }}
+              </div>
+            {% endif %}
+          </a>
+        {% endfor %}
+      </div>
+
+      <div class="list-collections__pagination mt4">
+        {% if paginate.pages > 1 %}
+          {% render 'pagination' with paginate: paginate, type: 'general.pagination.collections' %}
+        {% else %}
+          {% render 'pagination' with paginate: paginate, type: 'general.pagination.collections', display_paginate_item_count_only: true %}
+        {% endif %}
+      </div>
+    {% endpaginate %}
+  {% else %}
+    <div class="grid-display{{ grid_modifiers }}">
+      {% if blocks.size > 0 %}
+        {% for block in blocks %}
+          {% assign featured_collection = collections[block.settings.collection] %}
+
+          {% if featured_collection != empty %}
+            <a href="{{ featured_collection.url }}" class="list-collections--columns__collection">
+              {%- assign image_object = featured_collection.image
+                | default: featured_collection.products.first.featured_media.preview_image
+              -%}
+
+              {% if image_object != blank %}
+                <div class="list-collections--columns__image grid-display__image">
+                  {%
+                    render 'image' with
+                    image: image_object,
+                    disable_style: includes_aspect_ratio
+                  %}
+                </div>
+              {% else %}
+                <div class="list-collections--columns__collection-placeholder grid-display__image">
+                  {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                </div>
+              {% endif %}
+
+              <h2 class="list-collections--columns__title type-body-regular mt3 mb0">
+                {{ featured_collection.title }}
+              </h2>
+
+              {% if show_product_count %}
+                <div class="list-collections--columns__product-count meta">
+                  {{
+                    featured_collection.products_count
+                    | pluralize: 'list-collections.general.count_text_singular', 'list-collections.general.count_text'
+                    | t
+                  }}
+                </div>
+              {% endif %}
+            </a>
+          {% else %}
+            {% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}
+            {% capture product_count %}{% cycle 9, 18, 6, 21 %}{% endcapture %}
+
+            <div class="list-collections--columns__collection">
+              <div class="list-collections--columns__collection-placeholder grid-display__image">
+                {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+              <h2 class="list-collections--columns__title type-body-regular mt3 mb0">
+                {{ 'list-collections.onboarding.collection' | t }}
+              </h2>
+              <div class="list-collections--columns__product-count meta">
+                {{ product_count }}
+                {{ 'list-collections.general.count_text' | t }}
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        {% for i in (1..columns) %}
+          {% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}
+          {% capture product_count %}{% cycle 9, 18, 6, 21 %}{% endcapture %}
+
+          <div class="list-collections--columns__collection">
+            <div class="list-collections--columns__collection-placeholder grid-display__image">
+              {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+            <h2 class="list-collections--columns__title type-body-regular mt3 mb0">
+              {{ 'list-collections.onboarding.collection' | t }}
+            </h2>
+
+            {% if show_product_count %}
+              <div class="list-collections--columns__product-count meta">
+                {{ product_count }}
+                {{ 'list-collections.general.count_text' | t }}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  {% endif %}
+</section>

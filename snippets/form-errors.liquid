@@ -1,0 +1,6 @@
+{%- if form.errors -%}
+  <div class="form-errors" id="errors--{{ formID }}">
+    <h3 class="form-message--error">{{ 'general.accessibility.errors' | t }}</h3>
+    {{ form.errors | default_errors }}
+  </div>
+{%- endif -%}

@@ -1,0 +1,618 @@
+{
+  "blogs": {
+    "article": {
+      "all_topics": "सभी विषय",
+      "article_with_count": {
+        "one": "1 लेख",
+        "other": "{{ count }} लेख",
+        "zero": "0 लेख"
+      },
+      "back_to_blog": "वापस {{ title }} पर",
+      "by_author": "द्वारा {{ author }}",
+      "featured": "विशेष रुप से प्रदर्शित",
+      "posted_in": "प्रकाशित किया गया था",
+      "read_more": "और पढो",
+      "read_more_title": "और पढ़ें: {{ title }}",
+      "tags": "टैग",
+      "view_all": "सभी को देखें",
+      "view_all_blogs": "सभी ब्लॉग देखें"
+    },
+    "comments": {
+      "comments_with_count": {
+        "one": "{{ count }} टिप्पणी",
+        "other": "{{ count }} टिप्पणियाँ"
+      },
+      "email": "ईमेल",
+      "message": "संदेश",
+      "moderated": "कृपया ध्यान दें, टिप्पणियों को प्रकाशित होने से पहले स्वीकृत किया जाना चाहिए",
+      "name": "नाम",
+      "post": "टिप्पणी पोस्ट करें",
+      "success": "आपकी टिप्पणी सफलतापूर्वक पोस्ट कर दी गई थी! आपको धन्यवाद!",
+      "success_moderated": "आपकी टिप्पणी सफलतापूर्वक पोस्ट की गई थी। हम इसे थोड़ी देर में प्रकाशित करेंगे, क्योंकि हमारा ब्लॉग संचालित होता है।",
+      "title": "एक टिप्पणी छोड़ें",
+      "unapproved": "प्रदान किया गया ईमेल पता टिप्पणियों को पोस्ट करने के लिए स्वीकृत नहीं है।"
+    },
+    "general": {
+      "categories": "इसमें भरा हुआ"
+    },
+    "pagination": {
+      "next": "अगला लेख",
+      "previous": "पिछला लेख"
+    }
+  },
+  "cart": {
+    "general": {
+      "cart_error": "आपकी कार्ट को अपडेट करते समय एक त्रुटि हुई थी। कृपया पुन: प्रयास करें।",
+      "checkout": "चेक आउट",
+      "continue_browsing_html": "<a href=\"\/collections\/all\">यहां<\/a> ब्राउज़ करना जारी रखें।",
+      "continue_shopping": "खरीदारी जारी रखें",
+      "cookies_required": "शॉपिंग कार्ट का उपयोग करने के लिए कुकीज़ सक्षम करें",
+      "currency": "मुद्रा",
+      "empty": "आपकी गाड़ी वर्तमान में खाली है।",
+      "note": "अपने आदेश में एक नोट जोड़ें",
+      "quantity_error": "चयनित मात्रा वर्तमान स्टॉक से अधिक है",
+      "quantity_error_updated": "चयनित मात्रा वर्तमान स्टॉक से अधिक है। आपकी कार्ट अपडेट की जा चुकी है।",
+      "remove": "हटाना",
+      "removed_item_html": "आपकी कार्ट से <span class=\"cart__removed-product-details\">({{ quantity }}) {{ link }}<\/span> हटा दिया गया।",
+      "savings": "आप बचत कर रहे हैं",
+      "shipping_at_checkout": "चेकआउट के समय परिकलित शिपिंग और कर",
+      "subtotal": "उप-योग",
+      "taxes_and_shipping_at_checkout": "चेकआउट के समय परिकलित कर और शिपिंग।",
+      "taxes_and_shipping_policy_at_checkout_html": "चेकआउट के समय करों और <a href=\"{{ link }}\">शिपिंग<\/a> की गणना की जाती है।",
+      "taxes_included_and_shipping_policy_html": "टैक्स शामिल है और चेकआउट के समय <a href=\"{{ link }}\">शिपिंग<\/a> की गणना की जाती है।",
+      "taxes_included_but_shipping_at_checkout": "टैक्स शामिल है और चेकआउट के समय शिपिंग की गणना की जाती है।",
+      "title": "आपकी गाड़ी",
+      "update": "अद्यतन करें"
+    },
+    "label": {
+      "discounted_total": "कुल छूट",
+      "price": "मूल्य",
+      "price_column": "छूट विवरण के लिए मूल्य कॉलम देखें।",
+      "product": "उत्पाद",
+      "product_details": "उत्पाद विवरण",
+      "qty": "मात्रा",
+      "quantity": "मात्रा",
+      "regular_total": "नियमित कुल",
+      "remove": "{{ product }} हटाएं",
+      "total": "संपूर्ण",
+      "update": "अद्यतन करें"
+    },
+    "popup": {
+      "added_to_cart": "अभी-अभी आपके कार्ट में जोड़ा गया",
+      "cart_count": {
+        "one": "{{ count }} आइटम",
+        "other": "{{ count }} आइटम"
+      },
+      "product_details": "उत्पाद विवरण",
+      "quantity": "मात्रा",
+      "quantity_label": "मात्रा: {{ quantity_count }}",
+      "quick_cart_note_html": "आज आपका उप-योग {{ subtotal }} है। {{ shipping_taxes }}"
+    }
+  },
+  "collections": {
+    "catalog": {
+      "title": "सूची"
+    },
+    "filters": {
+      "all_tags": "सारे उत्पाद",
+      "clear": "फ़िल्टर साफ़ करें",
+      "from": "से",
+      "max_price": "उच्चतम मूल्य है {{ price }}",
+      "title_tags": "के द्वारा छनित",
+      "to": "सेवा मेरे"
+    },
+    "general": {
+      "apply": "लागू करें",
+      "clear": "सभी साफ करें",
+      "collection_label": "संग्रह",
+      "filter": "फिल्टर",
+      "items_with_count": {
+        "one": "{{ count }} उत्पाद",
+        "other": "{{ count }} उत्पाद"
+      },
+      "no_matches": "क्षमा करें, इस संग्रह में कोई उत्पाद नहीं है",
+      "no_products": "कोई उत्पाद नहीं",
+      "show": "प्रदर्शन",
+      "sort": "तरह",
+      "swatch_heading": "उपलब्ध {{ option_name }}s",
+      "template_label": "आइटम प्रति पेज",
+      "view_all": "सभी को देखें",
+      "view_all_label": "{{ collection_name }} संग्रह में सभी उत्पाद देखें"
+    },
+    "sorting": {
+      "sort": "क्रमबद्ध करें: {{ label }}",
+      "title": "तरह"
+    },
+    "tags": {
+      "title": "टैग"
+    }
+  },
+  "contact": {
+    "form": {
+      "email": "ईमेल",
+      "error_heading": "कृपया निम्नलिखित को समायोजित करें:",
+      "message": "संदेश",
+      "name": "नाम",
+      "phone": "फ़ोन नंबर",
+      "post_success": "हमे संपर्क करने के लिए धन्यवाद। हम जल्द से जल्द आपके पास वापस आएंगे।",
+      "submit": "भेजना"
+    }
+  },
+  "customer": {
+    "account": {
+      "details": "खाता विवरण",
+      "return": "खाता विवरण पर लौटें",
+      "title": "मेरा खाता",
+      "view_addresses": "पते देखें"
+    },
+    "activate_account": {
+      "cancel": "आमंत्रण अस्वीकार करें",
+      "password": "पारण शब्द",
+      "password_confirm": "पासवर्ड की पुष्टि कीजिये",
+      "submit": "खाते को सक्रिय करें",
+      "subtext": "अपना खाता सक्रिय करने के लिए अपना पासवर्ड बनाएं।",
+      "title": "खाते को सक्रिय करें"
+    },
+    "addresses": {
+      "add": "पता जोड़ें",
+      "add_new": "एक नया पता लिखो",
+      "address1": "पता",
+      "address2": "अपार्टमेंट, सुइट, आदि।",
+      "cancel": "रद्द करना",
+      "city": "शहर",
+      "company": "कंपनी",
+      "country": "देश\/क्षेत्र",
+      "default": "चूक",
+      "delete": "हटाना",
+      "delete_confirm": "क्या आप वाकई इस पते को हटाना चाहते हैं?",
+      "edit": "संपादित करें",
+      "edit_address": "पता संपादित करें",
+      "first_name": "पहला नाम",
+      "last_name": "अंतिम नाम",
+      "phone": "फ़ोन",
+      "province": "प्रांत",
+      "set_default": "डिफ़ॉल्ट पते के रूप में सेट करें",
+      "title": "आपके पते",
+      "update": "पता अपडेट करें",
+      "zip": "डाक का \/ ज़िप कोड"
+    },
+    "login": {
+      "email": "ईमेल",
+      "forgot_password": "अपना कूट शब्द भूल गए?",
+      "guest_continue": "जारी रहना",
+      "guest_title": "अतिथि के रूप में जारी रखें",
+      "password": "पारण शब्द",
+      "sign_in": "दाखिल करना",
+      "success": "सफलतापूर्वक लॉग इन किया",
+      "title": "लॉग इन करें"
+    },
+    "order": {
+      "billing_address": "बिल भेजने का पता",
+      "cancelled": "आदेश {{ date }} को रद्द किया गया",
+      "cancelled_reason": "कारण: {{ reason }}",
+      "date": "{{ date }} पर रखा गया",
+      "discount": "छूट",
+      "fulfilled_at": "तिथि पूर्ण",
+      "fulfillment_status": "पूर्ति स्थिति",
+      "payment_status": "भुगतान की स्थिति",
+      "price": "मूल्य",
+      "product": "उत्पाद",
+      "quantity": "मात्रा",
+      "shipping": "शिपिंग",
+      "shipping_address": "शिपिंग पता",
+      "sku": "Sku",
+      "subtotal": "उप-योग",
+      "tax": "कर",
+      "title": "आदेश {{ name }}",
+      "total": "संपूर्ण",
+      "track_shipment": "शिपमेंट ट्रैक करना",
+      "tracking_company": "वाहक",
+      "tracking_number": "खोज संख्या",
+      "tracking_url": "ट्रैकिंग लिंक"
+    },
+    "orders": {
+      "date": "दिनांक",
+      "fulfillment_status": "पूर्ति स्थिति",
+      "none": "आपने अभी तक कोई आदेश नहीं दिया है।",
+      "order_number": "गण",
+      "order_number_link": "आदेश संख्या {{ number }}",
+      "payment_status": "भुगतान की स्थिति",
+      "title": "आदेश इतिहास",
+      "total": "संपूर्ण"
+    },
+    "recover_password": {
+      "cancel": "रद्द करना",
+      "email": "ईमेल",
+      "submit": "जमा करें",
+      "subtext": "हम आपका पासवर्ड रीसेट करने के लिए आपको एक ईमेल भेजेंगे।",
+      "success": "हमने आपको आपका पासवर्ड अपडेट करने के लिए एक लिंक के साथ एक ईमेल भेजा है।",
+      "title": "अपना पासवर्ड रीसेट करें"
+    },
+    "register": {
+      "cancel": "स्टोर पर लौटें",
+      "email": "ईमेल",
+      "first_name": "पहला नाम",
+      "last_name": "अंतिम नाम",
+      "password": "पारण शब्द",
+      "submit": "सर्जन करना",
+      "success": "पंजीकरण पूर्ण",
+      "title": "खाता बनाएं"
+    },
+    "reset_password": {
+      "password": "पारण शब्द",
+      "password_confirm": "पासवर्ड की पुष्टि कीजिये",
+      "submit": "पासवर्ड रीसेट",
+      "subtext": "{{ email }} के लिए नया पासवर्ड दर्ज करें",
+      "title": "खाता पासवर्ड रीसेट करें"
+    }
+  },
+  "general": {
+    "404": {
+      "subtext_html": "आपके द्वारा अनुरोधित पृष्ठ मौजूद नहीं है। खरीदारी जारी रखने के लिए यहां <a href=\"\/collections\/all\">यहां<\/a> क्लिक करें।",
+      "title": "404 पृष्ठ नहीं मिला"
+    },
+    "accessibility": {
+      "carousel_next": "अगली कैरोसेल स्लाइड पर जाएं",
+      "carousel_previous": "पिछली कैरोसेल स्लाइड पर जाएं",
+      "carousel_select": "हिंडोला को स्लाइड {{ number }} पर ले जाएं",
+      "close_modal": "बंद करे",
+      "error": "त्रुटि",
+      "errors": "त्रुटियाँ",
+      "image_thumbail": "छवि को छवि में बदलें {{ number }}",
+      "link_messages": {
+        "external": "बाहरी वेबसाइट खोलता है।",
+        "new_window": "एक नई विंडो में खुलता है।",
+        "new_window_and_external": "बाहरी वेबसाइट को एक नई विंडो में खोलता है।"
+      },
+      "open_modal": "मोडल खोलें",
+      "pause": "ठहराव",
+      "play": "खेल",
+      "play_video": "वीडियो चलाएं",
+      "quantity": "उत्पाद गुणवत्ता",
+      "quantity_add": "उत्पाद मात्रा जोड़ें",
+      "quantity_subtract": "उत्पाद मात्रा घटाएं",
+      "quick_cart": "त्वरित कार्ट खोलें",
+      "quick_search": "त्वरित खोज खोलें",
+      "range_lower": "कम",
+      "range_upper": "अपर",
+      "refresh_page": "एक पूर्ण पृष्ठ रीफ्रेश में चयन परिणाम चुनना।",
+      "selection_help": "चयन करने के लिए स्पेस की और फिर एरो की दबाएं।",
+      "skip_to_content": "इसे छोड़कर सामग्री पर बढ़ने के लिए",
+      "star_reviews_info": " {{ rating_max }} में से {{ rating_value }} तारे",
+      "submit": "जमा करें",
+      "total_reviews": "कुल समीक्षा",
+      "unit_price_separator": "प्रति"
+    },
+    "currency": {
+      "dropdown_label": "मुद्रा"
+    },
+    "filters": {
+      "show_less": "कम दिखाएं",
+      "show_more": "और दिखाओ"
+    },
+    "language": {
+      "dropdown_label": "भाषा"
+    },
+    "menu": {
+      "login_register": "लॉग इन \/ रजिस्टर",
+      "logout": "लोग आउट"
+    },
+    "meta": {
+      "page": "पेज {{ page }}",
+      "read_more": "अधिक",
+      "rss": "आरएसएस",
+      "tags": "टैग किया गया \"{{ tags }}\""
+    },
+    "navigation": {
+      "home": "होम",
+      "next": "आगामी",
+      "previous": "पिछला"
+    },
+    "newsletter_form": {
+      "confirmation": "सब्सक्राइब करने के लिए धन्यवाद!",
+      "email_placeholder": "ईमेल पता",
+      "newsletter_email": "हमारी मेलिंग सूची की सदस्यता लें",
+      "submit": "सदस्यता लें",
+      "title": "समाचार पत्रिका"
+    },
+    "pagination": {
+      "addresses": "पतों",
+      "blog_posts": "वेबदैनिकी डाक",
+      "collections": "संग्रह",
+      "comments": "टिप्पणियाँ",
+      "load_more": "और लोड करें",
+      "next": "आगामी",
+      "orders": "आदेश",
+      "previous": "पिछला",
+      "products": "उत्पाद",
+      "viewing": "आप {{ total }} में से {{ of }} देख रहे हैं"
+    },
+    "password_page": {
+      "admin_link_html": "क्या आप स्टोर के मालिक हैं? <a href=\"\/admin\" class=\"text-link\">यहां लॉग इन करें<\/a>",
+      "login_form_heading": "पासवर्ड का उपयोग करके स्टोर में प्रवेश करें",
+      "login_form_password_label": "पारण शब्द",
+      "login_form_password_placeholder": "आपका पासवर्ड",
+      "login_form_submit": "दर्ज",
+      "opening_soon": "जल्द खुलेगा",
+      "password_link": "पासवर्ड का उपयोग करके दर्ज करें",
+      "powered_by_shopify_html": "यह दुकान {{ shopify }}द्वारा संचालित होगी",
+      "signup_form_button_label": "मुझे सूचित करो",
+      "signup_form_email_label": "ईमेल",
+      "signup_form_email_placeholder": "तुम्हारा ईमेल",
+      "signup_form_success": "खुलने से ठीक पहले हम आपको एक ईमेल भेजेंगे!",
+      "signup_title": "साइन अप करें"
+    },
+    "payment": {
+      "method": "भुगतान की विधि"
+    },
+    "products": {
+      "no_recently_viewed": "हाल ही में कोई आइटम नहीं देखा गया।",
+      "quick_cart": "जोड़ना",
+      "recently_viewed": "हाल में ही देखा गया",
+      "selling_plan_one_time": "एक बार ख़रीदे",
+      "selling_plan_options": "खरीद विकल्प:"
+    },
+    "search": {
+      "clear_search_term": "खोज शब्द साफ़ करें",
+      "close": "खोज बंद करें",
+      "empty_search_message": "खोज फ़ील्ड खाली नहीं हो सकती",
+      "heading": {
+        "one": "खोज का परिणाम",
+        "other": "खोज परिणाम"
+      },
+      "loading": "लोड हो रहा है",
+      "no_results": "अपनी वर्तनी की जाँच करने या विभिन्न शब्दों का उपयोग करने का प्रयास करें।",
+      "number_of_results": "आप {{ results_count }} से {{ result_number }} तक देख सकता है",
+      "number_of_results_found": "{{ results_count }} परिणाम मिले",
+      "one_result_found": "1 परिणाम मिला",
+      "placeholder": "खोज",
+      "products": "उत्पाद",
+      "quick_search": "त्वरित छानबीन",
+      "quick_search_results": {
+        "one": "नतीजा",
+        "other": "परिणाम"
+      },
+      "results": "परिणाम",
+      "results_with_count": {
+        "one": "{{ count }} \"{{ terms }}\" के लिए परिणाम",
+        "other": "\"{{ terms }}\" के लिए {{ count }} परिणाम"
+      },
+      "search": "खोज",
+      "search_for": "निम्न को खोजें",
+      "submit": "जमा करें",
+      "title": "हमारी साइट खोजें"
+    },
+    "social": {
+      "alt_text": {
+        "share_menu": "मेनू साझा करें",
+        "share_on_facebook": "फेसबुक पर सांझा करें",
+        "share_on_pinterest": "Pinterest पर पिन करें",
+        "share_on_twitter": "ट्विटर पर ट्वीट करें"
+      },
+      "share": "शेयर",
+      "share_on_facebook": "शेयर",
+      "share_on_pinterest": "इसे पिन करें",
+      "share_on_twitter": "कलरव"
+    },
+    "store_information": {
+      "address": "पता",
+      "hours": "घंटे"
+    }
+  },
+  "gift_cards": {
+    "issued": {
+      "active": "{{ expiry }} को समाप्त हो रहा है",
+      "add_to_apple_wallet": "Apple वॉलेट में जोड़ें",
+      "disabled": "विकलांग",
+      "expired": "{{ expiry }} को समाप्त हो गया",
+      "gift_card_code": "उपहार कार्ड कोड",
+      "initial_value": "उपहार कार्ड का मूल्य: {{ value }}",
+      "print": "इस उपहार कार्ड को प्रिंट करें",
+      "qr_image_alt": "क्यूआर कोड — उपहार कार्ड को भुनाने के लिए स्कैन करें",
+      "redeem": "अपना उपहार कार्ड रिडीम करने के लिए चेकआउट के समय इस कोड का उपयोग करें",
+      "remaining_html": "{{ balance }} बाएं",
+      "shop_link": "खरीदारी शुरू करें",
+      "subtext": "आपका उपहार कार्ड",
+      "title_html": "यहां {{ shop }} के लिए आपका {{ value }} उपहार कार्ड है!"
+    }
+  },
+  "homepage": {
+    "general": {
+      "title": "मुखपृष्ठ"
+    },
+    "onboarding": {
+      "article_excerpt": "अपने ब्रांड के बारे में बड़े संपादकीय ब्लॉग पोस्ट दिखाने के लिए इस अनुभाग का उपयोग करें। हम सुझाव देते हैं कि इस खंड को ठीक से तैयार करने के लिए एक से तीन का उपयोग करें।",
+      "article_title": "चुनिंदा ब्लॉग पोस्ट",
+      "blog_author": "लेखक का नाम",
+      "blog_excerpt": "आपके स्टोर ने अभी तक कोई ब्लॉग पोस्ट प्रकाशित नहीं किया है। एक ब्लॉग का उपयोग नए उत्पाद लॉन्च, सुझावों या अन्य समाचारों के बारे में बात करने के लिए किया जा सकता है जिन्हें आप अपने ग्राहकों के साथ साझा करना चाहते हैं। आप अपने स्टोर और ब्लॉग के लिए प्रेरणा और सलाह के लिए Shopify का ईकॉमर्स ब्लॉग देख सकते हैं।",
+      "blog_title": "आपकी पोस्ट का शीर्षक",
+      "collection_title": "संग्रह",
+      "no_content": "इस अनुभाग में वर्तमान में कोई भी सामग्री शामिल नहीं है। साइडबार का उपयोग करके इस अनुभाग में सामग्री जोड़ें।",
+      "product_description": "इस क्षेत्र का उपयोग आपके उत्पाद के विवरण का वर्णन करने के लिए किया जाता है। ग्राहकों को अपने उत्पाद के रंगरूप, अनुभव और शैली के बारे में बताएं। रंग, प्रयुक्त सामग्री, आकार और इसे कहाँ बनाया गया था, इस पर विवरण जोड़ें।",
+      "product_sku": "उत्पाद एसकेयू",
+      "product_title": "उत्पाद शीर्षक",
+      "product_vendor": "उत्पाद विक्रेता",
+      "testimonial_author": "पहला अंतिम नाम",
+      "testimonial_review": "मैं इस उत्पाद से बिल्कुल प्यार करता हूं, लेकिन इसके बारे में मेरी पसंदीदा चीज ग्राहक सेवा और आसान रिटर्न थी। मैंने वह पाया जो मेरे लिए आसानी से काम करता था। धन्यवाद स्टोर!"
+    }
+  },
+  "layout": {
+    "cart": {
+      "checkout": "परिक्षण के लिए जाएं",
+      "go": "गाड़ी पर जाना",
+      "items_count": {
+        "one": "मद",
+        "other": "आइटम"
+      },
+      "title": "गाड़ी"
+    },
+    "customer": {
+      "account": "लेखा",
+      "create_account": "खाता बनाएं",
+      "log_in": "लॉग इन करें",
+      "log_out": "लोग आउट"
+    },
+    "footer": {
+      "copyright": "सर्वाधिकार सुरक्षित",
+      "payment_methods": "भुगतान के तरीके स्वीकार किए जाते हैं",
+      "social_platform": "{{ name }} को {{ platform }}"
+    },
+    "navigation": {
+      "account": "लेखा",
+      "back": "वापस",
+      "collapse": "ढहने",
+      "expand": "विस्तार",
+      "login": "लॉग इन करें",
+      "menu": "मेन्यू",
+      "search": "खोज"
+    }
+  },
+  "list-collections": {
+    "general": {
+      "count_text": "उत्पाद",
+      "count_text_singular": "उत्पाद"
+    },
+    "onboarding": {
+      "collection": "संग्रह"
+    }
+  },
+  "products": {
+    "inventory": {
+      "backordered": "आदेश वापस लिया गया",
+      "in_stock": "स्टॉक में, शिप करने के लिए तैयार",
+      "label": "भण्डार",
+      "low_stock": "सीमित मात्रा में शेष",
+      "sold_out": "जल्द ही फिर से स्टॉकिंग!"
+    },
+    "product": {
+      "add_to_cart": "कार्ट में डालें",
+      "add_to_quick_shop": "त्वरित दुकान",
+      "availability": "उपलब्धता",
+      "back_to_collection": "वापस {{ title }} पर",
+      "country_placeholder": "देश\/क्षेत्र",
+      "description": "विवरण",
+      "estimate_shipping": "खरीदारी शुरू करें",
+      "from_lowest_price_html": "{{ lowest_price }} से",
+      "get_shipping_rates": "दरें प्राप्त होना",
+      "include_taxes": "टैक्स शामिल।",
+      "inventory_label": "भण्डार",
+      "loader_label": "अपने कार्ट में उत्पाद जोड़ना",
+      "no_rates": "शिपिंग दर अनुपलब्ध",
+      "on_sale": "बिक्री पर",
+      "on_sale_from_html": "{{ price }} से बिक्री पर",
+      "preorder": "पूर्व आदेश",
+      "quantity": "मात्रा",
+      "quantity_error": "चयनित मात्रा वर्तमान स्टॉक से अधिक है",
+      "quantity_minimum_message": "मात्रा 1 या अधिक होनी चाहिए",
+      "regular_price": "नियमित रूप से मूल्य",
+      "reviews": "{{ count }} समीक्षाएं",
+      "sale_price": "विक्रय कीमत",
+      "share_heading": "शेयर",
+      "shipping_estimator": "शिपिंग अनुमानक",
+      "shipping_policy_html": "<a href=\"{{ link }}\">शिपिंग<\/a> की गणना चेकआउट के समय की जाती है।",
+      "sku": "Sku",
+      "sku_with_value": "एसकेयू: {{ value }}",
+      "sold_out": "बिक गया",
+      "total_reviews": "समीक्षा",
+      "unavailable": "अनुपलब्ध",
+      "unit_price_label": "यूनिट मूल्य",
+      "vendor": "विक्रेता",
+      "view": "पूरा उत्पाद देखें",
+      "view_cart": "गाडी देंखे",
+      "view_in_space": "अपने स्थान में देखें",
+      "view_in_space_label": "अपने स्थान में देखें, ऑगमेंटेड रियलिटी विंडो में आइटम लोड करता है",
+      "write_review": "एक समीक्षा लिखे",
+      "zoom": "ज़ूम छवि"
+    }
+  },
+  "search": {
+    "clear": "स्पष्ट",
+    "heading": {
+      "one": "खोज का परिणाम",
+      "other": "खोज परिणाम"
+    },
+    "headings": {
+      "articles": "सामग्री",
+      "collections": "संग्रह",
+      "pages": "पेज",
+      "products": "उत्पाद",
+      "suggestions": "खोज सुझाव"
+    },
+    "no_article_results": "के लिए कोई लेख परिणाम नहीं",
+    "no_page_results": "के लिए कोई पृष्ठ परिणाम नहीं",
+    "no_product_results": "के लिए कोई उत्पाद परिणाम नहीं है",
+    "no_results": "हमें के लिए कोई खोज परिणाम नहीं मिला",
+    "no_results_html": "कृपया कोई भिन्न खोज शब्द आज़माएं या <a href=\"\/\">होमपेज<\/a>पर वापस जाएं।",
+    "nothing_found": "कुछ नहीं मिला",
+    "placeholder": "उत्पाद, लेख, पृष्ठ खोजें",
+    "results_with_count": {
+      "one": " &ldquo;{{ terms }}&rdquo;के लिए{{ count }} परिणाम",
+      "other": " &ldquo;{{ terms }}&rdquo;के लिए{{ count }} परिणाम"
+    },
+    "submit": "खोज",
+    "title": "हमारी साइट पर उत्पादों की खोज करें",
+    "view_all": "सभी को देखें"
+  },
+  "sections": {
+    "drawer_menu": {
+      "account": {
+        "logged_in": "लोग आउट",
+        "logged_out": "लॉग इन रजिस्टर करें"
+      },
+      "currency": "मुद्रा",
+      "language": "भाषा",
+      "search": "खोज",
+      "search_placeholder": "खोज"
+    },
+    "featured_collections": {
+      "count_text": "उत्पाद",
+      "count_text_singular": "उत्पाद"
+    },
+    "featured_product": {
+      "gallery_thumbnail_alt": "गैलरी व्यूअर में छवि लोड करें, {{ imageAlt }}",
+      "model_thumbnail_alt": "3D मॉडल को गैलरी व्यूअर में लोड करें, {{ imageAlt }}",
+      "title": "विशेष रुप से प्रदर्शित उत्पाद",
+      "video_thumbnail_alt": "गैलरी व्यूअर में वीडियो लोड करें और चलाएं, {{ imageAlt }}",
+      "view_product": "उत्पाद का पूरा विवरण देखें"
+    },
+    "map": {
+      "address_error": "उस पते को देखने में त्रुटि",
+      "address_no_results": "उस पते के लिए कोई परिणाम नहीं है",
+      "address_query_limit_html": "आप Google API उपयोग सीमा को पार कर चुके हैं। एक <a href=\"https:\/\/developers.google.com\/maps\/premium\/usage-limits\">प्रीमियम योजना<\/a> में अपग्रेड करने पर विचार करें।",
+      "auth_error_html": "आपके Google मानचित्र खाते को प्रमाणित करने में एक समस्या हुई।",
+      "section_heading": "स्थान"
+    },
+    "slideshow": {
+      "load_slide": "स्लाइड लोड करें {{ slide_number }}",
+      "navigation_instructions": "स्लाइड शो को नेविगेट करने के लिए बाएं\/दाएं तीरों का उपयोग करें या मोबाइल डिवाइस का उपयोग करते समय बाएं\/दाएं स्वाइप करें",
+      "next_slide": "अगली स्लाइड",
+      "pause_slideshow": "स्लाइड शो रोकें",
+      "previous_slide": "पिछली स्लाइड",
+      "rotate_slideshow": "स्लाइड शो चलाएं"
+    },
+    "testimonials": {
+      "reviewed_by": "द्वारा समीक्षित"
+    },
+    "video": {
+      "close": "बंद करें {{ video_title }} वीडियो",
+      "pause": "रोकें {{ video_title }} वीडियो",
+      "play": "{{ video_title }} वीडियो चलाएं",
+      "resume": "फिर से शुरू करें {{ video_title }} वीडियो"
+    }
+  },
+  "store_availability": {
+    "general": {
+      "availability": "उपलब्धता",
+      "check_other_stores": "अन्य दुकानों पर उपलब्धता की जाँच करें",
+      "in_stock": "स्टॉक में",
+      "locations": "स्थान",
+      "not_in_stock": "स्टॉक ख़त्म",
+      "pick_up_available": "पिकअप उपलब्ध",
+      "pick_up_available_at_html": "<span>{{ location_name }}<\/span> पर पिकअप",
+      "pick_up_available_time_html": "स्टॉक में, {{ pickup_time }}",
+      "pick_up_currently_unavailable": "पिकअप अभी उपलब्ध नहीं है",
+      "pick_up_unavailable_at_html": "पिकअप <span>{{ location_name }}<\/span> पर अनुपलब्ध है",
+      "view_store_info": "स्टोर की जानकारी देखें"
+    }
+  }
+}

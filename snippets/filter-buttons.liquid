@@ -1,0 +1,31 @@
+{% if show_sort or show_filters %}
+  <div class="collection-top-bar__filters">
+    {% if show_filters %}
+      {%- for filter in resource.filters -%}
+        <a 
+          href="#collection-sidebar--{{ filter.label | handle }}" 
+          class="collection__button type-body-regular" 
+          data-filter-open="__{{ filter.label }}"
+          aria-expanded="false"
+          aria-controls="collection-sidebar--{{ filter.label | handle }}"
+        >
+          {{ filter.label }}
+          {% render 'icon-chevron-down' %}
+        </a>
+      {%- endfor -%}
+    {% endif %}
+
+    {% if show_sort %}
+      <a 
+        href="#collection-sidebar--sort" 
+        class="collection__button type-body-regular" 
+        data-filter-open="__sort"
+        aria-expanded="false"
+        aria-controls="collection-sidebar--sort"
+      >
+        {{ 'collections.sorting.title' | t }}
+        {% render 'icon-chevron-down' %}
+      </a>
+    {% endif %}
+  </div>
+{% endif %}

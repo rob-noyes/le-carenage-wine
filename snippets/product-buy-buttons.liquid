@@ -1,0 +1,168 @@
+<!-- snippets/bloom.liquid -->
+{% comment %}
+This file sets up the necessary server-side Liquid variables for Bloom
+{% endcomment %}
+
+{% liquid 
+ assign is_member = false 
+
+ if customer 
+   for tag in customer.tags 
+      if tag contains "CLUB-LEVEL-" 
+         assign is_member = true 
+      endif 
+   endfor  
+ endif 
+
+ assign is_club_members_only = false 
+ if product.metafields.bloom['bloomfields'].club_members_only == "1" 
+   assign is_club_members_only = true 
+ endif 
+
+ assign show_add_to_cart = true 
+ if is_club_members_only == true and is_member == false 
+   assign show_add_to_cart = false 
+ endif 
+%}
+
+{%- liquid
+  assign product_available_label = 'products.product.add_to_cart' | t
+
+  if is_featured_product == true
+    if product.template_suffix == 'preorder'
+      assign product_available_label = 'products.product.preorder' | t
+    endif
+  elsif template.suffix == 'preorder' and request.design_mode or product.template_suffix == 'preorder'
+    assign product_available_label = 'products.product.preorder' | t
+  endif
+-%}
+{% if show_add_to_cart %}
+<div class="product-form__controls-group product-form__controls-group--submit">
+  {% comment %}
+    In order for this form to submit, it needs to contain an input with name="id".
+    ProductForm() will automatically create this input (or make sure it has the
+    right value set if it already exists) on form submit based on the
+    currently selected variant. However, if JS is disabled we need a fallback.
+
+    Include a single <select> element which allows users to select all variants
+    as a fallback and present it only when JS is disabled. In addition,
+    make sure you hide the option inputs declared above, like we do with the
+    `.js-enabled` class which only shows its contents when JS is enabled.
+  {% endcomment %}
+  <div class="product-form__variants">
+    <select
+      name="id"
+      class="input"
+      id="variant-selector-{{ product.id }}"
+      data-variant-select
+    >
+      {% for variant in product.variants %}
+        <option
+          value="{{ variant.id }}"
+          {%- if variant == current_variant %}
+            selected="selected"
+          {%- endif -%}
+        >
+          {{ variant.title }}
+          {%- if variant.available == false %} - {{ 'products.product.sold_out' | t }}{% endif %}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="
+      product-form__item product-form__item--submit
+      {%- if show_dynamic_checkout %} product-form__item--payment-button {%- endif -%}
+      {%- if product.has_only_default_variant %} product-form__item--no-variants {%- endif -%}
+    ">
+    <div class="product-form__submit-button-wrapper">
+      <button
+        type="submit"
+        name="add"
+        {% unless current_variant.available %}
+          aria-disabled="true"
+        {% endunless %}
+        aria-label="{% unless current_variant.available %}{{ 'products.product.sold_out' | t }}{% else %}{{ product_available_label }}{% endunless %}"
+        class="bttn product-form__cart-submit{% if show_dynamic_checkout %} bttn--secondary{% endif %}"
+        data-lang-available="{{ product_available_label }}"
+        data-lang-unavailable="{{ 'products.product.unavailable' | t }}"
+        data-lang-sold-out="{{ 'products.product.sold_out' | t }}"
+        data-add-to-cart
+        {% unless current_variant.available %}
+          disabled="disabled"
+        {% endunless %}
+      >
+        <span class="bttn__spinner">
+          <svg
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            x="0px"
+            y="0px"
+            width="20px"
+            height="20px"
+            viewBox="0 0 50 50"
+            style="enable-background:new 0 0 50 50;"
+            xml:space="preserve"
+          >
+            <path fill="currentColor" d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z">
+              <animateTransform attributeType="xml"
+                attributeName="transform"
+                type="rotate"
+                from="0 25 25"
+                to="360 25 25"
+                dur="0.6s"
+                repeatCount="indefinite"/>
+              </path>
+          </svg>
+        </span>
+
+        <span data-add-to-cart-text>
+          {% unless current_variant.available %}
+            {{ 'products.product.sold_out' | t }}
+          {% else %}
+            {{ product_available_label }}
+          {% endunless %}
+        </span>
+      </button>
+    </div>
+
+    {%- if product.selling_plan_groups.size == 0 -%}
+      {% if show_dynamic_checkout and current_variant.available %}
+        {{ form | payment_button }}
+      {% endif %}
+    {%- endif -%}
+  </div>
+</div>
+
+{%- if shop.taxes_included or shop.shipping_policy.body != blank -%}
+  <div class="product__policies rte type-body-small tc mt1 mb0" data-product-policies>
+    {%- if shop.taxes_included -%}
+      {{ 'products.product.include_taxes' | t }}
+    {%- endif -%}
+    {%- if shop.shipping_policy.body != blank -%}
+      {{ 'products.product.shipping_policy_html' | t: link: shop.shipping_policy.url }}
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+{% comment %} Shop Pay {% endcomment %}
+{%- if product.selling_plan_groups.size == 0 -%}
+  <div class="product-form__shop-pay type-body-small">
+    {{- form | payment_terms -}}
+  </div>
+{%- endif -%}
+
+{% comment %} Surface pick-up {% endcomment %}
+
+<div
+  class="store-availability-container__wrapper"
+  data-store-availability-container
+  data-base-url="{{ shop.url }}{{ routes.root_url }}"
+></div>
+{% else %}
+<div class="club-only uk-margin-bottom">
+<div class="uk-margin-small-bottom">{{section.settings.club_only_text}}</div>
+<a href="{{section.settings.club_only_link}}" class="button btn btn--full btn--secondary">{{section.settings.club_only_button}}</a>
+</div>
+{% endif %}

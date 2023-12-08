@@ -1,0 +1,193 @@
+{% assign chip_options = settings.chip_options | downcase | split: ', ' %}
+{% assign swatch_options = settings.swatch_options | downcase | split: ', ' %}
+
+{% capture footer_markup %}
+  <div class="collection-flyout__footer">
+    <button class="bttn bttn--secondary bttn--full" data-button="clear">{{ 'collections.general.clear' | t }}</button>
+    <button type="submit" class="bttn bttn--primary bttn--full" data-button="apply">
+      {{ 'collections.general.apply' | t }}
+    </button>
+  </div>
+{% endcapture %}
+
+{%- if show_filters or show_sort -%}
+  <form data-filter-form data-filter-form-flyout>
+    {%- if search.terms -%}
+      <input
+        type="hidden"
+        name="q"
+        id="SearchFilters"
+        value="{{ search.terms | escape }}"
+      >
+    {%- endif -%}
+
+    {%- comment -%} Keep product type within form {%- endcomment -%}
+    {%- if resource.current_type -%}
+      <input type="hidden" name="q" value="{{ resource.current_type | escape }}">
+    {%- endif -%}
+
+    {%- comment -%} Keep product vendor within form {%- endcomment -%}
+    {%- if resource.current_vendor -%}
+      <input type="hidden" name="q" value="{{ resource.current_vendor | escape }}">
+    {%- endif -%}
+
+    {%- if show_filters -%}
+      {%- for filter in resource.filters -%}
+        <div
+          class="
+            collection-flyout
+            drawer
+            {% if settings.enable_reveal_animations %}
+              animation
+              animation--filter-flyout
+            {% endif %}
+          "
+          data-filter-flyout="__{{ filter.label }}"
+          id="collection-sidebar--{{ filter.label | handle }}"
+          role="dialog"
+        >
+          <div class="collection-flyout__heading">
+            <h3 class="type-heading-1-small mt0 mb0">{{ filter.label }}</h3>
+            <a
+              href="#"
+              class="collection-flyout__close"
+              data-close-icon
+              aria-label="{{ 'general.accessibility.close_modal' | t }}"
+              aria-expanded="false"
+              aria-controls="collection-sidebar--{{ filter.label | handle }}"
+            >
+              {% render 'icon-close' %}
+            </a>
+          </div>
+          <div class="collection-flyout__content" data-scroll-lock-ignore>
+            {%- case filter.type -%}
+              {%- when 'boolean', 'list' -%}
+                {%- liquid
+                  assign group_name = filter.label | downcase
+                  assign list_modifiers = ''
+                  assign type = 'checkbox'
+                  if show_filter_swatches
+                    if swatch_options contains group_name
+                      assign type = 'swatch'
+                      assign list_modifiers = list_modifiers | append: ' filter-drawer__list--swatch'
+                    endif
+                  endif
+                  if show_filter_chips
+                    if chip_options contains group_name
+                      assign type = 'chip'
+                      assign list_modifiers = list_modifiers | append: ' filter-drawer__list--chip'
+                    endif
+                  endif
+                -%}
+
+                <ul class="filter-drawer__list{{ list_modifiers }}">
+                  {%- for filter_value in filter.values -%}
+                    {%
+                      render 'filter-item' with
+                      type: type,
+                      forloop: forloop,
+                      filter_value: filter_value,
+                      scope: 'flyout'
+                    %}
+                  {%- endfor -%}
+                </ul>
+              {%- when 'price_range' -%}
+                {% liquid
+                  assign max_price_amount = filter.range_max | money | strip_html | escape
+                %}
+                <div class="filter-drawer__price-range" data-price-range>
+                  <p class="filter-drawer__price-range-title">
+                    {{ 'collections.filters.max_price' | t: price: max_price_amount }}
+                  </p>
+                  <div class="filter-drawer__slider" data-range-slider></div>
+
+                  <div class="filter-drawer__price-range-input-wrapper">
+                    <div class="filter-drawer__price-range-input">
+                      <span class="filter-drawer__price-range-currency">{{ cart.currency.symbol }}</span>
+                      <input
+                        data-min-range-input
+                        data-range-input="price-min"
+                        data-filter-item
+                        class="input"
+                        name="{{ filter.min_value.param_name }}"
+                        id="filter-{{ filter.label | escape }}-from"
+                        {%- if filter.min_value.value -%}
+                          value="{{ filter.min_value.value | divided_by: 100 }}"
+                        {%- endif -%}
+                        type="number"
+                        placeholder="0"
+                        min="0"
+                        max="{{ filter.range_max | divided_by: 100 | ceil }}"
+                      >
+                      <label
+                        class="filter-drawer__price-range-label visually-hidden"
+                        for="filter-{{ filter.label | escape }}-from"
+                      >
+                        {{- 'collections.filters.from' | t -}}
+                      </label>
+                    </div>
+                    <span class="filter-drawer__price-range-separator">&ndash;</span>
+                    <div class="filter-drawer__price-range-input">
+                      <span class="filter-drawer__price-range-currency">{{ cart.currency.symbol }}</span>
+                      <input
+                        data-max-range-input
+                        data-range-input="price-max"
+                        data-filter-item
+                        class="input"
+                        name="{{ filter.max_value.param_name }}"
+                        id="filter-{{ filter.label | escape }}-to"
+                        {%- if filter.max_value.value -%}
+                          value="{{ filter.max_value.value | divided_by: 100 }}"
+                        {%- endif -%}
+                        type="number"
+                        placeholder="{{ filter.range_max | divided_by: 100 | ceil }}"
+                        min="0"
+                        max="{{ filter.range_max | divided_by: 100 | ceil }}"
+                      >
+                      <label
+                        class="filter-drawer__price-range-label visually-hidden"
+                        for="filter-{{ filter.label | escape }}-to"
+                      >
+                        {{- 'collections.filters.to' | t -}}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+            {%- endcase -%}
+          </div>
+          {{ footer_markup }}
+        </div>
+      {%- endfor -%}
+    {%- endif -%}
+
+    {% if show_sort %}
+      <div class="collection-flyout drawer" id="collection-sidebar--sort" data-filter-flyout="__sort">
+        <div class="collection-flyout__heading">
+          <h3 class="type-heading-1-small mt0 mb0">{{ 'collections.sorting.title' | t }}</h3>
+          <a
+            href="#"
+            data-close-icon
+            aria-label="{{ 'general.accessibility.close_modal' | t }}"
+            aria-expanded="false"
+            aria-controls="collection-sidebar--sort"
+          >
+            {% render 'icon-close' %}
+          </a>
+        </div>
+        <div class="collection-flyout__content" data-scroll-lock-ignore>
+          <ul class="filter-drawer__list">
+            {% for option in resource.sort_options %}
+              {%
+                render 'filter-sort-item' with
+                option: option
+              %}
+            {% endfor %}
+          </ul>
+        </div>
+        {{ footer_markup }}
+      </div>
+    {% endif %}
+  </form>
+{%- endif -%}
+
+<div class="collection-flyout__wash" data-filter-wash></div>

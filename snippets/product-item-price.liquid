@@ -1,0 +1,100 @@
+{% comment %}
+  Renders a list of product's price (regular, sale, unit)
+  Accompanies product listings (collection page, search result) and not updated dynamically
+  Renders a placeholder price if no product or variant
+
+  Accepts:
+  - variant: {Object} Variant Liquid object (optional)
+  - product: {Object} Product Liquid object (optional)
+  - show_vendor: {Boolean} Show the product's vendor depending on the section setting (optional)
+
+  Usage:
+  {% render 'product-item-price', product: product %}
+{% endcomment %}
+{%- liquid
+  if product.title
+    assign compare_at_price = product.compare_at_price
+    assign price = product.price
+    assign available = product.available
+    assign variant = product.variants.first
+  else
+    assign compare_at_price = 2000
+    assign price = 2000
+    assign available = true
+  endif
+
+  assign money_price = price | money
+  assign current_variant = product.selected_or_first_available_variant
+-%}
+
+<div
+  class="
+    price price--listing
+    {%- if available == false %} price--sold-out {% endif -%}
+    {%- if compare_at_price > price %} price--on-sale {% endif -%}
+    {%- if product.price_varies == false and product.compare_at_price_varies %} price--compare-price-hidden {% endif -%}
+  "
+>
+  {% if show_vendor and product %}
+    <dl class="price__vendor price__vendor--listing">
+      <dt>
+        <span class="visually-hidden">{{ 'products.product.vendor' | t }}</span>
+      </dt>
+      <dd>
+        {{ product.vendor }}
+      </dd>
+    </dl>
+  {% endif %}
+
+  {%- comment -%}
+    Explanation of description list:
+      - div.price__regular: Displayed when there are no variants on sale
+      - div.price__sale: Displayed when a variant is a sale
+      - div.price__unit: Displayed when the first variant has a unit price
+      - div.price__availability: Displayed when the product is sold out
+  {%- endcomment -%}
+  <dl class="price__regular">
+    <dt>
+      <span class="visually-hidden visually-hidden--inline">{{ 'products.product.regular_price' | t }}</span>
+    </dt>
+    <dd>
+      <span class="price-item price-item--regular meta">
+        {%- if product.price_varies -%}
+          {{ 'products.product.from_lowest_price_html' | t: lowest_price: money_price -}}
+          {%- if settings.currency_code_enabled %} {{ cart.currency.iso_code }}{% endif %}
+        {%- else -%}
+          {{ money_price -}}
+          {%- if settings.currency_code_enabled %} {{ cart.currency.iso_code }}{% endif %}
+        {%- endif -%}
+      </span>
+    </dd>
+  </dl>
+  <dl class="price__sale">
+    <dt class="price__compare meta">
+      <span class="visually-hidden visually-hidden--inline">{{ 'products.product.regular_price' | t }}</span>
+    </dt>
+    <dd class="price__compare meta">
+      <s class="price-item price-item--regular meta">
+        {{ compare_at_price | money -}}
+        {%- if settings.currency_code_enabled %} {{ cart.currency.iso_code }}{% endif %}
+      </s>
+    </dd>
+
+    <dt>
+      <span class="visually-hidden visually-hidden--inline">{{ 'products.product.sale_price' | t }}</span>
+    </dt>
+    <dd>
+      <span class="price-item price-item--sale accent">
+        {%- if product.price_varies -%}
+          {{ 'products.product.from_lowest_price_html' | t: lowest_price: money_price -}}
+          {%- if settings.currency_code_enabled %} {{ cart.currency.iso_code }}{% endif %}
+        {%- else -%}
+          {{ money_price -}}
+          {%- if settings.currency_code_enabled %} {{ cart.currency.iso_code }}{% endif %}
+        {%- endif -%}
+
+        {% render 'unit-price', item: current_variant %}
+      </span>
+    </dd>
+  </dl>
+</div>

@@ -1,0 +1,26 @@
+{%- form 'localization', class: 'selectors-form' -%}
+  <div class="selectors-form__item">
+    <h2 class="visually-hidden" id="lang-heading--header">
+      {{ 'general.language.dropdown_label' | t }}
+    </h2>
+
+    <div class="disclosure" data-disclosure="locale" data-disclosure-locale>
+      <button type="button" class="disclosure__toggle type-body-regular input-reset input" aria-expanded="false" aria-controls="lang-list--header" aria-describedby="lang-heading--header" data-disclosure-toggle data-navigation-dropdown-trigger>
+        {{ form.current_locale.endonym_name }}
+        <span class="arrow">
+          {% render 'icon-inline-chevron-down' %}
+        </span>
+      </button>
+      <ul id="lang-list--header" class="disclosure-list" data-disclosure-list data-navigation-dropdown>
+        {% for locale in form.available_locales %}
+          <li class="disclosure-list__item {% if locale.iso_code == form.current_locale.iso_code %}disclosure-list__item--current{% endif %}">
+            <a class="disclosure-list__option" href="#" lang="{{ locale.iso_code }}" {% if locale.iso_code == form.current_locale.iso_code %}aria-current="true"{% endif %} data-value="{{ locale.iso_code }}" data-disclosure-option>
+              {{ locale.endonym_name }}
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+      <input type="hidden" name="locale_code" id="LocaleSelector" value="{{ form.current_locale.iso_code }}" data-disclosure-input/>
+    </div>
+  </div>
+{%- endform -%}

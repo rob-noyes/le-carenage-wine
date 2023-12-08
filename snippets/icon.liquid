@@ -1,0 +1,29 @@
+<!-- Icon weight is adjusted below range settings -->
+{% liquid
+  assign icon_weight = 1.4
+
+  if settings.font_navigation_weight == 'bold'
+    assign icon_weight = 1.8
+  endif
+%}
+
+<span class="icon {{ class }}">
+  <svg width="100%" viewBox="0 0 24 24">
+    {% case icon %}
+      {% when 'account' %}
+        <circle cx="12" cy="6.47" r="5.92" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="{{ icon_weight }}px"/>
+        <path d="M.43 23.86c0-4.19 2.17-7.62 7.15-7.62h8.84c5 0 7.15 3.43 7.15 7.62" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="{{ icon_weight }}px"/>
+
+      {% when 'search' %}
+        <circle cx="9.54" cy="9.51" r="9.08" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="{{ icon_weight }}px" />
+        <path d="m17.87 17.83 5.88 5.89" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="{{ icon_weight }}px" />
+
+      {% when 'cart' %}
+        <path d="M21.17 22.84H2.83A2.44 2.44 0 0 1 .39 20.4v-12a2.44 2.44 0 0 1 2.44-2.49h18.34a2.44 2.44 0 0 1 2.44 2.44v12a2.44 2.44 0 0 1-2.44 2.49zM17 4V2.91a1.75 1.75 0 0 0-1.75-1.75H8.71A1.75 1.75 0 0 0 7 2.91V4"  fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="{{ icon_weight }}px" />
+
+      {% when 'drawer' %}
+        <path d="M.39 12h23.22M.39 4.26h23.22M.39 19.74h23.22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="{{ icon_weight }}px" />
+
+    {% endcase %}
+  </svg>
+</span>

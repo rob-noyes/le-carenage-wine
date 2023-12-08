@@ -1,0 +1,136 @@
+{%- liquid
+  assign type = block.type
+  assign settings = block.settings
+  assign type = type | replace: "_", "-"
+  assign position = settings.text_position | split: "_"
+  assign video_focal_alignment = settings.focal_point | replace: "_", " "
+  assign opacity = settings.overlay_opacity | divided_by: 100.0
+
+  assign brightness_button = settings.color_background_button | color_brightness
+  if brightness_button > 60
+    assign color_background_button_hover = settings.color_background_button | color_darken: 20
+    else
+    assign color_background_button_hover = settings.color_background_button | color_lighten: 20
+  endif
+-%}
+
+{%- capture text_block -%}
+  {%- if settings.overline != blank or settings.title != blank or settings.subheading != blank or settings.link != blank and settings.link_text != blank -%}
+    <div
+      class="
+        mosaic-grid__text-container
+        mosaic-grid__text-container--text-align-{{ position | first }}
+        mosaic-grid__text-container--mobile-text-align-{{ mobile_text_align | default: "center" }}
+        {% if settings.color_text_container != blank and settings.color_text_container != 'rgba(0,0,0,0)' %}mosaic-grid__text-container--has-background-color{% endif %}
+      "
+      style="
+        --s-color-text-container-background: {{ settings.color_text_container }};
+        --s-color-background-button: {{ settings.color_background_button }};
+        --s-color-background-button-hover: {{ color_background_button_hover }};
+        --s-color-text-button: {{ settings.color_text_button }};
+        --s-color-text: {{ settings.color_text }};
+        --text-max-width: {{ settings.text_max_width }}rem;
+      "
+    >
+      {%- if settings.overline != blank -%}
+        <h3 class="mosaic-grid__overline overline ma0">
+          {{ settings.overline }}
+        </h3>
+      {%- endif -%}
+
+      {%- if settings.title != blank -%}
+        <h4 class="mosaic-grid__heading ma0 type-heading-1">
+          {{ settings.title }}
+        </h4>
+      {%- endif -%}
+
+      {%- if settings.subheading != blank -%}
+        <div class="mosaic-grid__subheading ma0 rte">
+          {{ settings.subheading }}
+        </div>
+      {%- endif -%}
+
+      {%- if settings.link != blank and settings.link_text != blank -%}
+        <div class="mosaic-grid__button-wrapper">
+          <a
+            href="{{ settings.link }}"
+            class="mosaic-grid__button bttn bttn--secondary"
+          >
+            {{ settings.link_text }}
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if settings.link != blank and settings.link_text == blank -%}
+  <a href="{{ settings.link }}" class="mosaic-grid__item mosaic-grid__item--{{ type }}">
+{%- else -%}
+  <div class="mosaic-grid__item mosaic-grid__item--{{ type }}">
+{%- endif -%}
+
+  <div
+    class="
+      mosaic-grid__item-inner
+      mosaic-grid__item-inner--h-align-{{ position[0] }}
+      mosaic-grid__item-inner--v-align-{{ position[1] }}
+    "
+    style="
+      --video-focal-alignment: {{ video_focal_alignment }};
+      --video-fit: {{ settings.media_fit }};
+      --color-background: {{ settings.background_color }};
+    "
+    {{ block.shopify_attributes }}
+  >
+    {%- if settings.image != blank -%}
+      {% render 'image',
+        image: settings.image,
+        wrapper_class: 'mosaic-grid__item-image',
+        focal_point: settings.focal_point,
+        object_fit: settings.media_fit,
+        disable_style: true,
+        animate: true
+      %}
+    {%- endif -%}
+
+    {%- if settings.video_url != blank -%}
+      <video class="mosaic-grid__item-video image" autoplay playsinline loop muted src="{{ settings.video_url }}"></video>
+      {%- render 'video-pause' -%}
+    {% endif %}
+
+    {%- if settings.image == blank and settings.video_url == blank -%}
+      {%- if settings.background_color == blank or settings.background_color == 'rgba(0,0,0,0)' -%}
+        <div class="mosaic-grid__item-image placeholder-image">
+          {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- if settings.text != blank -%}
+      <video class="mosaic-grid__item-video image" autoplay playsinline loop muted src="{{ settings.video_url }}"></video>
+      {%- render 'video-pause' -%}
+    {% endif %}
+
+    <div
+      class="mosaic-grid__item-fill"
+      style="
+        --color-overlay-color: {{ settings.overlay_color }};
+        --overlay-opacity: {{ opacity }};
+        {% if settings.color_overlay_gradient != blank %}
+          --overlay-gradient: {{ settings.color_overlay_gradient }};
+        {% endif %}
+      "
+      >
+    </div>
+
+    {{ text_block }}
+  </div>
+
+{%- if settings.link != blank and settings.link_text == blank -%}
+  </a>
+{%- else -%}
+  </div>
+{%- endif -%}
+
+{{ text_block }}

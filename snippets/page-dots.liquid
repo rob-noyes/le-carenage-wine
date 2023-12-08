@@ -1,0 +1,25 @@
+{% if blocks.size == 2 %}
+  <div class="page-dots">
+    <button
+      type="button"
+      class="page-dot prev is-selected"
+      aria-label="{{ 'general.accessibility.carousel_previous' | t }}"
+    ></button>
+    <button
+      type="button"
+      class="page-dot next"
+      aria-label="{{ 'general.accessibility.carousel_next' | t }}"
+    ></button>
+  </div>
+  {% elsif blocks.size > 2 %}
+  <div class="page-dots">
+    {% for i in blocks %}
+    <button
+      type="button"
+      class="page-dot{% if forloop.first %} is-selected{% endif %}"
+      data-slide-index="{{ forloop.index0 }}"
+      aria-label="{{ 'general.accessibility.carousel_select' | t: number: forloop.index }}"
+    ></button>
+    {% endfor %}
+  </div>
+{% endif %}

@@ -1,0 +1,28 @@
+{%- assign is_active = false -%}
+{%- if option.value == collection.sort_by -%}
+  {%- assign is_active = true -%}
+{%- endif -%}
+
+{%- if scope -%}
+  {%- assign scope = scope | prepend: '--' -%}
+{%- endif -%}
+
+<li class="filter-item" data-sort-by="{{ collection.sort_by }}">
+  <label for="filter-{{ option.name | url_escape }}{{ scope }}" class="filter-item__content">
+    <input
+      data-sort="{{ option.value }}"
+      type="radio"
+      name="sort_by"
+      {% if is_active %}checked{% endif %}
+      data-value-escaped="{{ option.value | url_escape }}"
+      value="{{ option.value }}"
+      id="filter-{{ option.name | url_escape }}{{ scope }}"
+      class="filter-item__input visually-hidden"
+      data-filter-item
+    />
+    <div class=" filter-item__radio">
+      <div class="indicator"></div>
+    </div>
+    <span class="filter-item__label type-body-regular">{{ option.name }}</span>
+  </label>
+</li>

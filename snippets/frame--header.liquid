@@ -1,0 +1,363 @@
+{% liquid
+  assign font_logo_size = settings.font_logo_size | append: 'px'
+  assign links = linklists[menu].links
+  assign header_is_transparent = false
+  assign header_style_is_icon = false
+  assign header_style_modifier = 'default'
+
+  assign position = nav_position | split: '_'
+  assign position_vertical_alignment = position.first
+  assign position_horizontal_alignment = position.last
+
+  if transparent_index_header_enabled and template.name == 'index'
+    assign header_is_transparent = true
+  endif
+
+  if header_style == 'icon-minimal'
+    assign header_style_modifier = 'always-mobile'
+  endif
+
+  assign modifiers = ''
+  assign modifiers = modifiers | append: ' header--' | append: header_style_modifier
+  assign modifiers = modifiers | append: ' header--alignment-' | append: position_horizontal_alignment
+  assign modifiers = modifiers | append: ' header--position-' | append: position_vertical_alignment
+  assign modifiers = modifiers | append: ' header--content-' | append: settings.font_navigation_weight
+
+  if header_style == 'icon' or header_style == 'icon-minimal'
+    assign header_style_is_icon = true
+    assign modifiers = modifiers | append: ' header--style-is-icon'
+  endif
+
+  if show_cart_icon == false
+    assign modifiers = modifiers | append: ' header--cart-icon-hidden'
+  endif
+
+  if show_search_mobile_icon
+    assign modifiers = modifiers | append: ' header--has-mobile-search-icon'
+  endif
+
+  if header_is_transparent
+    assign modifiers = modifiers | append: ' header--transparent'
+  endif
+
+  if transparent_logo != blank and header_is_transparent
+    assign modifiers = modifiers | append: ' header--has-transparent-logo'
+  endif
+
+  if settings.font_navigation_uppercase
+    assign modifiers = modifiers | append: ' header--content-uppercase'
+  endif
+
+  if settings.enable_reveal_animations
+    assign modifiers = modifiers | append: ' animation animation--header'
+  endif
+
+  assign logo_size_control = 'height'
+  assign logo_min_mobile_size = 50
+  assign logo_medium_size_multiplier = 0.75
+  assign logo_small_size_multiplier = 0.5
+
+  if logo != blank
+    assign modifiers = modifiers | append: ' header--has-logo'
+
+    if logo.aspect_ratio > 1.5
+      assign logo_size_control = 'width'
+
+      if logo_max_size > 150
+        assign logo_min_mobile_size = 150
+      else
+        assign logo_min_mobile_size = logo_max_size
+      endif
+    endif
+  endif
+
+  assign brightness_header_text = settings.color_header_text | color_brightness
+  if brightness_header_text > 127
+    assign transparent_indicator_color = settings.color_header_background
+  else
+    assign transparent_indicator_color = settings.color_header_text
+  endif
+%}
+
+{%- if show_search -%}
+  {%- capture search_nav_item -%}
+    <noscript>
+      <a href="{{ routes.search_url }}" class="color-inherit">
+        <div class="relative">
+          {{ 'layout.navigation.search' | t }}
+        </div>
+      </a>
+    </noscript>
+    {%
+      render 'quick-search',
+      header_style_is_icon: header_style_is_icon,
+      show_search_mobile_icon: show_search_mobile_icon
+    %}
+  {%- endcapture -%}
+{%- endif -%}
+
+{%- capture header_nav -%}
+  <nav class="header__nav" role="navigation">
+    {%
+      render 'navmenu' with
+      menu: menu,
+      depth: 1,
+      max_depth: 3,
+      blocks: section.blocks,
+      top_level: true,
+      has_triggers: true
+    %}
+  </nav>
+{%- endcapture -%}
+
+<script>
+  window.theme.quickCartNote = {{ settings.quick_cart_note | json }};
+</script>
+
+<section
+  data-component="header"
+  data-section-id="{{ id }}"
+  data-section-type="header"
+  class="{% unless header_is_transparent %}bg-base {% endunless %} w-100 z-5"
+  data-navigation-interaction="{{ dropdown_interaction }}"
+>
+  <div
+    id="header"
+    class="header {{ modifiers }}"
+    data-transparent-header="{{ header_is_transparent }}"
+  >
+    <div class="header__content">
+      <div class="header__content-inner flex justify-between w-100" data-primary-navigation="yes">
+        {%- if position_horizontal_alignment == 'left' and position_vertical_alignment == 'inline' -%}
+          {{ header_nav }}
+        {%- endif -%}
+
+        <div class="no-js-menu no-js-menu--desktop">
+          {% render 'no-js-navmenu' with menu: menu %}
+        </div>
+
+        <div class="mobile-nav">
+          <a href="#" id="mobile-nav" class="mobile-nav__trigger" aria-label="{{ 'layout.navigation.menu' | t }}">
+            <div class="header__menu-icon">
+              {% render 'icon-header-button' with icon: 'drawer' %}
+            </div>
+          </a>
+        </div>
+
+        {%- if show_search -%}
+          <div class="header__search-left">
+            {{ search_nav_item }}
+          </div>
+        {%- endif -%}
+
+        {%- if show_search != true
+          and position_vertical_alignment == 'below'
+          and position_horizontal_alignment == 'center'
+        -%}
+          {{ header_nav }}
+        {%- endif -%}
+
+        <h1 class="header__logo-wrapper">
+          <a
+            href="{{ routes.root_url }}"
+            class="header__logo-image color-inherit logo-orientation--{{ logo_size_control }}"
+          >
+            {% capture image_size %}{{ logo_max_size }}x{% endcapture %}
+            {% if logo != blank %}
+              <img
+                class="header__logo"
+                src="{{ logo | img_url: image_size }}"
+                srcset="{{ logo | img_url: image_size }} 1x, {{ logo | img_url: image_size, scale: 2 }} 2x"
+                alt="{{ logo.alt | default: shop.name }}"
+              >
+            {% else %}
+              <span class="header__logo-text{% if settings.logo_uppercase %} ttu{% endif %}">
+                {{ shop.name }}
+              </span>
+            {% endif %}
+            {% if transparent_logo != blank and header_is_transparent %}
+              <img
+                class="header__transparent-logo"
+                src="{{ transparent_logo | img_url: image_size }}"
+                srcset="{{ transparent_logo | img_url: image_size }} 1x, {{ transparent_logo | img_url: image_size, scale: 2 }} 2x"
+                alt="{{ transparent_logo.alt | default: shop.name }}"
+              >
+            {% endif %}
+          </a>
+        </h1>
+
+        {%- if position_vertical_alignment == 'inline' -%}
+          {%- if position_horizontal_alignment == 'center' or position_horizontal_alignment == 'right' -%}
+            {{ header_nav }}
+          {%- endif -%}
+        {%- endif -%}
+
+        <div class="header__icon-wrapper">
+          <ul class="header__icon-list">
+            {%- if show_search -%}
+              <li
+                class="
+                  header__icon
+                  header__icon--search
+                "
+              >
+                {{ search_nav_item }}
+              </li>
+            {%- endif -%}
+            {%- if shop.customer_accounts_enabled -%}
+              <li class="header__icon header__icon--account">
+                <a
+                  href="{{ routes.account_url }}"
+                  class="quick-cart__trigger color-inherit"
+                  aria-label="{% if customer.id == null %}{{ 'layout.navigation.login' | t }}{% else %}{ 'layout.navigation.account' | t }}{% endif %}"
+                >
+                  {%- if header_style_is_icon -%}
+                    {% render 'icon-header-button' with icon: 'account' %}
+                  {%- else -%}
+                    {%- if customer.id == null -%}
+                      {{ 'layout.navigation.login' | t }}
+                    {%- else -%}
+                      {{ 'layout.navigation.account' | t }}
+                    {%- endif -%}
+                  {%- endif -%}
+                </a>
+              </li>
+            {%- endif -%}
+            <li class="header__icon header__icon--cart">
+              <div class="quick-cart__icon">
+                <a
+                  href="{{ routes.cart_url }}"
+                  class="quick-cart__trigger color-inherit js-cart-drawer-toggle"
+                  aria-expanded="false"
+                  aria-controls="cart-flyout-drawer"
+                >
+                  {%- if header_style_is_icon -%}
+                    {% render 'icon-header-button' with icon: 'cart' %}
+                    <div class="quick-cart__icon-indicator js-cart-count{% unless cart.item_count > 0 %} hidden{% endunless %}">
+                      <span class="quick-cart__indicator-inner">
+                        {{ cart.item_count }}
+                      </span>
+                    </div>
+                  {%- else -%}
+                    <div class="quick-cart__indicator js-cart-count">
+                      <span class="quick-cart__indicator-inner{% if cart.item_count > 0 %} quick-cart--cart-has-item{% endif %}">
+                        {{ cart.item_count }}
+                      </span>
+                    </div>
+                  {%- endif -%}
+                </a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      {%- if position_vertical_alignment == 'below' -%}
+        <div class="header__below-nav">
+          {{ header_nav }}
+        </div>
+      {%- endif -%}
+    </div>
+    <div class="no-js-menu no-js-menu--mobile">
+      {% render 'no-js-navmenu' with menu: menu %}
+    </div>
+  </div>
+</section>
+
+{% assign proper_alpha = transparent_header_border_opacity | divided_by: 100.00 %}
+
+<style>
+  .header__logo-text {
+    font-size: {{ font_logo_size }};
+  }
+
+  .header.header--transparent {
+    border-color: {{ transparent_header_border_color | color_modify: 'alpha', proper_alpha }};
+    color: {{ transparent_header_foreground_color }};
+  }
+
+  .header.header--transparent .header__menu-icon .icon,
+  .header.header--transparent .disclosure__toggle  {
+    color: {{ transparent_header_foreground_color }};
+  }
+
+  .header.header--transparent .icon-header-button {
+    --color: {{ transparent_header_foreground_color }};
+  }
+
+  .header.header--transparent .quick-cart__icon-indicator {
+    background-color: {{ transparent_header_foreground_color }};
+    color: {{ transparent_indicator_color }};
+  }
+
+  .header.header--transparent .quick-cart__indicator {
+    border-color: {{ transparent_header_border_color | color_modify: 'alpha', proper_alpha }};
+  }
+
+  .header.header--transparent .header__icon-wrapper,
+  .header.header--transparent #mobile-nav {
+    color: {{ transparent_header_foreground_color }};
+  }
+
+  {% if header_is_transparent %}
+    .header-section {
+      position: absolute;
+      top: var(--utility-bar-height, 0);
+    }
+  {% endif %}
+
+  {% if logo != blank %}
+    .header__logo-image {
+      {{ logo_size_control }}: {{ logo_max_size }}px;
+    }
+
+    @media (min-width: 38em) and (max-width: 60em) {
+      .header__logo-image {
+        {{ logo_size_control }}: {{ logo_max_size | times: logo_medium_size_multiplier }}px;
+        min-{{ logo_size_control }}: {{ logo_min_mobile_size }}px;
+      }
+    }
+
+    @media (max-width: 38em) {
+      .header__logo-image {
+        {{ logo_size_control }}: {{ logo_max_size | times: logo_small_size_multiplier }}px;
+        min-{{ logo_size_control }}: {{ logo_min_mobile_size }}px;
+      }
+    }
+  {% endif %}
+
+  {% assign minimum_icon_link_width = 300 %}
+  {% assign flex_basis_adjustment = minimum_icon_link_width %}
+
+  {% if logo != blank and logo_size_control == 'width' %}
+    {% if logo_max_size > minimum_icon_link_width %}
+      {% assign flex_basis_adjustment = logo_max_size %}
+    {% endif %}
+  {% endif %}
+
+  @media (min-width: 60em) {
+    .header--alignment-center .header__icon-wrapper {
+      flex-basis: {{ flex_basis_adjustment }}px;
+    }
+
+    .header--alignment-center .header__logo-wrapper {
+      flex-basis: {{ flex_basis_adjustment }}px;
+    }
+  }
+</style>
+
+{% if template.name == 'index' %}
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "WebSite",
+      "name": "{{ shop.name }}",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ routes.search_url }}?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      },
+      "url": "{{ shop.url }}{{ page.url }}"
+    }
+  </script>
+{% endif %}

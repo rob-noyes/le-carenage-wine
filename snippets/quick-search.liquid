@@ -1,0 +1,67 @@
+<div class="quick-search">
+  <a
+    href="{{ routes.search_url }}"
+    class="color-inherit no-ajax quick-search__trigger"
+    aria-expanded="false"
+    aria-controls="quick-search"
+    aria-label="{{ 'general.accessibility.quick_search' | t }}"
+  >
+    {%- if header_style_is_icon -%}
+      {% render 'icon-header-button' with icon: 'search' %}
+    {%- else -%}
+      {%- if show_search_mobile_icon -%}
+        {%- assign mobile_only_icon = 'mobile-only-icon' -%}
+        {%
+          render 'icon-header-button',
+          icon: 'search',
+          class: mobile_only_icon,
+        %}
+      {%- endif -%}
+      <div class="quick-search__trigger-text">
+        {{ 'layout.navigation.search' | t }}
+      </div>
+    {%- endif -%}
+  </a>
+
+  <div class="search hidden" id="quick-search" role="dialog">
+    <div class="search__container">
+      <form action="{{ routes.search_url }}" class="search__input-container" autocomplete="off">
+        <input
+          autofocus
+          type="search"
+          name="q"
+          class="search__input"
+          placeholder="{{ 'search.placeholder' | t }}"
+        >
+        <input type="hidden" name="options[prefix]" value="last">
+
+        <div class="search__input-actions">
+          <a href="#" class="search__input-clear accent underline">
+            {{ 'search.clear' | t }}
+          </a>
+          <button
+            type="submit"
+            class="search__submit-button"
+            aria-label="{{ 'search.submit' | t }}"
+          >
+            {% render 'icon-arrow-forward' %}
+          </button>
+
+          <a
+            href="#"
+            class="search__input-close"
+            aria-label="{{ 'general.accessibility.close_modal' | t }}"
+            aria-expanded="false"
+            aria-controls="quick-search"
+          >
+            {% render 'icon-close' %}
+          </a>
+        </div>
+
+        <div class="search__results"></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="search__overlay"></div>
+</div>

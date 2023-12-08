@@ -1,0 +1,55 @@
+{%- assign active_filter_count = 0 -%}
+{%- for filter in resource.filters -%}
+  {%- if filter.type == "price_range" -%}
+    {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+      {%- assign active_filter_count = active_filter_count | plus: 1 -%}
+    {%- endif -%}
+  {%- elsif filter.type == "list" -%}
+    {%- for value in filter.active_values -%}
+      {%- assign active_filter_count = active_filter_count | plus: 1 -%}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{% if active_filter_count > 0 or resource.sort_by != blank %}
+  <div class="collection-top-bar">
+    <div class="collection-top-bar__active-elements">
+      {%- for filter in resource.filters -%}
+        {%- for value in filter.active_values -%}
+          <a href="{{ value.url_to_remove }}" class="collection__tag" data-remove-filter data-filter="filter-{{ value.label | handleize | escape }}" data-name="{{ value.param_name }}" data-value="{{ value.value }}" data-value-escaped="{{ value.value | url_escape }}">
+            {%- if filter.type == "boolean" -%}
+              <span>{{ filter.label | escape }}</span>
+            {%- else -%}
+              <span>{{ value.label | escape }}</span>
+            {%- endif -%}
+            {% render 'icon-close' %}
+          </a>
+        {%- endfor -%}
+
+        {% if filter.type == "price_range" %}
+          {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+            <a href="{{ value.url_to_remove }}" class="collection__tag" data-remove-range>
+              <span>
+                {%- if filter.min_value.value -%}{{ filter.min_value.value | money }}{%- else -%}{{ 0 | money }}{%- endif -%}&nbsp;-&nbsp;{%- if filter.max_value.value -%}{{ filter.max_value.value | money }}{%- else -%}{{ filter.range_max | money }}{%- endif -%}
+              </span>
+              {% render 'icon-close' %}
+            </a>
+          {%- endif -%}
+        {% endif %}
+      {%- endfor -%}
+
+      {%- if resource.sort_by != blank -%}
+        {% comment %} Would be nice not to loop to get the formatted label {% endcomment %}
+        {% for option in resource.sort_options %}
+          {% if resource.sort_by == option.value %}
+            {% assign label = option.name %}
+          {% endif %}
+        {% endfor %}
+        <a href="#" class="collection__tag" data-remove-filter data-name="sort_by" data-value="{{ resource.sort_by | escape | handleize }}" data-value-escaped="{{ resource.sort_by | url_escape }}">
+          <span>{{ 'collections.sorting.sort' | t: label: label }}</span>
+          {% render 'icon-close' %}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+{% endif %}

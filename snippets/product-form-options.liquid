@@ -1,0 +1,212 @@
+{%- liquid
+  assign file_extension = 'png'
+  assign chip_options = settings.chip_options | downcase | split: ', '
+  assign swatch_options = settings.swatch_options | downcase | split: ', '
+  assign dynamic_options = settings.enable_dynamic_product_options
+  assign variant_popup_page = pages[block.settings.variant_popup_page]
+
+  assign variant_popup_content_exists = false
+  assign variant_popup_option = ''
+
+  if block.settings.variant_popup_option != blank and block.settings.variant_popup_text != blank and variant_popup_page.content != blank
+    assign variant_popup_content_exists = true
+    assign variant_popup_option = block.settings.variant_popup_option | downcase
+  endif
+-%}
+
+{% capture guide_trigger %}
+  <a
+    href="{{ variant_popup_page.url }}"
+    class="variant-popup__trigger"
+    data-variant-popup-trigger
+    data-modal-content-id="modal-{{ block.settings.variant_popup_page }}"
+    aria-expanded="false"
+    aria-controls="modal"
+  >
+    {{ block.settings.variant_popup_text }}
+  </a>
+  <div id="modal-{{ block.settings.variant_popup_page }}" class="variant-popup__content modal-content">
+    <h2 class="type-heading-1 mt0 mb3">{{ variant_popup_page.title }}</h2>
+    {{ variant_popup_page.content }}
+  </div>
+{% endcapture %}
+
+{% for option in product.options_with_values %}
+  {%- assign option_name = option.name | downcase -%}
+
+  {% if swatch_options contains option_name %}
+    <div class="product-form__option product-form__option-swatches js-enabled">
+      <div
+        class="product-form__color-swatches"
+        data-option-buttons
+        data-product-option="Option{{ option.position }}"
+        {% if dynamic_options %}
+          data-index="option{{ forloop.index }}"
+          dynamic-variant-input-wrap
+        {% endif %}
+      >
+        <div class="product-form__option-label-wrapper">
+          <label class="product-form__option-label type-heading-3" for="Option{{ option.position }}--{{ block.id }}">
+            {{ option.name }}
+          </label>
+
+          <span class="product-form__option-selected" data-option-selected>{{ option.selected_value }}</span>
+
+          {% if variant_popup_content_exists and option_name == variant_popup_option %}
+            {{ guide_trigger }}
+          {% endif %}
+        </div>
+
+        <div class="product-form__option-swatches-wrapper">
+          {% for value in option.values %}
+            <button
+              type="button"
+              data-button="{{ value | handleize }}--{{ forloop.index0 }}"
+              class="product-form__color-swatch {% if option.selected_value == value %}selected{% endif %}"
+              style="background-image: url({{ value | handle | append: '.' | append: file_extension | file_url }}); background-color: {{ value | handle }};"
+              tabindex="0"
+              aria-label="{{ value }}"
+              {% if dynamic_options %}
+                dynamic-variant-button
+                data-option-value="{{ value | escape }}"
+              {% endif %}
+            ></button>
+          {% endfor %}
+        </div>
+
+        <select
+          id="option{{ forloop.index }}"
+          name="options[{{ option.name | escape }}]"
+          class="product-form__option-select"
+          {% if dynamic_options %}
+            dynamic-variant-input
+            data-index="option{{ forloop.index }}"
+          {% endif %}
+        >
+          {% for value in option.values %}
+            <option
+              data-value-handle="{{ value | handleize }}--{{ forloop.index0 }}"
+              value="{{ value | escape }}"
+              {% if option.selected_value == value %}
+                selected="selected"
+              {% endif %}
+            >
+              {{ value }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  {%- elsif chip_options contains option_name -%}
+    <div class="product-form__option product-form__option-chip js-enabled">
+      <div
+        class="product-form__chip-wrapper"
+        data-option-buttons
+        {% if dynamic_options %}
+          dynamic-variant-input-wrap
+          data-index="option{{ forloop.index }}"
+        {% endif %}
+      >
+        <div class="            product-form__option-label-wrapper">
+          <label class="product-form__option-label type-heading-3" for="Option{{ option.position }}--{{ block.id }}">
+            {{ option.name }}
+          </label>
+
+          {% if variant_popup_content_exists and option_name == variant_popup_option %}
+            {{ guide_trigger }}
+          {% endif %}
+        </div>
+
+        {% for value in option.values %}
+          <button
+            type="button"
+            data-button="{{ value | handleize }}--{{ forloop.index0 }}"
+            class="product-form__chip {% if option.selected_value == value %}selected{% endif %}"
+            tabindex="0"
+            aria-label="{{ value }}"
+            {% if dynamic_options %}
+              dynamic-variant-button
+              data-option-value="{{ value | escape }}"
+            {% endif %}
+          >
+            {{ value }}
+          </button>
+        {% endfor %}
+
+        <select
+          id="option{{ forloop.index }}"
+          name="options[{{ option.name | escape }}]"
+          class="product-form__option-select"
+          {% if dynamic_options %}
+            dynamic-variant-input
+            data-index="option{{ forloop.index }}"
+          {% endif %}
+        >
+          {% for value in option.values %}
+            <option
+              data-value-handle="{{ value | handleize }}--{{ forloop.index0 }}"
+              value="{{ value | escape }}"
+              {% if option.selected_value == value %}
+                selected="selected"
+              {% endif %}
+            >
+              {{ value }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  {% else %}
+    <div class="product-form__option js-enabled">
+      <div class="product-form__option-label-wrapper">
+        <label class="product-form__option-label type-heading-3" for="Option{{ option.position }}--{{ block.id }}">
+          {{ option.name }}
+        </label>
+
+        {% if variant_popup_content_exists and option_name == variant_popup_option %}
+          {{ guide_trigger }}
+        {% endif %}
+      </div>
+
+      <div
+        class="product-form__option-select-wrapper"
+        {% if dynamic_options %}
+          dynamic-variant-input-wrap
+          data-index="option{{ forloop.index }}"
+        {% endif %}
+      >
+        <select
+          id="option{{ forloop.index }}"
+          name="options[{{ option.name | escape }}]"
+          class="product-form__option-select"
+          {% if dynamic_options %}
+            dynamic-variant-input
+            data-index="option{{ forloop.index }}"
+          {% endif %}
+        >
+          {% for value in option.values %}
+            <option
+              data-value-handle="{{ value | handleize }}--{{ forloop.index0 }}"
+              value="{{ value | escape }}"
+              {% if option.selected_value == value %}
+                selected="selected"
+              {% endif %}
+            >
+              {{ value }}
+            </option>
+          {% endfor %}
+        </select>
+
+        <div class="product-form__option-select-icon">
+          {% render 'icon-chevron-down' %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endfor %}
+
+{%- if dynamic_options -%}
+  <script type="application/json" data-variant-json>
+    {{ product.variants | json }}
+  </script>
+{%- endif -%}

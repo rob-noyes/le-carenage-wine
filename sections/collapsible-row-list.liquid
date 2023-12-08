@@ -1,0 +1,183 @@
+<section
+  data-section-id="{{ section.id }}"
+  data-section-type="collapsible-row-list"
+  class="
+    collapsible-row-list
+    section
+    section--{{ section.settings.section_style }}
+    {% unless section.settings.section_style == 'contrast' %}
+      section--bordered
+    {% endunless %}
+    {% if settings.enable_reveal_animations and section.settings.enable_animation %}
+      animation
+      animation--collapsible-row-list
+    {% endif %}
+  "
+>
+  <div
+    class="collapsible-row-list__inner"
+    style="
+      --section-max-width: {{ section.settings.section_max_width }}px;
+      --text-max-width: {{ section.settings.text_max_width }}em;
+    "
+  >
+    {%
+      render 'text-block' with
+      modifiers: 'collapsible-row-list__title mb3 animation--section-introduction',
+      heading: section.settings.title,
+    %}
+    {% for block in section.blocks %}
+      <div class="collapsible-row-list-item">
+        <button
+          class="collapsible-row-list-item__label"
+          aria-expanded="
+            {%- if block.settings.style == 'open' -%}
+              true
+            {%- else -%}
+              false
+            {%- endif -%}
+          "
+          aria-controls="collapsible-row-list-item--{{ block.settings.heading | handle }}{{ block.id }}"
+        >
+          <span class="collapsible-row-list-item__heading type-heading-2">{{ block.settings.heading }}</span>
+          <div class="collapsible-row-list-item__label-icon"></div>
+        </button>
+        <div
+          id="collapsible-row-list-item--{{ block.settings.heading | handle }}{{ block.id }}"
+          class="collapsible-row-list-item__text"
+          {% if block.settings.style == 'open' %}
+            style="display:block;"
+            aria-hidden="false"
+          {% else %}
+            aria-hidden="true"
+          {% endif %}
+        >
+          {{ block.settings.content }}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.collapsible_row_list.name",
+  "class": "section-dynamic section-borderable",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.collapsible_row_list.settings.style_header.content"
+    },
+    {
+      "type": "range",
+      "id": "section_max_width",
+      "label": "t:sections.collapsible_row_list.settings.section_max_width.label",
+      "info": "t:sections.collapsible_row_list.settings.section_max_width.info",
+      "default": 800,
+      "min": 400,
+      "max": 1200,
+      "step": 100
+    },
+    {
+      "id": "enable_animation",
+      "type": "checkbox",
+      "label": "t:shared.settings.section_style.enable_animation.label",
+      "info": "t:shared.settings.section_style.enable_animation.info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.collapsible_row_list.settings.content_header.content"
+    },
+    {
+      "type": "select",
+      "id": "section_style",
+      "label": "t:sections.collapsible_row_list.settings.section_style.label",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.collapsible_row_list.settings.section_style.option_1"
+        },
+        {
+          "value": "contrast",
+          "label": "t:sections.collapsible_row_list.settings.section_style.option_2"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:sections.collapsible_row_list.settings.title.label",
+      "default": "Collapsible row list"
+    },
+    {
+      "type": "range",
+      "id": "text_max_width",
+      "label": "t:sections.collapsible_row_list.settings.text_max_width.label",
+      "default": 50,
+      "min": 16,
+      "max": 80,
+      "step": 1
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Accordion",
+      "settings": [
+        {
+          "type": "select",
+          "id": "style",
+          "label": "t:sections.collapsible_row_list.blocks.item.settings.style.label",
+          "default": "closed",
+          "options": [
+            {
+              "value": "open",
+              "label": "t:sections.collapsible_row_list.blocks.item.settings.style.option_1"
+            },
+            {
+              "value": "closed",
+              "label": "t:sections.collapsible_row_list.blocks.item.settings.style.option_2"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.collapsible_row_list.blocks.item.settings.heading.label",
+          "default": "This is an example of a question that a customer might ask"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "t:sections.collapsible_row_list.blocks.item.settings.content.label",
+          "default": "<p>This is an example of a response that you might give. It's good to be as thorough as possible in responses as that has a tendency to improve trust overall.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collapsible row list",
+      "blocks": [
+        {
+          "type": "item",
+          "settings": {
+            "style": "open"
+          }
+        },
+        {
+          "type": "item"
+        },
+        {
+          "type": "item"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,118 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "enable_animation": true,
+        "content_max_width": 500
+      }
+    },
+    "b75e3c0b-4d39-44b7-801c-8b725090d10f": {
+      "type": "wines",
+      "blocks": {
+        "d6f78fea-8036-4602-85df-2d86c569594a": {
+          "type": "block",
+          "settings": {
+            "wine_image": "shopify:\/\/shop_images\/Bottle_-_2022_California_Rose.png",
+            "wine_title": "2022 California Rosé",
+            "wine_cta_link": "LEARN MORE",
+            "wine_link": "shopify:\/\/pages\/2022-california-rose"
+          }
+        },
+        "30d0a386-6f89-4398-952e-049ecd1f4b63": {
+          "type": "block",
+          "settings": {
+            "wine_image": "shopify:\/\/shop_images\/Bottle_-_2022_Napa_Valley_Sauvignon_Blanc.png",
+            "wine_title": "2022 Sauvignon Blanc",
+            "wine_cta_link": "LEARN MORE",
+            "wine_link": "shopify:\/\/pages\/2022-napa-valley-sauvignon-blanc"
+          }
+        }
+      },
+      "block_order": [
+        "d6f78fea-8036-4602-85df-2d86c569594a",
+        "30d0a386-6f89-4398-952e-049ecd1f4b63"
+      ],
+      "settings": {
+        "background_color": "",
+        "header_text": "Le Carénage Wines",
+        "header_subtext": "<p>Current Releases<\/p>"
+      }
+    },
+    "7847f5fd-a4b6-40f1-a508-f04809a53a1e": {
+      "type": "mosaic-grid-2-column",
+      "blocks": {
+        "4b84a210-7385-4059-b50f-58742ce60c6e": {
+          "type": "small_square",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/Bottle_-_2022_California_Rose_3c002c92-29f5-424c-a659-1c477be11984.png",
+            "video_url": "",
+            "media_fit": "contain",
+            "focal_point": "image_presentation",
+            "overline": "",
+            "title": "2022 California Rosé",
+            "subheading": "",
+            "text_max_width": 30,
+            "link_text": "LEARN MORE",
+            "link": "shopify:\/\/pages\/2022-california-rose",
+            "text_position": "center_bottom",
+            "background_color": "",
+            "color_text": "#1a1818",
+            "color_text_button": "#ffffff",
+            "color_background_button": "#1a1818",
+            "color_text_container": "",
+            "overlay_color": "#000000",
+            "color_overlay_gradient": "",
+            "overlay_opacity": 0
+          }
+        },
+        "5ccf27b9-3d0d-4f3b-9eaf-8972545ba146": {
+          "type": "small_square",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/Bottle_-_2022_Napa_Valley_Sauvignon_Blanc_fab84ce3-7ea8-4aaf-90b8-354333bda73a.png",
+            "video_url": "",
+            "media_fit": "contain",
+            "focal_point": "image_presentation",
+            "overline": "",
+            "title": "2022 Sauvignon Blanc",
+            "subheading": "",
+            "text_max_width": 35,
+            "link_text": "LEARN MORE",
+            "link": "shopify:\/\/pages\/2022-napa-valley-sauvignon-blanc",
+            "text_position": "center_bottom",
+            "background_color": "",
+            "color_text": "#1a1818",
+            "color_text_button": "#ffffff",
+            "color_background_button": "#1a1818",
+            "color_text_container": "",
+            "overlay_color": "#ffffff",
+            "color_overlay_gradient": "",
+            "overlay_opacity": 0
+          }
+        }
+      },
+      "block_order": [
+        "4b84a210-7385-4059-b50f-58742ce60c6e",
+        "5ccf27b9-3d0d-4f3b-9eaf-8972545ba146"
+      ],
+      "disabled": true,
+      "settings": {
+        "section_style": "default",
+        "enable_animation": true,
+        "title": "",
+        "heading": "Le Carénage Wines",
+        "subheading": "<p>Current Releases<\/p>",
+        "heading_alignment": "center",
+        "text_max_width": 42,
+        "mobile_content_placement": "within",
+        "mobile_text_align": "center"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "b75e3c0b-4d39-44b7-801c-8b725090d10f",
+    "7847f5fd-a4b6-40f1-a508-f04809a53a1e"
+  ]
+}

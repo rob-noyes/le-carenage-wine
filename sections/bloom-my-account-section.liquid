@@ -1,0 +1,181 @@
+{% comment %}
+This shop uses Bloom, a growth platform for modern wineries.
+You SHOULD NOT modify the contents of this file.
+It is automatically generated and your changes will be overwritten.
+These features and content can be managed within the Bloom app or the Shopify customizer.
+
+Bloom (www.bloom.wine)
+{% endcomment %}
+
+
+{% comment %}
+Installation note: This section requires 'bloom.liquid' to be present and a variable is_member to be defined.
+{% endcomment %}
+
+<section>
+  {{ 'bloom-my-account.css' | asset_url | stylesheet_tag }}
+  <noscript>You need to enable JavaScript to manage your membership and releases.</noscript>
+  <div
+    data-bloom-my-account-container
+    {% if customer %}
+      data-customer='{"id": "{{ customer.id }}","firstName": {{ customer.first_name | json }},"lastName": {{ customer.last_name | json }},"phone": {{ customer.phone | json }},"email": {{ customer.email | json }}}'
+    {% else %}
+     data-customer='{}'
+    {% endif %}
+      data-settings="{{ section.settings | json | escape }}"
+      data-credentials='{"gateway_publishable_key":"pk_live_p8pFV215m3ereYJOYEI7KBad","google_maps_api_key":"AIzaSyDP47c7KBKGiLfRpTCE3UgXWca_W8nstW4"}'
+  ></div>
+
+  <script defer="defer" src="{{ 'bloom-my-account.js' | asset_url }}"></script>
+</section>
+
+{% schema %}
+{
+  "name": "Allocation selection",
+  "settings": [
+    {
+      "type": "header",
+      "content": "General settings"
+    },
+    {
+      "type": "text",
+      "id": "allocation_name",
+      "label": "Allocation name",
+      "info": "Can't exceed 22 characters. Orders created from this page will be tagged with the allocation name"
+    },
+    {
+      "type": "header",
+      "content": "Customize package"
+    },
+    {
+      "type": "text",
+      "id": "customize_package_heading",
+      "label": "Title",
+      "default": "Customize your package"
+    },
+    {
+      "type": "richtext",
+      "id": "customize_package_description",
+      "label": "Description",
+      "default": "<p>Lorem Ipsum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus.</p>"
+    },
+    {
+      "type": "text",
+      "id": "customize_package_accordion_title",
+      "label": "Accordion title",
+      "default": "How it works"
+    },
+    {
+      "type": "richtext",
+      "id": "customize_package_accordion_description",
+      "label": "Accordion content"
+    },
+    {
+      "type": "text",
+      "id": "continue_button_label",
+      "label": "Continue button label",
+      "default": "Continue"
+    },
+    {
+      "type": "header",
+      "content": "Wishlist"
+    },
+    {
+      "type": "image_picker",
+      "id": "wishlist_image",
+      "label": "Image",
+      "info": "Icon or logo recommended. Minimum 600px."
+    },
+    {
+      "type": "text",
+      "id": "wishlist_header",
+      "label": "Header title",
+      "info": "Header"
+    },
+    {
+      "type": "richtext",
+      "id": "wishlist_description",
+      "label": "Description",
+      "default": "<p>Lorem Ipsum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus.</p>"
+    },
+    {
+      "type": "text",
+      "id": "wishlist_accordion_title",
+      "label": "Accordion title",
+      "default": "How wishes work"
+    },
+    {
+      "type": "richtext",
+      "id": "wishlist_accordion_content",
+      "label": "Accordion content"
+    },
+    {
+      "type": "text",
+      "id": "wishlist_yes_label",
+      "label": "Yes radio label",
+      "default": "Yes, contact me about more wine"
+    },
+    {
+      "type": "text",
+      "id": "wishlist_no_label",
+      "label": "No radio label",
+      "default": "No, I have no extra requests"
+    },
+    {
+      "type": "header",
+      "content": "Wishlist buttons"
+    },
+    {
+      "type": "text",
+      "id": "wishlist_info_message",
+      "label": "Wishlist info message"
+    },
+    {
+      "type": "text",
+      "id": "submit_button_label",
+      "label": "Submit button label",
+      "default": "Continue to Payment"
+    },
+    {
+      "type": "text",
+      "id": "back_button_label",
+      "label": "Back button label",
+      "default": "Back to allocations"
+    },
+    {
+      "type": "header",
+      "content": "Packages unavailable"
+    },
+    {
+      "type": "html",
+      "id": "unavailable_package_text",
+      "label": "Customer has no packages",
+      "default": "<p>You don't currently have any packages available.  Return to <a href=\"/account\">your account</a> to view your current orders.</p>"
+    },
+    {
+      "type": "html",
+      "id": "already_purchased_message",
+      "label": "Customer has already made a purchase",
+      "default": "<p>You've already made a purchase for this release. Contact the store if you want to modify your allocation.</p>"
+    },
+    {
+      "type": "html",
+      "id": "members_only_text",
+      "label": "Members only",
+      "default": "<p><a href=\"/account\">Sign in</a> to create an account to access this release.</p>"
+    },
+    {
+      "type": "html",
+      "id": "not_started_text",
+      "label": "Release not started",
+      "default": "<p>This release has not started yet.  Return to <a href=\"/account\">your account</a> to view your current orders.</p>"
+    },
+    {
+      "type": "html",
+      "id": "release_expired_text",
+      "label": "Release ended",
+      "default": "<p>This release has ended. Return to <a href=\"/account\">your account</a> to view your current orders.</p>"
+    }
+  ]
+}
+{% endschema %}

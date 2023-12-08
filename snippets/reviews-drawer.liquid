@@ -1,0 +1,12 @@
+<div class="drawer reviews-flyout" data-reviews-drawer>
+  <div class="reviews-flyout__header">
+    <a href="#" data-reviews-close>
+      {% render 'icon-close' %}
+    </a>
+  </div>
+
+  {% comment %} <div id="shopify-product-reviews" data-id="{{product.id}}">{{ product.metafields.spr.reviews }}</div> {% endcomment %}
+  <template class="product-reviews-template">
+  <div id="shopify-product-reviews" data-id="{{product.id}}">{{ product.metafields.spr.reviews }}</div>
+  </template>
+</div>

@@ -1,0 +1,198 @@
+{% liquid
+  assign layout = section.settings.layout
+  assign show_rss = section.settings.show_rss
+%}
+
+{% assign paginated_amount = 9 %}
+
+{% if layout == 'latest_featured' %}
+  {% assign paginated_amount = 8 %}
+{% endif %}
+
+<section
+  data-section-id="{{ section.id }}"
+  data-section-type="blog"
+  class="
+    blog
+    {% if settings.enable_reveal_animations and section.settings.enable_animation %}
+      animation
+      animation--blog
+    {% endif %}
+  "
+>
+  {% paginate blog.articles by paginated_amount %}
+    <div class="blog__heading">
+      {%- assign blog_title = blog.title -%}
+
+      {% if current_tags %}
+        {% capture blog_title %}{{ blog.title | link_to: blog.url }} &mdash; {{ current_tags.first }}{% endcapture %}
+      {% endif %}
+
+      <div class="blog__heading-inner flex justify-between items-center">
+        <h1 class="ma0 type-heading-1">{{ blog_title }}</h1>
+        {% if show_rss %}
+          <a href="/blogs/{{ blog.handle }}.atom" class="blog__rss underline accent">{{ 'general.meta.rss' | t }}</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="blog__articles-container mt3">
+      <div class="blog__articles">
+        {% for article in blog.articles %}
+          {% capture article_modifiers %}
+              {% if forloop.first and layout == 'latest_featured' %} is-featured {%- endif -%}
+              {%- if article.image %} has-image {%- endif -%}
+            {% endcapture %}
+
+          <article class="blog__article relative{{ article_modifiers }}">
+            {% if article.image %}
+              <a href="{{ article.url }}">
+                {%- assign aspect_ratio = section.settings.aspect_ratio -%}
+                {%- assign image_is_constrained = true -%}
+
+                {%- if aspect_ratio == 'natural' -%}
+                  {%- assign image_is_constrained = false -%}
+                {%- endif -%}
+                <div class="blog__article-image blog__article-image--aspect-ratio-{{ aspect_ratio }}">
+                  <div class="blog__article-image-constraint">
+                    {% render 'image', image: article.image, disable_style: image_is_constrained, animate: true %}
+                  </div>
+                </div>
+
+                {% if forloop.first and layout == 'latest_featured' %}
+                  <div class="blog__article-featured-badge ttu lh-title bg-sale white">
+                    {{ 'blogs.article.featured' | t }}
+                  </div>
+                {% endif %}
+              </a>
+            {% endif %}
+            <div class="blog__article-content">
+              {%- for block in section.blocks -%}
+                {%- case block.type -%}
+                  {%- when 'title' -%}
+                    <h2 class="blog__article-title blog__article-heading type-heading-1-small">
+                      <a href="{{ article.url }}">{{ article.title }}</a>
+                    </h2>
+                  {%- when 'date' -%}
+                    {% capture date %}{{ article.published_at | time_tag: format: 'date'  }}{% endcapture %}
+                    <div class="type-heading-meta meta mt1">{{ date }}</div>
+                  {%- when 'summary' -%}
+                    <div class="blog__article-excerpt type-body-regular mt3">
+                      {{ article.excerpt_or_content | strip_html | truncate: 200 }}
+                    </div>
+                  {%- when 'button' -%}
+                    <a href="{{ article.url }}" class="bttn bttn--secondary bttn--inline mt4">
+                      {{- 'blogs.article.read_more' | t -}}
+                    </a>
+                {%- endcase -%}
+              {%- endfor -%}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="blog__pagination">
+      {% if paginate.pages > 1 %}
+        {% render 'pagination' with paginate: paginate, type: 'general.pagination.blog_posts' %}
+      {% else %}
+        {% render 'pagination' with paginate: paginate, type: 'general.pagination.blog_posts', display_paginate_item_count_only: true %}
+      {% endif %}
+    </div>
+  {% endpaginate %}
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.main_blog.name",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:shared.settings.section_style.style_header.content"
+    },
+    {
+      "id": "enable_animation",
+      "type": "checkbox",
+      "label": "t:shared.settings.section_style.enable_animation.label",
+      "info": "t:shared.settings.section_style.enable_animation.info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:shared.settings.content_header.content"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:sections.main_blog.settings.layout_style.label",
+      "default": "latest_featured",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.main_blog.settings.layout_style.options__1.label"
+        },
+        {
+          "value": "latest_featured",
+          "label": "t:sections.main_blog.settings.layout_style.options__2.label"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rss",
+      "label": "t:sections.main_blog.settings.show_rss.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main_blog.settings.header.content"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "options": [
+        {
+          "value": "natural",
+          "label": "t:sections.main_blog.settings.aspect_ratio.option_1"
+        },
+        {
+          "value": "square",
+          "label": "t:sections.main_blog.settings.aspect_ratio.option_2"
+        },
+        {
+          "value": "landscape",
+          "label": "t:sections.main_blog.settings.aspect_ratio.option_3"
+        },
+        {
+          "value": "portrait",
+          "label": "t:sections.main_blog.settings.aspect_ratio.option_4"
+        }
+      ],
+      "default": "square",
+      "label": "t:sections.main_blog.settings.aspect_ratio.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "title",
+      "name": "t:sections.main_blog.blocks.title.name",
+      "limit": 1
+    },
+    {
+      "type": "date",
+      "name": "t:sections.main_blog.blocks.date.name",
+      "limit": 1
+    },
+    {
+      "type": "summary",
+      "name": "t:sections.main_blog.blocks.summary.name",
+      "limit": 1
+    },
+    {
+      "type": "button",
+      "name": "t:sections.main_blog.blocks.button.name",
+      "limit": 1
+    }
+  ]
+}
+{% endschema %}

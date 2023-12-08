@@ -1,0 +1,152 @@
+{% liquid
+  assign id = section.id
+  assign overline = section.settings.overline
+  assign heading = section.settings.title
+  assign subheading = section.settings.subheading
+  assign columns_mobile = section.settings.columns_mobile
+  assign columns = section.settings.columns
+  assign text_max_width = section.settings.text_max_width
+%}
+
+{% assign product_count = 6 %}
+
+<section
+  data-section-id="{{ id }}"
+  data-section-type="product-recommendations"
+  data-product-id="{{ product.id }}"
+  data-limit="{{ product_count }}"
+  {% comment %} class="product-recommendations product-recommendations--column-{{ columns }}" {% endcomment %}
+  class="
+    section
+    section--bordered
+    product-recommendations
+    carousel
+    carousel--columns-{{ columns }}
+    carousel--columns-mobile-{{ columns_mobile }}
+    carousel--items-{{ product_count }}
+    {% if settings.enable_reveal_animations and section.settings.enable_animation %}
+      animation
+      animation--product-recommendations
+    {% endif %}
+  "
+>
+  {%- if recommendations.products_count > 0 -%}
+    {%
+      render 'text-block' with
+      id: id,
+      modifiers: 'mb5 animation--section-introduction',
+      heading_alignment: 'center',
+      overline: overline,
+      heading: heading,
+      subheading: subheading,
+      text_max_width: text_max_width
+    %}
+
+    {% render 'carousel-navigation' %}
+
+    <div class="carousel__slides" data-carousel>
+      {%- for product in recommendations.products -%}
+        <div class="carousel__slide">
+          {% render 'product-item', product: product, aspect_ratio: section.settings.aspect_ratio %}
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.recommended_products.name",
+  "class": "section-dynamic section-borderable",
+  "templates": ["product"],
+  "limit": 1,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.recommended_products.settings.paragraph__customization.content"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.recommended_products.settings.paragraph__intro.content"
+    },
+    {
+      "type": "header",
+      "content": "t:shared.settings.section_style.style_header.content"
+    },
+    {
+      "id": "enable_animation",
+      "type": "checkbox",
+      "label": "t:shared.settings.section_style.enable_animation.label",
+      "info": "t:shared.settings.section_style.enable_animation.info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:shared.settings.content_header.content"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "t:sections.recommended_products.settings.columns.label",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "id": "columns_mobile",
+      "type": "select",
+      "label": "t:shared.settings.columns_mobile.label",
+      "options": [
+        { "label": "t:shared.settings.columns_mobile.option_1", "value": "1" },
+        { "label": "t:shared.settings.columns_mobile.option_2", "value": "2" }
+      ],
+      "default": "1"
+    },
+    {
+      "id": "aspect_ratio",
+      "type": "select",
+      "label": "t:sections.recommended_products.settings.aspect_ratio.label",
+      "options": [
+        { "label": "t:sections.recommended_products.settings.aspect_ratio.option_1", "value": "natural" },
+        { "label": "t:sections.recommended_products.settings.aspect_ratio.option_2", "value": "square" },
+        { "label": "t:sections.recommended_products.settings.aspect_ratio.option_3", "value": "landscape" },
+        { "label": "t:sections.recommended_products.settings.aspect_ratio.option_4", "value": "portrait" }
+      ],
+      "default": "natural"
+    },
+    {
+      "type": "text",
+      "id": "overline",
+      "label": "t:sections.recommended_products.settings.overline.label",
+      "default": "Collection"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:sections.recommended_products.settings.heading.label",
+      "default": "Recommended"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "t:sections.recommended_products.settings.subheading.label",
+      "default": "<p>You might want to take a look at these.</p>"
+    },
+    {
+      "type": "range",
+      "id": "text_max_width",
+      "label": "t:sections.recommended_products.settings.text_max_width.label",
+      "min": 16,
+      "max": 50,
+      "step": 1,
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.recommended_products.presets.name"
+    }
+  ]
+}
+{% endschema %}

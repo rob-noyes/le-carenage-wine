@@ -1,0 +1,38 @@
+{% comment %}
+This shop uses Bloom, a growth platform for modern wineries.
+You SHOULD NOT modify the contents of this file.
+It is automatically generated and your changes will be overwritten.
+These features and content can be managed within the Bloom app or the Shopify customizer.
+
+Bloom (www.bloom.wine)
+{% endcomment %}
+
+{% if settings.bloom_cart_dob_show %}
+
+  {% if cart_attribute_name == blank %}
+    {% assign cart_attribute_name = "Customer date of birth" %}
+  {% endif %}
+  {% assign label = settings.bloom_cart_dob_label %}
+
+  {% capture requires_dob %}{%- render 'bloom-requires-dob' -%}{% endcapture %}
+  {% assign stripped_requires_dob = requires_dob | strip %}
+  {% if stripped_requires_dob == 'true' %}{% assign requires_dob = true %}{% else %}{% assign requires_dob = false %}{% endif %}
+
+<div class="{{ class_name }}" data-date-selector="{{ cart_attribute_name }}" data-date-selector-options='{}' style="display: {%- if stripped_requires_dob -%}inline-block{%- else -%}none{%- endif -%};{{ style }}">
+
+    {% if label != blank %}
+      <p id="bloom-cart-date-of-birth" data-date-selector-label="" class="Bloom__DateOfBirth--label {{ label_class }}" style="{{ label_style }}">{{ label }}</p>
+    {% endif %}
+
+    {%- render 'bloom-date-input-snippet',
+      describedby: "bloom-cart-date-of-birth",
+      date: cart.attributes[cart_attribute_name],
+      wrapper_class: wrapper_class,
+      wrapper_style: wrapper_style,
+      input_wrapper_class: input_wrapper_class,
+      input_wrapper_style: input_wrapper_style,
+      input_class: input_class,
+      input_style: input_style -%}
+  </div>
+
+{% endif %}

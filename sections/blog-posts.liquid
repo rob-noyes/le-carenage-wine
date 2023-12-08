@@ -1,0 +1,251 @@
+{% liquid
+  assign id = section.id
+  assign section_style = section.settings.section_style
+
+  assign columns = section.settings.columns
+  assign aspect_ratio = section.settings.aspect_ratio
+  assign overline = section.settings.title
+  assign link_text = section.settings.link_text
+  assign text_max_width = section.settings.text_max_width
+
+  assign blocks = section.blocks
+%}
+
+{% assign modifiers = '' %}
+
+{% assign modifiers = modifiers | append: ' section--' | append: section_style %}
+
+{% unless section_style == 'contrast' %}
+  {% assign modifiers = modifiers | append: ' section--bordered' %}
+{% endunless %}
+
+{% assign modifiers = modifiers | append: ' carousel--columns-' | append: columns %}
+
+{% assign minimum_items_for_wrap_around = columns | plus: 2 %}
+{% assign items_needed = minimum_items_for_wrap_around | minus: blocks.size %}
+
+{% if items_needed <= 0 or blocks.size == 0 %}
+  {% assign modifiers = modifiers | append: ' carousel--columns-wrap-around' %}
+{% endif %}
+
+{% assign carousel_type = 'top_center' %}
+
+{% assign carousel_text_position = carousel_type | split: '_' | first %}
+{% assign carousel_text_alignment = carousel_type | split: '_' | last %}
+
+{% assign modifiers = modifiers | append: ' carousel--text-position-' | append: carousel_text_position %}
+{% assign modifiers = modifiers | append: ' carousel--text-alignment-' | append: carousel_text_alignment %}
+{% assign modifiers = modifiers | append: ' carousel--items-' | append: blocks.size %}
+{% assign modifiers = modifiers | append: ' carousel--aspect-ratio-' | append: aspect_ratio %}
+
+{% if settings.enable_reveal_animations and section.settings.enable_animation %}
+  {% assign modifiers = modifiers | append: ' animation animation--blog-posts' %}
+{% endif %}
+
+{% assign image_is_constrained = true %}
+
+{% if aspect_ratio == 'natural' %}
+  {% assign image_is_constrained = false %}
+{% endif %}
+
+<section
+  data-section-id="{{ id }}"
+  data-section-type="blog-posts"
+  class="section blog-posts carousel{{ modifiers }}"
+  data-text-position="{{ carousel_text_position }}"
+  data-text-alignment="{{ carousel_text_alignment }}"
+  data-columns="{{ columns }}"
+>
+  {% render 'carousel-navigation' %}
+
+  <div class="blog-posts__slides carousel__slides" data-carousel>
+    {% if blocks.size > 0 %}
+      {% for block in blocks %}
+        {% assign article = articles[block.settings.article] %}
+
+        {% if article != blank %}
+          {% assign article_heading = article.title %}
+          {% assign article_excerpt = article.excerpt_or_content | strip_html | truncate: 200 %}
+
+          <div class="blog-posts__slide carousel__slide">
+            {% if article.image %}
+              <a href="{{ article.url }}" class="blog-posts__slide-image carousel__slide-image">
+                {%
+                  render 'image' with
+                  image: article.image,
+                  disable_style: image_is_constrained,
+                  animate: true
+                %}
+              </a>
+            {% else %}
+              <div class="blog-posts__slide-image carousel__slide-image">
+                {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+            {% endif %}
+
+            {%
+              render 'text-block' with
+              id: id,
+              modifiers: 'mt5 animation--section-introduction',
+              heading_alignment: 'center',
+              overline: overline,
+              heading: article_heading,
+              subheading: article_excerpt,
+              text_max_width: text_max_width,
+              link: article.url,
+              link_text: link_text
+            %}
+          </div>
+        {% else %}
+          {% assign article_title = 'homepage.onboarding.article_title' | t %}
+          {% assign article_excerpt = 'homepage.onboarding.article_excerpt' | t %}
+
+          <div class="blog-posts__slide carousel__slide">
+            <div class="blog-posts__slide-image carousel__slide-image">
+              {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+            {%
+              render 'text-block' with
+              id: id,
+              modifiers: 'mt5 animation--section-introduction',
+              heading_alignment: 'center',
+              overline: overline,
+              heading: article_title,
+              subheading: article_excerpt,
+              text_max_width: text_max_width,
+              show_placeholder_link: true,
+              link_text: link_text
+            %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      {% assign article_title = 'homepage.onboarding.article_title' | t %}
+      {% assign article_excerpt = 'homepage.onboarding.article_excerpt' | t %}
+      {% for i in (1..minimum_items_for_wrap_around) %}
+        <div class="blog-posts__slide carousel__slide">
+          <div class="blog-posts__slide-image carousel__slide-image">
+            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+          {%
+            render 'text-block' with
+            id: id,
+            modifiers: 'mt5 animation--section-introduction',
+            heading_alignment: 'center',
+            overline: overline,
+            heading: article_title,
+            subheading: article_excerpt,
+            text_max_width: text_max_width,
+            show_placeholder_link: true,
+            link_text: link_text
+          %}
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.blog_posts.name",
+  "class": "section-dynamic section-borderable",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"],
+    "templates": ["password"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.blog_posts.settings.style_header.content"
+    },
+    {
+      "type": "select",
+      "id": "section_style",
+      "label": "t:sections.blog_posts.settings.section_style.label",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.blog_posts.settings.section_style.option_1"
+        },
+        {
+          "value": "contrast",
+          "label": "t:sections.blog_posts.settings.section_style.option_2"
+        }
+      ]
+    },
+    {
+      "id": "enable_animation",
+      "type": "checkbox",
+      "label": "t:shared.settings.section_style.enable_animation.label",
+      "info": "t:shared.settings.section_style.enable_animation.info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.blog_posts.settings.content_header.content"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "t:sections.blog_posts.settings.columns.label",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "id": "aspect_ratio",
+      "type": "select",
+      "label": "t:sections.blog_posts.settings.aspect_ratio.label",
+      "options": [
+        { "label": "t:sections.blog_posts.settings.aspect_ratio.option_1", "value": "natural" },
+        { "label": "t:sections.blog_posts.settings.aspect_ratio.option_2", "value": "square" },
+        { "label": "t:sections.blog_posts.settings.aspect_ratio.option_3", "value": "landscape" },
+        { "label": "t:sections.blog_posts.settings.aspect_ratio.option_4", "value": "portrait" }
+      ],
+      "default": "natural"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:sections.blog_posts.settings.title.label",
+      "default": "Story"
+    },
+    {
+      "type": "text",
+      "id": "link_text",
+      "label": "t:sections.blog_posts.settings.link_text.label",
+      "default": "Read more"
+    },
+    {
+      "type": "range",
+      "id": "text_max_width",
+      "label": "t:sections.blog_posts.settings.text_max_width.label",
+      "min": 16,
+      "max": 50,
+      "step": 1,
+      "default": 36
+    }
+  ],
+  "max_blocks": 6,
+  "blocks": [
+    {
+      "type": "article",
+      "name": "t:sections.blog_posts.blocks.article.name",
+      "settings": [
+        {
+          "id": "article",
+          "type": "article",
+          "label": "t:sections.blog_posts.blocks.article.settings.article.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.blog_posts.presets.blog_posts.name"
+    }
+  ]
+}
+{% endschema %}

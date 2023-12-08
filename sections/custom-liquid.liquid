@@ -1,0 +1,26 @@
+<div class="section section--bordered">
+  {{ section.settings.custom_liquid }}
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.custom_liquid.name",
+  "tag": "section",
+  "class": "section-dynamic section-borderable",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "liquid",
+      "id": "custom_liquid",
+      "label": "t:sections.custom_liquid.settings.custom_liquid.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.custom_liquid.presets.name"
+    }
+  ]
+}
+{% endschema %}

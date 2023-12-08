@@ -1,0 +1,371 @@
+{% liquid
+  assign id = section.id
+  assign section_style = section.settings.section_style
+  assign heading_alignment = section.settings.heading_alignment
+  assign text_max_width = section.settings.text_max_width
+  assign image = section.settings.image
+  assign map_address = section.settings.map_address
+  assign map_link_text = section.settings.map_link_text
+  assign api_key = section.settings.api_key
+  assign map_json = section.settings.map_json
+%}
+
+{% assign map_is_valid = false %}
+
+{% if api_key != blank and map_address != blank %}
+  {% assign map_is_valid = true %}
+{% endif %}
+
+{% assign modifiers = '' %}
+
+{% assign modifiers = modifiers | append: ' section--' | append: section_style %}
+
+{% unless section_style == 'contrast' %}
+  {% assign modifiers = modifiers | append: ' section--bordered' %}
+{% endunless %}
+
+{% assign modifiers = modifiers | append: ' location--alignment-' | append: heading_alignment %}
+
+{% if image %}
+  {% assign modifiers = modifiers | append: ' location--has-image' %}
+{% endif %}
+
+{% if map_is_valid %}
+  {% assign modifiers = modifiers | append: ' location--has-map' %}
+{% endif %}
+
+{% if settings.enable_reveal_animations and section.settings.enable_animation %}
+  {% assign modifiers = modifiers | append: ' animation animation--location' %}
+{% endif %}
+
+{% capture map_link %}
+  <div class="location__map-cta">
+    <a
+      target="_blank"
+      class="accent-link"
+      data-theme-editor-setting="section.{{ id }}.map_link_text"
+      rel="norefferer noopener"
+      href="https://www.google.com/maps/place/{{ map_address | url_encode }}"
+    >
+      {{ map_link_text }}
+    </a>
+  </div>
+{% endcapture %}
+
+<section
+  data-section-id="{{ id }}"
+  data-section-type="location"
+  class="section location{{ modifiers }}"
+>
+  <div class="location__intro">
+    {% comment %}
+       {% render 'text-block' with
+        id: id,
+        modifiers: 'mb5',
+        heading_alignment: heading_alignment,
+        text_max_width: text_max_width,
+        overline: overline,
+        heading: heading,
+        subheading: subheading,
+      %}
+    {% endcomment %}
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="text-block mb5 text-block--{{ heading_alignment }} animation--section-introduction">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'overline' -%}
+              {% unless block.settings.overline == blank %}
+                <div
+                  {{ block.shopify_attributes }}
+                  class="text-block__item text-block__overline overline"
+                >
+                  {{ block.settings.overline }}
+                </div>
+              {% endunless %}
+            {%- when 'heading' -%}
+              {%- unless block.settings.heading == blank -%}
+                <h2
+                  {{ block.shopify_attributes }}
+                  class="text-block__item text-block__heading type-heading-1"
+                  {%- if text_max_width != blank -%}
+                    style="max-width: {{ text_max_width }}rem;"
+                  {%- endif -%}
+                >
+                  {{ block.settings.heading }}
+                </h2>
+              {%- endunless -%}
+            {%- when 'subheading' -%}
+              {%- unless block.settings.subheading == blank -%}
+                <div
+                  {{ block.shopify_attributes }}
+                  class="text-block__subheading type-body-regular rte"
+                  {%- if text_max_width != blank -%}
+                    style="max-width: {{ text_max_width }}rem;"
+                  {%- endif -%}
+                >
+                  {{ block.settings.subheading }}
+                </div>
+              {%- endunless -%}
+            {%- when 'store_info' -%}
+              {%- assign address = block.settings.address -%}
+              {%- assign hours = block.settings.hours -%}
+              {% if hours != blank or address != blank %}
+                <div
+                  {{ block.shopify_attributes }}
+                  class="location__store-info{% if forloop.first != true %} mt5{% endif %}{% if forloop.last != true %} mb5{% endif %}"
+                >
+                  <div class="location__store-info-inner">
+                    {% unless hours == blank %}
+                      <div class="location__store-hours">
+                        <div class="location__store-hours-title overline mb3">
+                          {{ 'general.store_information.hours' | t }}
+                        </div>
+                        <div
+                          class="type-body-regular rte"
+                          data-theme-editor-setting="section.{{ id }}.hours"
+                        >
+                          {{ hours }}
+                        </div>
+                      </div>
+                    {% endunless %}
+
+                    {% unless address == blank %}
+                      <div class="location__store-address">
+                        <div class="location__store-address-title overline mb3">
+                          {{ 'general.store_information.address' | t }}
+                        </div>
+                        <div
+                          class="type-body-regular rte"
+                          data-theme-editor-setting="section.{{ id }}.address"
+                        >
+                          {{ address }}
+                        </div>
+                      </div>
+                    {% endunless %}
+                  </div>
+                </div>
+              {% endif %}
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="location__map w-100">
+    <div class="location__image">
+      {% if image %}
+        {% render 'image', image: image, image_class: 'w-100', animate: true %}
+      {% else %}
+        {% unless map_is_valid %}
+          <div class="location__map-placeholder">{{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}</div>
+        {% endunless %}
+      {% endif %}
+    </div>
+
+    {% if map_is_valid %}
+      <div
+        class="location__map-container"
+        data-api-key="{{ api_key }}"
+        data-address="{{ map_address | url_encode }}"
+      >
+        <div class="location__map-element-wrapper">
+          <div class="location__map-element" style="height: 100%;"></div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% unless map_link_text == blank and map_address != blank %}
+      {{ map_link }}
+    {% endunless %}
+  </div>
+</section>
+
+<script id="map-styles-{{ id }}" type="application/json">
+  {
+    "styles":
+      {%- if map_json != blank -%}
+        {{ map_json }}
+      {% else %}
+        {}
+      {%- endif -%}
+  }
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.location.name",
+  "class": "section-dynamic section-borderable",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.location.settings.style_header.content"
+    },
+    {
+      "type": "select",
+      "id": "section_style",
+      "label": "t:sections.location.settings.section_style.label",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.location.settings.section_style.option_1"
+        },
+        {
+          "value": "contrast",
+          "label": "t:sections.location.settings.section_style.option_2"
+        }
+      ]
+    },
+    {
+      "id": "enable_animation",
+      "type": "checkbox",
+      "label": "t:shared.settings.section_style.enable_animation.label",
+      "info": "t:shared.settings.section_style.enable_animation.info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.location.settings.content_header.content"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "t:sections.location.settings.heading_alignment.label",
+      "default": "center",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.location.settings.heading_alignment.option_1"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.location.settings.heading_alignment.option_2"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "text_max_width",
+      "label": "t:sections.location.settings.text_max_width.label",
+      "min": 16,
+      "max": 50,
+      "step": 1,
+      "default": 32
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.location.settings.image.label",
+      "info": "t:sections.location.settings.image.info"
+    },
+    {
+      "type": "text",
+      "id": "map_address",
+      "label": "t:sections.location.settings.map_address.label",
+      "info": "t:sections.location.settings.map_address.info"
+    },
+    {
+      "type": "text",
+      "id": "api_key",
+      "label": "t:sections.location.settings.api_key.label",
+      "info": "t:sections.location.settings.api_key.info"
+    },
+    {
+      "type": "textarea",
+      "id": "map_json",
+      "label": "t:sections.location.settings.map_json.label",
+      "info": "t:sections.location.settings.map_json.info"
+    },
+    {
+      "type": "text",
+      "id": "map_link_text",
+      "label": "t:sections.location.settings.map_link_text.label",
+      "info": "t:sections.location.settings.map_link_text.info",
+      "default": "Get Directions"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "overline",
+      "name": "t:sections.location.blocks.overline.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "overline",
+          "label": "t:sections.location.blocks.overline.settings.overline.label",
+          "default": "Location"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "name": "t:sections.location.blocks.heading.name",
+      "limit": 1,
+      "settings": [
+        {
+          "id": "heading",
+          "type": "text",
+          "label": "t:sections.location.blocks.heading.settings.heading.label",
+          "default": "Map Section"
+        }
+      ]
+    },
+    {
+      "type": "subheading",
+      "name": "t:sections.location.blocks.subheading.name",
+      "limit": 1,
+      "settings": [
+        {
+          "id": "subheading",
+          "type": "richtext",
+          "label": "t:sections.location.blocks.subheading.settings.subheading.label",
+          "default": "<p>Use this section to direct your customers to your physical location.</p>"
+        }
+      ]
+    },
+    {
+      "type": "store_info",
+      "name": "t:sections.location.blocks.store_info.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "hours",
+          "label": "t:sections.location.blocks.store_info.settings.hours.label",
+          "default": "<p>Mon - Fri, 10am - 7pm<br/>Saturday, 11am - 8pm<br/>Sunday, 11am - 5pm</p>"
+        },
+        {
+          "type": "richtext",
+          "id": "address",
+          "label": "t:sections.location.blocks.store_info.settings.address.label",
+          "default": "<p>Our store<br/>423 Fake St.<br/>Faketown, Ontario</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.location.presets.map.name",
+      "blocks": [
+        {
+          "type": "overline"
+        },
+        {
+          "type": "heading"
+        },
+        {
+          "type": "subheading"
+        },
+        {
+          "type": "store_info"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
