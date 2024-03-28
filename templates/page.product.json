@@ -21,7 +21,7 @@
         "template--19878681870645__56da0051-e31a-438e-a0b0-40761e9097b7-16887449033308608b-2": {
           "type": "subheading",
           "settings": {
-            "subheading": "<p>{{ page.metafields.custom.tasting_notes | metafield_tag }}<\/p>",
+            "subheading": "{{ page.metafields.custom.product_description | metafield_tag }}",
             "text_max_width": 36
           }
         }

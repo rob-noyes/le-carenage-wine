@@ -30,7 +30,7 @@
 
 .wine_grid .wine_grid_container {
     display: grid;
-    grid-template-columns: repeat(2,1fr);
+    grid-template-columns: repeat(3,1fr);
     grid-auto-rows: auto; 
     grid-column-gap: 0px;
     grid-row-gap: 80px;
@@ -77,4 +77,16 @@
     font-family: var(--font-heading),sans-serif;
     font-weight: var(--font-heading-weight);
     font-style: var(--font-heading-style);
+}
+
+@media (min-width: 1024px) {
+  .wine_grid .wine_block .wine_grid_block_header  {
+    height: 70px;
+  }
+}
+
+@media (max-width: 768px) {
+  .wine_grid .wine_grid_container {
+      grid-template-columns: repeat(2,1fr);
+  }
 }

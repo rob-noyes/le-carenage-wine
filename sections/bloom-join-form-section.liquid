@@ -10,7 +10,7 @@ Bloom (www.bloom.wine)
 <section>
   {{ 'bloom-join-form.css' | asset_url | stylesheet_tag }}
   <noscript>You need to enable JavaScript to manage your membership and releases.</noscript>
-  <div id="bloom-join-form" data-gateway-key='pk_live_p8pFV215m3ereYJOYEI7KBad' data-google-api-key="AIzaSyDP47c7KBKGiLfRpTCE3UgXWca_W8nstW4"></div>
+  <div id="bloom-join-form" data-gateway-key='{{ shop.metafields.bloom.shop_settings.value.gateway_publishable_key }}' data-google-api-key="{{ shop.metafields.bloom.shop_settings.value.google_maps_api_key }}"></div>
 
   <script defer="defer" src="{{ 'bloom-join-form.js' | asset_url }}" type="module"></script>
 </section>

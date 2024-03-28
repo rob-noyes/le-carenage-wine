@@ -24,15 +24,45 @@
           "type": "block",
           "settings": {
             "wine_image": "shopify:\/\/shop_images\/Bottle_-_2022_Napa_Valley_Sauvignon_Blanc.png",
-            "wine_title": "2022 Sauvignon Blanc",
+            "wine_title": "2022 Napa Valley Sauvignon Blanc",
             "wine_cta_link": "LEARN MORE",
             "wine_link": "shopify:\/\/pages\/2022-napa-valley-sauvignon-blanc"
+          }
+        },
+        "block_EE3DhV": {
+          "type": "block",
+          "settings": {
+            "wine_image": "shopify:\/\/shop_images\/Knights_Valley_2022.png",
+            "wine_title": "2022 Knight's Valley Cabernet Sauvignon",
+            "wine_cta_link": "LEARN MORE",
+            "wine_link": "shopify:\/\/pages\/2022-knights-valley-cabernet-sauvignon"
+          }
+        },
+        "block_cbKrr4": {
+          "type": "block",
+          "settings": {
+            "wine_image": "shopify:\/\/shop_images\/Glass_Rock_2022.png",
+            "wine_title": "2022 Glass Rock Cabernet Sauvignon",
+            "wine_cta_link": "LEARN MORE",
+            "wine_link": "shopify:\/\/pages\/2022-glass-rock-cabernet-sauvignon"
+          }
+        },
+        "block_FpWm9z": {
+          "type": "block",
+          "settings": {
+            "wine_image": "shopify:\/\/shop_images\/Oakville_Reserve_2022_2577b925-05ac-404e-9784-2889d0232cba.png",
+            "wine_title": "2022 Oakville Reserve Cabernet Sauvignon",
+            "wine_cta_link": "LEARN MORE",
+            "wine_link": "shopify:\/\/pages\/2022-oakville-reserve-cabernet-sauvignon"
           }
         }
       },
       "block_order": [
         "d6f78fea-8036-4602-85df-2d86c569594a",
-        "30d0a386-6f89-4398-952e-049ecd1f4b63"
+        "30d0a386-6f89-4398-952e-049ecd1f4b63",
+        "block_EE3DhV",
+        "block_cbKrr4",
+        "block_FpWm9z"
       ],
       "settings": {
         "background_color": "",

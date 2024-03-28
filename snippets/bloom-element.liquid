@@ -60,7 +60,11 @@ Bloom (www.bloom.wine)
         var element = bloom.elements().create('form', props)
       }
 
+      {% if shop.metafields.bloom.shop_settings.value.defer_legacy_theme_asset_loading %}
         Bloom.storefront.utilities.ready(initBloomElements);
+      {% else %}
+        initBloomElements();
+      {% endif %}
     </script>
   {% else %}
      This snippet is not configured properly

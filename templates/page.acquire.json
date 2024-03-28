@@ -59,7 +59,6 @@
     },
     "ae8aeba3-d1b6-4e3c-96f0-2ff2a406f926": {
       "type": "rich-text",
-      "disabled": true,
       "blocks": {
         "template--19596642713909__ae8aeba3-d1b6-4e3c-96f0-2ff2a406f926-16886786962d5c1156-0": {
           "type": "overline",
@@ -87,6 +86,7 @@
         "template--19596642713909__ae8aeba3-d1b6-4e3c-96f0-2ff2a406f926-16886786962d5c1156-1",
         "template--19596642713909__ae8aeba3-d1b6-4e3c-96f0-2ff2a406f926-16886786962d5c1156-2"
       ],
+      "disabled": true,
       "settings": {
         "section_style": "default",
         "enable_animation": true,
@@ -100,7 +100,7 @@
         "primary-color": "#000000",
         "secondary-color": "#ffffff",
         "section-header": "We are offering allocations based on a first-come, first-served basis.",
-        "section-text": "Please fill out the form below for consideration on future allocations as well as the opportunity to acquire additional wines.",
+        "section-text": "Please fill out the form below for consideration on future allocations as well as the opportunity to acquire additional wines. Please note, we currently ship to all states except the following: Alabama, Alaska, Hawaii, Mississippi, Oklahoma, Pennsylvania, and Utah. If you live in one of these states, please contact us at sales@lecarenage.com so we can assist in procuring your selections.",
         "show_benefits": false,
         "description-text": "<p>In ut quam vitae odio lacinia tincidunt. Cras ultricies mi eu turpis hendrerit fringilla. Sed a libero. Proin faucibus arcu quis ante.<\/p>",
         "benefits-text": "",

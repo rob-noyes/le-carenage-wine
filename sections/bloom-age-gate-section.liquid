@@ -408,7 +408,11 @@ document.addEventListener('shopify:section:unload', function() {
   </div>
 
   <script>
+    {% if shop.metafields.bloom.shop_settings.value.defer_legacy_theme_asset_loading %}
       Bloom.storefront.utilities.ready(bloom.checkAge);
+    {% else %}
+      bloom.checkAge();
+    {% endif %}
   </script>
 {% endif %}
 

@@ -23,7 +23,7 @@ Installation note: This section requires 'bloom.liquid' to be present and a vari
      data-customer='{}'
     {% endif %}
       data-settings="{{ section.settings | json | escape }}"
-      data-credentials='{"gateway_publishable_key":"pk_live_p8pFV215m3ereYJOYEI7KBad","google_maps_api_key":"AIzaSyDP47c7KBKGiLfRpTCE3UgXWca_W8nstW4"}'
+      data-credentials='{"gateway_publishable_key":"{{ shop.metafields.bloom.shop_settings.value.gateway_publishable_key }}","google_maps_api_key":"{{ shop.metafields.bloom.shop_settings.value.google_maps_api_key }}"}'
   ></div>
 
   <script defer="defer" src="{{ 'bloom-my-account.js' | asset_url }}"></script>
